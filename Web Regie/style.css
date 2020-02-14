@@ -1,0 +1,58 @@
+
+    body
+    {
+      font-family: Helvetica, Sans-Serif;
+      font-size: 10pt;
+      background-color: #303030;
+      color:white;
+
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* https://openclassrooms.com/forum/sujet/tableau-avec-double-scroll-entetes-fixes */
+
+    /* https://stackoverflow.com/questions/15811653/table-with-fixed-header-and-fixed-column-on-pure-css */
+
+    .container{
+    }
+
+    .leftHeader{
+      position: absolute;
+      top:0;
+      border:2px solid green;
+      /* position:fixed; */
+      height:100%;
+      width: 20%;
+    }
+
+    .dispoHeader{
+    }
+    .dispos{
+      top:0;
+      position: absolute;
+      border:1px solid orange;
+      overflow: auto;
+      white-space:nowrap;
+    }
+    .dispo{
+      border:1px solid yellow;
+      width:20%;
+      /* float:left; */
+      padding: 10px;
+      display: inline-block;
+      vertical-align:top;
+      margin-right:20px;
+      white-space:normal;
+    }
+
+    .case{
+      padding-bottom: 80px;
+    }
+    .seq{
+      padding-bottom: 80px;
+    }
