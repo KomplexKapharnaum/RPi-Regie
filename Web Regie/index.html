@@ -6,147 +6,263 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <!-- JQUERY -->
-    <script type='text/javascript' src='lib/jquery-3.3.1.min.js'></script>
+    <script type='text/javascript' src='lib/jquery-3.4.1.min.js'></script>
     <!-- INT -->
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="script.js"></script>
   </HEAD>
 
-  <BODY>
+<BODY>
 
-    <div class="container">
-
-      <!-- LEFT HEADER -->
-      <div class="leftHeader">
-        <!-- CONTROLS -->
-        <div class="mainControls">
-          <div class="">Connection state</div>
-          <div class="">DOSSIER</div>
-          <div class="">STOP</div>
-          <div class="">EDIT</div>
-        </div>
-        <!-- SEQUENCES -->
-        <div class="seqList">
-          <div class="seq">
-            <div class="seqName">sequence 1</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 2</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 3</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 4</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 5</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 6</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 7</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 8</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 9</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-          <div class="seq">
-            <div class="seqName">sequence 10</div><div class="seqOptions">Clear / Copy / Paste </div>
-          </div>
-        </div>
-      </div>
+<!-- OVERLAYS -->
+<div class="overlay" id=mediaOverlay>
+  <div class="overlayContent">
+  </div>
+</div>
+<div class="overlay" id=dispoOverlay>
+  <div class="overlayContent">
+  </div>
+</div>
+<div class="overlay" id=folderOverlay>
+  <div class="overlayContent">
+  </div>
+</div>
 
 
+<!-- TABLE -->
+<div class="container">
 
-      <!-- DISPOS -->
-      <div class="dispos">
-        <div class="dispo">
-          <div class="dispoHeader">
-            <div class="headerBasics"> State<br>operator<br>stop </div>
-            <div class="headerMore">name<br>pause<br>mute<br>looping </div>
-          </div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-        </div>
-        <div class="dispo">
-          <div class="dispoHeader">
-            <div class="headerBasics"> State<br>operator<br>stop </div>
-            <div class="headerMore">name<br>pause<br>mute<br>looping </div>
-          </div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-        </div>
-        <div class="dispo">
-          <div class="dispoHeader">
-            <div class="headerBasics"> State<br>operator<br>stop </div>
-            <div class="headerMore">name<br>pause<br>mute<br>looping </div>
-          </div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-        </div>
-        <div class="dispo">
-          <div class="dispoHeader">
-            <div class="headerBasics"> State<br>operator<br>stop </div>
-            <div class="headerMore">name<br>pause<br>mute<br>looping </div>
-          </div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-        </div>
-        <div class="dispo">
-          <div class="dispoHeader">
-            <div class="headerBasics"> State<br>operator<br>stop </div>
-            <div class="headerMore">name<br>pause<br>mute<br>looping </div>
-          </div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-          <div class="case">vid</div>
-        </div>
-      </div>
-
+  <div class="masterControls">
+    <div class="connectionState">
+      <div class="connectionLed circle"></div>
     </div>
+    <div class="folderEditor">DOSSIER A</div>
+    <div class="btn editToggle">EDIT / FUNCTION</div>
+    <div class="btn dispoToggle">EXPAND V</div>
+    <div class="btn">STOP</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>
+          <div class="dispo">
+            <div class="dispoBasics">
+              <div class="">State</div>
+              <div class="operatorEditor">operator</div>
+              <div class="btn">STOP</div>
+            </div>
+            <div class="dispoMore">
+              <div class="nameEditor">Name</div>
+              <div class="btn">PAUSE</div>
+              <div class="btn">MUTE</div>
+              <div class="btn">LOOPING</div>
+            </div>
+          </div>
+        </th>
+        <th>
+          <div class="dispo">
+            <div class="dispoBasics">
+              <div class="">State</div>
+              <div class="operatorEditor">operator</div>
+              <div class="btn">STOP</div>
+            </div>
+            <div class="dispoMore">
+              <div class="nameEditor">Name</div>
+              <div class="btn">PAUSE</div>
+              <div class="btn">MUTE</div>
+              <div class="btn">LOOPING</div>
+            </div>
+          </div>
+        </th>
+        <th>
+          <div class="dispo">
+            <div class="dispoBasics">
+              <div class="">State</div>
+              <div class="operatorEditor">operator</div>
+              <div class="btn">STOP</div>
+            </div>
+            <div class="dispoMore">
+              <div class="nameEditor">Name</div>
+              <div class="btn">PAUSE</div>
+              <div class="btn">MUTE</div>
+              <div class="btn">LOOPING</div>
+            </div>
+          </div>
+        </th>
+        <th>
+          <div class="dispo">
+            <div class="dispoBasics">
+              <div class="">State</div>
+              <div class="operatorEditor">operator</div>
+              <div class="btn">STOP</div>
+            </div>
+            <div class="dispoMore">
+              <div class="nameEditor">Name</div>
+              <div class="btn">PAUSE</div>
+              <div class="btn">MUTE</div>
+              <div class="btn">LOOPING</div>
+            </div>
+          </div>
+        </th>
+        <th>
+          <div class="dispo">
+            <div class="dispoBasics">
+              <div class="">State</div>
+              <div class="operatorEditor">operator</div>
+              <div class="btn">STOP</div>
+            </div>
+            <div class="dispoMore">
+              <div class="nameEditor">Name</div>
+              <div class="btn">PAUSE</div>
+              <div class="btn">MUTE</div>
+              <div class="btn">LOOPING</div>
+            </div>
+          </div>
+        </th>
+        <th>
+          <div class="dispo">
+            <div class="dispoBasics">
+              <div class="">State</div>
+              <div class="operatorEditor">operator</div>
+              <div class="btn">STOP</div>
+            </div>
+            <div class="dispoMore">
+              <div class="nameEditor">Name</div>
+              <div class="btn">PAUSE</div>
+              <div class="btn">MUTE</div>
+              <div class="btn">LOOPING</div>
+            </div>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence 1</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media avecnnommaximaxilongmaximaxilongds;kjdhslkjdhslkjdhslkjdh</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence maxi long name maxi long</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+      <tr>
+        <th class="seqDiv">
+          <div class="seqName">Sequence i</div>
+          <div class="seqControls"> <div class="btn">clear</div><div class="btn">copy</div><div class="btn">paste</div> </div>
+        </th>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+        <td class="case"><div class="mediaSelector">Media</div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 
 
 

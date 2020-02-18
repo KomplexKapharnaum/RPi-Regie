@@ -1,58 +1,156 @@
+body
+{
+  margin:0;
+  font-family: Helvetica, Sans-Serif;
+  font-size: 10pt;
+  background-color: #202020;
+  color:white;
+  overflow:hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
-    body
-    {
-      font-family: Helvetica, Sans-Serif;
-      font-size: 10pt;
-      background-color: #303030;
-      color:white;
+/* https://openclassrooms.com/forum/sujet/tableau-avec-double-scroll-entetes-fixes */
+/* https://stackoverflow.com/questions/15811653/table-with-fixed-header-and-fixed-column-on-pure-css */
 
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
 
-    /* https://openclassrooms.com/forum/sujet/tableau-avec-double-scroll-entetes-fixes */
+.masterControls{
+  position: fixed;
+  z-index:10;
+  left: 10px;
+  top: 10px;
 
-    /* https://stackoverflow.com/questions/15811653/table-with-fixed-header-and-fixed-column-on-pure-css */
+}
 
-    .container{
-    }
+.container {
+  max-width: 100vw;
+  max-height: 100vh;
+  height:100%;
+  overflow: scroll;
+  position: relative;
+}
 
-    .leftHeader{
-      position: absolute;
-      top:0;
-      border:2px solid green;
-      /* position:fixed; */
-      height:100%;
-      width: 20%;
-    }
 
-    .dispoHeader{
-    }
-    .dispos{
-      top:0;
-      position: absolute;
-      border:1px solid orange;
-      overflow: auto;
-      white-space:nowrap;
-    }
-    .dispo{
-      border:1px solid yellow;
-      width:20%;
-      /* float:left; */
-      padding: 10px;
-      display: inline-block;
-      vertical-align:top;
-      margin-right:20px;
-      white-space:normal;
-    }
+/*DISPO*/
+.dispo{
 
-    .case{
-      padding-bottom: 80px;
-    }
-    .seq{
-      padding-bottom: 80px;
-    }
+}
+.dispo,.case{
+}
+/* COLUMN WIDTH*/
+.dispo, .mediaSelector{
+  width: 200px;
+}
+.mediaSelector{
+  text-align: center;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+table {
+  position: relative;
+  border-spacing: separate;
+  border-spacing: 0;
+}
+
+td,
+th {
+}
+
+/*BORDERS*/
+.dispo,thead th:first-child{
+  background: #404040;
+}
+.dispo,td, .seqDiv, thead th:first-child{
+  box-sizing:content-box;
+  border:4px solid #202020;
+}
+.case{
+  background-color: #303030;
+}
+
+
+
+/*HEAD*/
+thead th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  top: 0;
+  background: #202020;
+}
+thead th:first-child {
+  left: 0;
+  z-index: 1;
+}
+/*SEQ*/
+tbody th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  left: 0;
+  background-color: #404040;
+}
+.seqDiv{
+  height:100px;
+}
+.seqName{
+  max-width: 150px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  margin: 20px;
+  color: green;
+}
+.seqControls{
+  margin: 0px;
+  color: orange;
+  float:left;
+}
+.seqControls .btn{
+  float:left;
+}
+
+
+
+
+/* OVERLAYS */
+.overlay {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 100;
+  cursor: pointer;
+  padding: 10%;
+
+}
+.overlayContent{
+  padding:5%;
+  width:70%;
+  background-color: #303030;
+  min-height:100px;
+  max-height:50%;
+  overflow-y: scroll;
+}
+
+
+
+/* UI */
+.circle {
+  width: 10px;
+  height: 10px;
+  background: red;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+}
