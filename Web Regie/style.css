@@ -14,6 +14,7 @@ body
   user-select: none;
 }
 
+
 /* TABLE FORKED FROM
 https://jsfiddle.net/qwubvg9m/1/
 https://stackoverflow.com/questions/15811653/table-with-fixed-header-and-fixed-column-on-pure-css */
@@ -166,47 +167,100 @@ tbody th {
   height:100px;
 }
 .seqName{
-  width: 200px;
+  width: 157px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow-x: hidden;
-  margin: 20px;
+  margin: 22px 22px 22px 22px;
+  background-color: #00ab3f;
+  padding: 20px;
+  cursor:pointer;
+  border-radius:4px;
+}
+.seqName:active{
+
+}
+.editionMode .seqName{
+  background-color: rgb(101, 132, 150, 1);
+}
+.playMode .seqName{
+  background-color: #00ab3f;
 }
 .seqControls{
-  margin: 0px;
-  color: orange;
+  margin: 0px 0px 10px 0px;
+  color: rgb(101, 132, 150, 1);
   float:left;
+  width:100%;
 }
-.seqControls{
-  float:left;
+.seqControls i{
+  text-align: center;
+  width:15%;
+  box-sizing: border-box; margin: 0;
 }
+
 
 
 
 
 /* OVERLAYS */
 .overlay {
-  display: none;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.7);
-  z-index: 100;
+  opacity: 0;
   cursor: pointer;
-  padding: 10%;
+  position : absolute;
+  width : 100%;
+  height : 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 100;
+  text-align: center;
+}
+.overlay:before{
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.overlayContent{
+  cursor: default;
+  height : 80%;
+  width : 80%;
+  background-color : #303030;
+  display: inline-block;
+  vertical-align: middle;
 
 }
-.overlayContent{
-  padding:5%;
-  width:70%;
-  background-color: #303030;
-  min-height:100px;
-  max-height:50%;
+.mediaList{
+  height: 85%;
   overflow-y: scroll;
+  padding-left: 5%;
+  text-align: left;
+}
+.mediaList .mediaItem{
+  cursor: pointer;
+  height: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#mediaOverlay .controls{
+  height: 10%;
+  text-align: left;
+  padding-left: 5%;
+  padding-top: 1%;
+}
+
+#textOverlay .overlayContent{
+
+}
+
+#textOverlay textarea{
+  font-size: 20px;
+  width:50%;
+  float: left;
+  margin: 15% 10% 10% 15%;
+}
+#textOverlay .controls{
+  margin: 15% 10% 10% 15%;
 }
 
 
@@ -231,7 +285,7 @@ tbody th {
 }
 
 .btnSmall{
-  font-size: 20px !important;
+  font-size: 25px !important;
 }
 .btnMedium{
   font-size: 30px !important;
@@ -239,9 +293,15 @@ tbody th {
 .btnBig{
   font-size: 50px !important;
 }
-.fa:hover{
+.btn{
+  cursor: pointer;
+}
+.btn:hover{
   opacity:0.8;
 }
-.fa:active{
+.btn:active{
   opacity:0.4;
+}
+textarea {
+  outline: none;
 }

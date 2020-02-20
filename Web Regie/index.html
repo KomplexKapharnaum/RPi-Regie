@@ -9,25 +9,86 @@
     <script type='text/javascript' src='lib/jquery-3.4.1.min.js'></script>
     <!-- INT -->
     <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="stylesheet" href="files/fa4.7/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style/fa4.7/css/font-awesome.min.css">
     <script src="script.js"></script>
   </HEAD>
 
-<BODY>
+<BODY class="editionMode">
 
 <!-- OVERLAYS -->
 <div class="overlay" id=mediaOverlay>
   <div class="overlayContent">
+    <div class="mediaList">
+      <div class="mediaItem">media 1</div>
+      <div class="mediaItem">media 2</div>
+      <div class="mediaItem">media 3</div>
+      <div class="mediaItem">media 4</div>
+      <div class="mediaItem">media 5</div>
+      <div class="mediaItem">media 6</div>
+      <div class="mediaItem">media 7</div>
+      <div class="mediaItem">media 8</div>
+      <div class="mediaItem">media 9</div>
+      <div class="mediaItem">media 10</div>
+      <div class="mediaItem">media 11</div>
+      <div class="mediaItem">media 12</div>
+      <div class="mediaItem">media 13</div>
+      <div class="mediaItem">media 14</div>
+      <div class="mediaItem">media 15</div>
+      <div class="mediaItem">media 16</div>
+      <div class="mediaItem">media 17</div>
+      <div class="mediaItem">media 18</div>
+      <div class="mediaItem">media 19</div>
+      <div class="mediaItem">media 20</div>
+    </div>
+    <div class="controls">
+      <i class="btn fa fa-check-circle btnBig" aria-hidden="true"></i>
+    </div>
+    <br>
   </div>
 </div>
+
 <div class="overlay" id=dispoOverlay>
+  <div class="overlayContent">
+    <div class="dispoList">
+      <div class="dispoItem">dispo 1</div>
+      <div class="dispoItem">dispo 2</div>
+      <div class="dispoItem">dispo 3</div>
+      <div class="dispoItem">dispo 4</div>
+      <div class="dispoItem">dispo 5</div>
+      <div class="dispoItem">dispo 6</div>
+      <div class="dispoItem">dispo 7</div>
+      <div class="dispoItem">dispo 8</div>
+      <div class="dispoItem">dispo 9</div>
+      <div class="dispoItem">dispo 10</div>
+    </div>
+    <div class="controls">
+      <i class="btn fa fa-check-circle btnBig" aria-hidden="true"></i>
+    </div>
+    <br>
+  </div>
+</div>
+
+
+<div class="overlay" id=textOverlay>
+  <div class="overlayContent">
+    <textarea id="textToEdit">TEXT</textarea>
+    <div class="controls">
+      <i class="btn fa fa-check-circle btnBig validateText" aria-hidden="true"></i>
+    </div>
+    <br>
+  </div>
+</div>
+
+
+
+<!-- <div class="overlay" id=dispoOverlay>
   <div class="overlayContent">
   </div>
 </div>
 <div class="overlay" id=folderOverlay>
   <div class="overlayContent">
   </div>
-</div>
+</div> -->
 
 
 <!-- TABLE -->
@@ -38,9 +99,9 @@
       <div class="connectionLed circle"></div>
     </div>
     <div class="folderEditor">DOSSIER A</div>
-    <i class="fa fa-pencil-square btnOn btnBig editToggle" aria-hidden="true"></i>
-    <i class="fa fa-chevron-up btnBig dispoToggle" aria-hidden="true"></i>
-    <i class="fa fa-stop btnBig stopAll" aria-hidden="true"></i>
+    <i class="btn fa fa-pencil-square btnOn btnBig editToggle" aria-hidden="true"></i>
+    <i class="btn fa fa-chevron-up btnBig dispoToggle" aria-hidden="true"></i>
+    <i class="btn fa fa-stop btnBig stopAll" aria-hidden="true"></i>
   </div> -->
 
   <table>
@@ -50,109 +111,93 @@
           <div class="masterControls">
             <!-- <div class="connectionState"> <div class="connectionLed circle"></div> </div> -->
             <div class="folderEditor">DOSSIER A</div>
-            <i class="fa fa-chevron-up btnMedium dispoToggle" aria-hidden="true"></i>
-            <i class="fa fa-stop btnBig stopAll masterBtn" aria-hidden="true"></i>
-            <i class="fa fa-pencil-square btnOn btnBig editToggle masterBtn" aria-hidden="true"></i>
-          </div>
-        </th>
-        <th>
-          <div class="dispo">
-            <!-- basics -->
-            <div class="dispoNaming">
-              <div class="operatorEditor">Operator name</div>
-              <div class="nameEditor">Dispositif name</div>
-            </div>
-            <i class="fa fa-stop btnBig stopDispo" aria-hidden="true"></i>
-            <!-- hideable -->
-            <div class="dispoMore">
-              <i class="fa fa-volume-up btnMedium" aria-hidden="true"></i>
-              <i class="fa fa-repeat btnMedium" aria-hidden="true"></i>
-              <i class="fa fa-pause btnMedium" aria-hidden="true"></i>
-            </div>
+            <i class="btn fa fa-chevron-up btnMedium dispoToggle" aria-hidden="true"></i>
+            <i class="btn fa fa-stop btnBig stopAll masterBtn" aria-hidden="true"></i>
+            <i class="btn fa fa-pencil-square btnOn btnBig editToggle masterBtn" aria-hidden="true"></i>
           </div>
         </th>
 
         <!-- <th>
           <div class="dispo">
-            <div class="dispoBasics">
-              <div class="">State</div>
-              <div class="operatorEditor">operator</div>
-              <div class="btnSmall">STOP</div>
+            <div class="dispoNaming">
+              <div class="operatorEditor">Operator name</div>
+              <div class="nameEditor">Dispositif name</div>
             </div>
+            <i class="btn fa fa-stop btnBig stopDispo" aria-hidden="true"></i>
             <div class="dispoMore">
-              <div class="nameEditor">Name</div>
-              <div class="btnSmall">PAUSE</div>
-              <div class="btnSmall">MUTE</div>
-              <div class="btnSmall">LOOPING</div>
-            </div>
-          </div>
-        </th>
-        <th>
-          <div class="dispo">
-            <div class="dispoBasics">
-              <div class="">State</div>
-              <div class="operatorEditor">operator</div>
-              <div class="btnSmall">STOP</div>
-            </div>
-            <div class="dispoMore">
-              <div class="nameEditor">Name</div>
-              <div class="btnSmall">PAUSE</div>
-              <div class="btnSmall">MUTE</div>
-              <div class="btnSmall">LOOPING</div>
-            </div>
-          </div>
-        </th>
-        <th>
-          <div class="dispo">
-            <div class="dispoBasics">
-              <div class="">State</div>
-              <div class="operatorEditor">operator</div>
-              <div class="btnSmall">STOP</div>
-            </div>
-            <div class="dispoMore">
-              <div class="nameEditor">Name</div>
-              <div class="btnSmall">PAUSE</div>
-              <div class="btnSmall">MUTE</div>
-              <div class="btnSmall">LOOPING</div>
-            </div>
-          </div>
-        </th>
-        <th>
-          <div class="dispo">
-            <div class="dispoBasics">
-              <div class="">State</div>
-              <div class="operatorEditor">operator</div>
-              <div class="btnSmall">STOP</div>
-            </div>
-            <div class="dispoMore">
-              <div class="nameEditor">Name</div>
-              <div class="btnSmall">PAUSE</div>
-              <div class="btnSmall">MUTE</div>
-              <div class="btnSmall">LOOPING</div>
-            </div>
-          </div>
-        </th>
-        <th>
-          <div class="dispo">
-            <div class="dispoBasics">
-              <div class="">State</div>
-              <div class="operatorEditor">operator</div>
-              <div class="btnSmall">STOP</div>
-            </div>
-            <div class="dispoMore">
-              <div class="nameEditor">Name</div>
-              <div class="btnSmall">PAUSE</div>
-              <div class="btnSmall">MUTE</div>
-              <div class="btnSmall">LOOPING</div>
+              <i class="btn fa fa-volume-up btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-repeat btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-pause btnMedium" aria-hidden="true"></i>
             </div>
           </div>
         </th> -->
 
+        <!-- <th>
+          <div class="dispo">
+            <div class="dispoNaming">
+              <div class="operatorEditor">Operator name</div>
+              <div class="nameEditor">Dispositif name</div>
+            </div>
+            <i class="btn fa fa-stop btnBig stopDispo" aria-hidden="true"></i>
+            <div class="dispoMore">
+              <i class="btn fa fa-volume-up btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-repeat btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-pause btnMedium" aria-hidden="true"></i>
+            </div>
+          </div>
+        </th> -->
+
+        <!-- <th>
+          <div class="dispo">
+            <div class="dispoNaming">
+              <div class="operatorEditor">Operator name</div>
+              <div class="nameEditor">Dispositif name</div>
+            </div>
+            <i class="btn fa fa-stop btnBig stopDispo" aria-hidden="true"></i>
+            <div class="dispoMore">
+              <i class="btn fa fa-volume-up btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-repeat btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-pause btnMedium" aria-hidden="true"></i>
+            </div>
+          </div>
+        </th> -->
+
+        <!-- <th>
+          <div class="dispo">
+            <div class="dispoNaming">
+              <div class="operatorEditor">Operator name</div>
+              <div class="nameEditor">Dispositif name</div>
+            </div>
+            <i class="btn fa fa-stop btnBig stopDispo" aria-hidden="true"></i>
+            <div class="dispoMore">
+              <i class="btn fa fa-volume-up btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-repeat btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-pause btnMedium" aria-hidden="true"></i>
+            </div>
+          </div>
+        </th> -->
+
+        <!-- <th>
+          <div class="dispo">
+            <div class="dispoNaming">
+              <div class="operatorEditor">Operator name</div>
+              <div class="nameEditor">Dispositif name</div>
+            </div>
+            <i class="btn fa fa-stop btnBig stopDispo" aria-hidden="true"></i>
+            <div class="dispoMore">
+              <i class="btn fa fa-volume-up btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-repeat btnMedium" aria-hidden="true"></i>
+              <i class="btn fa fa-pause btnMedium" aria-hidden="true"></i>
+            </div>
+          </div>
+        </th> -->
+
+
         <th id="addRemoveDispos">
           <div class="dispo">
             <div class="dispoBasics">
-              <i class="fa fa-plus-circle btnBig addDispo" aria-hidden="true"></i>
-              <i class="fa fa-minus-circle btnBig removeDispo" aria-hidden="true"></i>
+              <i class="btn fa fa-plus-circle btnBig addDispo" aria-hidden="true"></i>
+              <i class="btn fa fa-minus-circle btnBig removeDispo" aria-hidden="true"></i>
             </div>
           </div>
         </th>
@@ -162,165 +207,165 @@
 
     <!-- SEQUENCES -->
     <tbody>
-      <tr id="sequences">
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 1</div>
+          <div class="seqName btn ">Sequence 1</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 2</div>
+          <div class="seqName btn ">Sequence 2</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 3</div>
+          <div class="seqName btn ">Sequence 3</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 4</div>
+          <div class="seqName btn ">Sequence 4</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 5</div>
+          <div class="seqName btn ">Sequence 5</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 6</div>
+          <div class="seqName btn ">Sequence 6</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 7</div>
+          <div class="seqName btn ">Sequence 7</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 8</div>
+          <div class="seqName btn ">Sequence 8</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 9</div>
+          <div class="seqName btn ">Sequence 9</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
-      <tr>
+      <tr class="seqLine">
         <th class="seqDiv">
-          <div class="seqName">Sequence 10</div>
+          <div class="seqName btn ">Sequence 10</div>
           <div class="seqControls">
-            <i class="fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
-            <i class="fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
-            <i class="fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-times btnSmall eraseSequence" aria-hidden="true"></i>
+            <i class="btn fa fa-files-o btnSmall copySequence" aria-hidden="true"></i>
+            <i class="btn fa fa-clipboard btnSmall pasteSequence" aria-hidden="true"></i>
           </div>
         </th>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <!-- <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td>
-        <td class="box"><div class="mediaSelector">Media</div></td> -->
+        <!-- <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td>
+        <td class="box"><div class="mediaSelector">...</div></td> -->
       </tr>
 
     </tbody>
