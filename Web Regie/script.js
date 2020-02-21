@@ -4,7 +4,7 @@ $(function() {
   $('.overlay').css('opacity','1').hide();
 
   ////////////////////////////////////////////////////////////
-  /////////////////////////  TOGGLES  ////////////////////////
+  /////////////////////////  GENERAL  ////////////////////////
   ////////////////////////////////////////////////////////////
 
   var editionMode = true;
@@ -47,10 +47,6 @@ $(function() {
     }
   });
 
-  $('.folderEditor').click(function(){
-    $('#folderOverlay').fadeIn(fadeTime);
-  });
-
 
   ///////// Overlay Closer
   $(".overlay").click(function(e){
@@ -60,6 +56,7 @@ $(function() {
 
   });
 
+
   ///////// Add dispo
   $('.addDispo').click(function(){
     pool.addDispo();
@@ -68,6 +65,14 @@ $(function() {
   $('.removeDispo').click(function(){
     pool.removeDispo();
   });
+
+
+  // $('.listItem').click(function(){
+  //   $('.listItem').removeClass('selected'); $(this).addClass('selected');
+  // });
+
+
+
 
   ////////////////////////////////////////////////////////////
   /////////////////////////    POOL   ////////////////////////
@@ -84,7 +89,7 @@ $(function() {
 
     // ADD
     this.addDispo = function(){
-      that.allDispos.push(new dispoObject('name','operator'));
+      that.allDispos.push(new dispoObject('name dispo','name operator'));
     }
     // DEV
     this.removeDispo = function(){
@@ -166,12 +171,6 @@ $(function() {
 
 
 
-
-
-
-
-
-
   ////////////////////////////////////////////////////////////
   /////////////////////////   DISPO   ////////////////////////
   ////////////////////////////////////////////////////////////
@@ -218,31 +217,63 @@ $(function() {
       }
     }
 
-    this.operatorDiv.click(function(){
-      // if(editionMode==true){
-      //   $("#textOverlay").fadeIn(fadeTime);
-      //   $("#textToEdit").focus();
-      //   $("#textToEdit").val(seqName);
-      //   $('#textToEdit').unbind().keyup(function(e){ if(e.keyCode == 13){ validateText(); } });
-      // }
+    // OPERATOR EDIT
+    $(that.operatorDiv).click(function(){
+      var thatOperatorDiv = this;
+      if(editionMode==true){
+        $("#textToEditTitle").html("Nom de l'opérateur :");
+        $("#textOverlay").fadeIn(fadeTime);
+        $("#textToEdit").focus();
+        $("#textToEdit").val(that.operator);
+        $('#textToEdit').unbind().keypress(function(e){ if(e.keyCode == 13){ e.preventDefault(); thatOperatorDiv.validateText(); } });
+        $('.validateText').unbind().click(function(){ thatOperatorDiv.validateText(); });
+      }
+      //OK
+      this.validateText = function(){
+        $("#textToEdit").blur();
+        $("#textOverlay").fadeOut(fadeTime);
+        $(that.operatorDiv).html($("#textToEdit").val());
+        that.operator = $("#textToEdit").val();
+      }
     });
 
+    // NAME EDIT
+    $(that.nameDiv).click(function(){
+      var selectedDispo = 'none';
+      if(editionMode==true){
+        $('.listItem').removeClass('selected');
+        $("#dispoOverlay").fadeIn(fadeTime);
+        // select
+        $(".dispoItem").unbind().click(function(){
+          selectedDispo = $(this).html();
+          $('.listItem').removeClass('selected'); $(this).addClass('selected');
+        });
+        // validate
+        $(".validateDispo").unbind().click(function(){
+          $("#dispoOverlay").fadeOut(fadeTime);
+          $(that.nameDiv).html(selectedDispo);
+          that.name = selectedDispo;
+        });
+      }
+    });
 
 
     // init
     this.updateConnectionState();
 
-
-
   }
 
+
   ////////////////////////////////////////////////////////////
-  /////////////////////////   CASE    ////////////////////////
+  /////////////////////////   BOX     ////////////////////////
   ////////////////////////////////////////////////////////////
 
   function boxObject(div){
 
-    this.box = $('<td class="box"><div class="mediaSelector">...</div></td>').appendTo($(div).parent());
+    this.box = $('<td class="box"></td>').appendTo($(div).parent());
+    this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
+    var that = this;
+    this.media='?';
 
     this.updateConnectionState = function(state){
       if(state=='disconnected'){
@@ -254,13 +285,62 @@ $(function() {
     }
 
     $(this.box).click(function(){
+      var selectedMedia = 'none';
       if(editionMode==true){
-        console.log('fade in overlay');
+        $('.listItem').removeClass('selected');
         $("#mediaOverlay").fadeIn(fadeTime);
+        // select
+        $(".mediaItem").unbind().click(function(){
+          selectedMedia = $(this).html();
+          $('.listItem').removeClass('selected'); $(this).addClass('selected');
+        });
+        // validate
+        $(".validateMedia").unbind().click(function(){
+          $("#mediaOverlay").fadeOut(fadeTime);
+          $(that.mediaDiv).html(selectedMedia);
+          that.media = selectedMedia;
+        });
       }else{
         //PLAY
       }
     });
+
+  }
+
+
+
+
+
+  ////////////////////////////////////////////////////////////
+  //////////////////////     PROJECT     /////////////////////
+  ////////////////////////////////////////////////////////////
+
+  project = new projectObject();
+  projectExport = [];
+  projectImport = [];
+
+  function projectObject(){
+
+    var that = this;
+    that.allScenes = new Array();
+
+  }
+
+
+  ////////////////////////////////////////////////////////////
+  //////////////////////      SCENE      /////////////////////
+  ////////////////////////////////////////////////////////////
+
+
+  $('.sceneEditor').click(function(){
+    $('#sceneOverlay').fadeIn(fadeTime);
+  });
+
+  function sceneObject(){
+
+    var that = this;
+    that.allSequences = new Array();
+
 
   }
 
@@ -272,33 +352,24 @@ $(function() {
   var editedSequence;
 
   $('.seqName').click(function(){
+    var that = this;
     editedSequence = this;
     var seqName = $(editedSequence).html();
     if(editionMode==true){
+      $("#textToEditTitle").html("Nom de la séquence :");
       $("#textOverlay").fadeIn(fadeTime);
       $("#textToEdit").focus();
       $("#textToEdit").val(seqName);
-      $('#textToEdit').unbind().keyup(function(e){ if(e.keyCode == 13){ validateText(); } });
+      $('#textToEdit').unbind().keypress(function(e){ if(e.keyCode == 13){ e.preventDefault(); that.validateText(); } });
+      $('.validateText').unbind().click(function(){ that.validateText(); });
     }
-
+    // OK
+    this.validateText = function(){
+      $("#textToEdit").blur();
+      $("#textOverlay").fadeOut(fadeTime);
+      $(editedSequence).html($("#textToEdit").val());
+    }
   });
-
-
-  $('.validateText').click(function(){
-    validateText();
-  });
-
-
-  function validateText(){
-
-    // attention peut aussi servir à txt 'operator name'
-    $("#textToEdit").blur();
-    $("#textOverlay").fadeOut(fadeTime);
-    console.log($("#textToEdit").val());
-    $(editedSequence).html($("#textToEdit").val());
-
-  }
-
 
 
 

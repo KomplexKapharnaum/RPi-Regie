@@ -8,7 +8,7 @@
     <!-- JQUERY -->
     <script type='text/javascript' src='lib/jquery-3.4.1.min.js'></script>
     <!-- INT -->
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css?rnd=132">
     <link rel="stylesheet" href="style/fa4.7/css/font-awesome.min.css">
     <script src="script.js"></script>
   </HEAD>
@@ -18,30 +18,31 @@
 <!-- OVERLAYS -->
 <div class="overlay" id=mediaOverlay>
   <div class="overlayContent">
-    <div class="mediaList">
-      <div class="mediaItem">media 1</div>
-      <div class="mediaItem">media 2</div>
-      <div class="mediaItem">media 3</div>
-      <div class="mediaItem">media 4</div>
-      <div class="mediaItem">media 5</div>
-      <div class="mediaItem">media 6</div>
-      <div class="mediaItem">media 7</div>
-      <div class="mediaItem">media 8</div>
-      <div class="mediaItem">media 9</div>
-      <div class="mediaItem">media 10</div>
-      <div class="mediaItem">media 11</div>
-      <div class="mediaItem">media 12</div>
-      <div class="mediaItem">media 13</div>
-      <div class="mediaItem">media 14</div>
-      <div class="mediaItem">media 15</div>
-      <div class="mediaItem">media 16</div>
-      <div class="mediaItem">media 17</div>
-      <div class="mediaItem">media 18</div>
-      <div class="mediaItem">media 19</div>
-      <div class="mediaItem">media 20</div>
-    </div>
+    <div class="overlayTitle"> SELECTIONNER UN MEDIA: </div>
     <div class="controls">
-      <i class="btn fa fa-check-circle btnBig" aria-hidden="true"></i>
+      <i class="btn fa fa-check-circle btnBig validateMedia" aria-hidden="true"></i>
+    </div>
+    <div class="mediaList">
+      <div class="listItem mediaItem">media 1</div>
+      <div class="listItem mediaItem">media 2</div>
+      <div class="listItem mediaItem">media 3</div>
+      <div class="listItem mediaItem">media 4</div>
+      <div class="listItem mediaItem">media 5</div>
+      <div class="listItem mediaItem">media 6</div>
+      <div class="listItem mediaItem">media 7</div>
+      <div class="listItem mediaItem">media 8</div>
+      <div class="listItem mediaItem">media 9</div>
+      <div class="listItem mediaItem">media 10</div>
+      <div class="listItem mediaItem">media 11</div>
+      <div class="listItem mediaItem">media 12</div>
+      <div class="listItem mediaItem">media 13</div>
+      <div class="listItem mediaItem">media 14</div>
+      <div class="listItem mediaItem">media 15</div>
+      <div class="listItem mediaItem">media 16</div>
+      <div class="listItem mediaItem">media 17</div>
+      <div class="listItem mediaItem">media 18</div>
+      <div class="listItem mediaItem">media 19</div>
+      <div class="listItem mediaItem">media 20</div>
     </div>
     <br>
   </div>
@@ -49,21 +50,66 @@
 
 <div class="overlay" id=dispoOverlay>
   <div class="overlayContent">
-    <div class="dispoList">
-      <div class="dispoItem">dispo 1</div>
-      <div class="dispoItem">dispo 2</div>
-      <div class="dispoItem">dispo 3</div>
-      <div class="dispoItem">dispo 4</div>
-      <div class="dispoItem">dispo 5</div>
-      <div class="dispoItem">dispo 6</div>
-      <div class="dispoItem">dispo 7</div>
-      <div class="dispoItem">dispo 8</div>
-      <div class="dispoItem">dispo 9</div>
-      <div class="dispoItem">dispo 10</div>
-    </div>
+    <div class="overlayTitle"> SELECTIONNER UN DISPO: </div>
     <div class="controls">
-      <i class="btn fa fa-check-circle btnBig" aria-hidden="true"></i>
+      <i class="btn fa fa-check-circle btnBig validateDispo" aria-hidden="true"></i>
     </div>
+    <div class="dispoList">
+      <div class="listItem dispoItem">dispo 1</div>
+      <div class="listItem dispoItem">dispo 2</div>
+      <div class="listItem dispoItem">dispo 3</div>
+      <div class="listItem dispoItem">dispo 4</div>
+      <div class="listItem dispoItem">dispo 5</div>
+      <div class="listItem dispoItem">dispo 6</div>
+      <div class="listItem dispoItem">dispo 7</div>
+      <div class="listItem dispoItem">dispo 8</div>
+      <div class="listItem dispoItem">dispo 9</div>
+      <div class="listItem dispoItem">dispo 10</div>
+      <div class="listItem dispoItem">dispo 11</div>
+      <div class="listItem dispoItem">dispo 12</div>
+      <div class="listItem dispoItem">dispo 13</div>
+      <div class="listItem dispoItem">dispo 14</div>
+      <div class="listItem dispoItem">dispo 15</div>
+      <div class="listItem dispoItem">dispo 16</div>
+      <div class="listItem dispoItem">dispo 17</div>
+      <div class="listItem dispoItem">dispo 18</div>
+      <div class="listItem dispoItem">dispo 19</div>
+      <div class="listItem dispoItem">dispo 20</div>
+    </div>
+    <br>
+  </div>
+</div>
+
+
+<div class="overlay" id=sceneOverlay>
+  <div class="overlayContent">
+    <div class="overlayTitle"> SELECTIONNER UNE SCENE: </div>
+    <div class="controls">
+      <i class="btn fa fa-check-circle btnBig validateFoler" aria-hidden="true"></i>
+    </div>
+    <div class="sceneList">
+      <div class="listItem sceneItem">scene 1</div>
+      <div class="listItem sceneItem">scene 2</div>
+      <div class="listItem sceneItem">scene 3</div>
+      <div class="listItem sceneItem">scene 4</div>
+      <div class="listItem sceneItem">scene 5</div>
+      <div class="listItem sceneItem">scene 6</div>
+      <div class="listItem sceneItem">scene 7</div>
+      <div class="listItem sceneItem">scene 8</div>
+      <div class="listItem sceneItem">scene 9</div>
+      <div class="listItem sceneItem">scene 10</div>
+      <div class="listItem sceneItem">scene 11</div>
+      <div class="listItem sceneItem">scene 12</div>
+      <div class="listItem sceneItem">scene 13</div>
+      <div class="listItem sceneItem">scene 14</div>
+      <div class="listItem sceneItem">scene 15</div>
+      <div class="listItem sceneItem">scene 16</div>
+      <div class="listItem sceneItem">scene 17</div>
+      <div class="listItem sceneItem">scene 18</div>
+      <div class="listItem sceneItem">scene 19</div>
+      <div class="listItem sceneItem">scene 20</div>
+    </div>
+
     <br>
   </div>
 </div>
@@ -71,6 +117,7 @@
 
 <div class="overlay" id=textOverlay>
   <div class="overlayContent">
+    <div id="textToEditTitle" class="overlayTitle"> EDIT: </div>
     <textarea id="textToEdit">TEXT</textarea>
     <div class="controls">
       <i class="btn fa fa-check-circle btnBig validateText" aria-hidden="true"></i>
@@ -81,28 +128,10 @@
 
 
 
-<!-- <div class="overlay" id=dispoOverlay>
-  <div class="overlayContent">
-  </div>
-</div>
-<div class="overlay" id=folderOverlay>
-  <div class="overlayContent">
-  </div>
-</div> -->
-
 
 <!-- TABLE -->
 <div class="container">
 
-  <!-- <div class="masterControls">
-    <div class="connectionState">
-      <div class="connectionLed circle"></div>
-    </div>
-    <div class="folderEditor">DOSSIER A</div>
-    <i class="btn fa fa-pencil-square btnOn btnBig editToggle" aria-hidden="true"></i>
-    <i class="btn fa fa-chevron-up btnBig dispoToggle" aria-hidden="true"></i>
-    <i class="btn fa fa-stop btnBig stopAll" aria-hidden="true"></i>
-  </div> -->
 
   <table>
     <thead>
@@ -110,7 +139,7 @@
         <th>
           <div class="masterControls">
             <!-- <div class="connectionState"> <div class="connectionLed circle"></div> </div> -->
-            <div class="folderEditor">DOSSIER A</div>
+            <div class="sceneEditor">SCENE A</div>
             <i class="btn fa fa-chevron-up btnMedium dispoToggle" aria-hidden="true"></i>
             <i class="btn fa fa-stop btnBig stopAll masterBtn" aria-hidden="true"></i>
             <i class="btn fa fa-pencil-square btnOn btnBig editToggle masterBtn" aria-hidden="true"></i>

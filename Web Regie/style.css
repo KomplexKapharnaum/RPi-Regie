@@ -41,7 +41,7 @@ thead th:first-child{
   text-align: right;
 }
 
-.folderEditor{
+.sceneEditor{
   float:left;
   margin-top: 10px;
   font-size: 20px;
@@ -222,31 +222,55 @@ tbody th {
 
 .overlayContent{
   cursor: default;
-  height : 80%;
-  width : 80%;
   background-color : #303030;
   display: inline-block;
   vertical-align: middle;
-
 }
-.mediaList{
-  height: 85%;
-  overflow-y: scroll;
-  padding-left: 5%;
+.overlayTitle{
+  margin: 2%;
+  padding: 3% 0% 0% 2%;
+  width: 30%;
+  text-align: left;
+  float: left;
+}
+#textOverlay .overlayTitle{
+  margin: 8% 0% 0% 15%;
+  padding:0;
+  width: 100%;
   text-align: left;
 }
-.mediaList .mediaItem{
+#mediaOverlay .overlayContent{
+  height : 80%;
+  width : 80%;
+}
+#dispoOverlay .overlayContent, #sceneOverlay .overlayContent, #textOverlay .overlayContent{
+  width: 50%;
+  height : 80%;
+}
+#textOverlay .overlayContent{
+  width: 50%;
+  height: 42%;
+}
+.mediaList, .dispoList, .sceneList{
+  height: 83%;
+  overflow-y: scroll;
+  /* padding-left: 5%; */
+  text-align: left;
+  background-color: #404040;
+  clear: both;
+}
+.mediaList .mediaItem, .dispoList .dispoItem, .sceneList .sceneItem{
   cursor: pointer;
   height: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 5%;
 }
 
-#mediaOverlay .controls{
+#mediaOverlay .controls, #dispoOverlay .controls, #sceneOverlay .controls{
   height: 10%;
-  text-align: left;
-  padding-left: 5%;
-  padding-top: 1%;
+  margin: 3%;
+  text-align: right;
 }
 
 #textOverlay .overlayContent{
@@ -254,10 +278,10 @@ tbody th {
 }
 
 #textOverlay textarea{
-  font-size: 20px;
+  font-size: 17px;
   width:50%;
   float: left;
-  margin: 15% 10% 10% 15%;
+  margin: 5% 10% 10% 15%;
 }
 #textOverlay .controls{
   margin: 15% 10% 10% 15%;
@@ -304,4 +328,17 @@ tbody th {
 }
 textarea {
   outline: none;
+}
+
+.listItem:active{
+  background-color: #454545;
+}
+.listItem:hover{
+  background-color: #454545;
+}
+.selected{
+  background-color: #808080;
+}
+.selected:hover{
+  background-color: #808080 !important;
 }
