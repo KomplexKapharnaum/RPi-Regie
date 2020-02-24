@@ -159,6 +159,7 @@ $(function() {
           $.each(poolImport, function( index, dispo ) {
             that.allDispos.push(new dispoObject(dispo.name, dispo.operator));
           });
+          initProject();
         }
       });
     }
@@ -299,6 +300,20 @@ $(function() {
           $("#mediaOverlay").fadeOut(fadeTime);
           $(that.mediaDiv).html(selectedMedia);
           that.media = selectedMedia;
+          // Save it in project
+          var xIndex = $(that.box).parent().index();
+          var yIndex = $(that.box).index()-1;
+          $.each(project.allScenes,function(index,scene){
+            if(scene.isActive==true){
+              $.each(scene.allMedias,function(index,media){
+                if((media.x==xIndex)&&(media.y==yIndex)){
+                  media.media = selectedMedia;
+                  console.log('editing media x:'+xIndex+' y:'+yIndex+' '+media.media);
+                }
+              });
+            }
+          });
+
         });
       }else{
         //PLAY
@@ -308,23 +323,155 @@ $(function() {
   }
 
 
-
-
-
   ////////////////////////////////////////////////////////////
   //////////////////////     PROJECT     /////////////////////
   ////////////////////////////////////////////////////////////
 
-  project = new projectObject();
+  allScenesTemp = ['scene1','scene2','scene3','scene4','scene5','scene6','scene7','scene8','scene9','scene10'];
+  allSequencesTemp = ['seq1','seq2','seq3','seq4','seq5','seq6','seq7','seq8','seq9','seq10','seq11','seq12','seq13','seq14','seq15','seq16','seq17','seq18','seq19','seq20', ];
   projectExport = [];
   projectImport = [];
+
+  var project;
+
+
+  function initProject(){
+    project = new projectObject();
+    project.loadProject();
+  }
+
 
   function projectObject(){
 
     var that = this;
     that.allScenes = new Array();
 
+    // SAVE - interval
+    this.saveProjectInterval = function(){
+      setInterval(function(){
+        that.fillExportArray();
+        that.saveProject();
+      }, 2000);
+    }
+    // SAVE - Pre export array
+    this.fillExportArray = function(){
+      projectExport = [];
+      // projectExport.length = 0;
+      projectExport.push(that.allScenes);
+      // console.log(projectExport[0][0].allSequences);
+    }
+    // SAVE - for real
+    this.saveProject = function(){
+      $.ajax({
+        url: "data/save.php",
+        dataType: "json",
+        type: "POST",
+        data: {
+            contents: JSON.stringify(projectExport),
+            filename: 'project',
+            timestamp: $.now(),
+            type: 'project'
+        }
+      })
+      .done(function(reponse){
+        // console.log(reponse.status);
+      })
+      .fail(function(){
+        // console.log('save failed');
+      });
+    }
+
+
+    this.loadProject = function(){
+      $.ajax({
+        url: "data/load.php",
+        dataType: "json",
+        type: "POST",
+        data: {
+            filename: 'project',
+            type: 'project'
+        }
+      })
+      .done(function(reponse) {
+        if (reponse.status == 'success')
+        {
+          console.log('LOADING FROM JSON');
+          // FROM JSON
+          that.allScenes=[];
+          projectImport = JSON.parse(reponse.contents);
+          // NEW SCENES
+          $.each(projectImport[0], function( index, incomingScene ) {
+            that.allScenes.push(new sceneObject(incomingScene.name) );
+          });
+          // EDIT SCENE
+          $.each(that.allScenes,function(index,newScene){
+            // sequences
+            $.each(projectImport[0][index].allSequences,function(index,seqName){
+              newScene.allSequences.push(seqName);
+            });
+            // medias
+          $.each(projectImport[0][index].allMedias,function(index,incomingMedia){
+              newScene.allMedias.push(new media(incomingMedia.x,incomingMedia.y,incomingMedia.media,incomingMedia.loop));
+            });
+          });
+
+          // // FROM SCRATCH
+          // // NEW SCENES
+          // $.each(allScenesTemp,function(index){
+          //   that.allScenes.push(new sceneObject(allScenesTemp[index]) );
+          // });
+          // // EDIT SCENE
+          // $.each(that.allScenes,function(index,scene){
+          //   // scene.allSequences = allSequencesTemp;
+          //   $.each(allSequencesTemp,function(index,seqName){
+          //     scene.allSequences.push(seqName);
+          //   });
+          //   $.each(pool.allDispos,function(indexY,dispo){
+          //     for (var indexX = 0; indexX < 20; indexX++) {
+          //       scene.allMedias.push(new media(indexX,indexY,'...','none'));
+          //     }
+          //   });
+          // });
+
+          // LOAD FIRST SCENE
+          project.allScenes[0].loadScene();
+          $('.sceneEditor').html(project.allScenes[0].name);
+        }
+      });
+
+    }
+
+
+
+    this.saveProjectInterval();
+
+
   }
+
+
+  // SCENE CHANGE
+  $('.sceneEditor').click(function(){
+    if(editionMode==true){
+      var selectedSceneName;
+      $('.listItem').removeClass('selected');
+      $("#sceneOverlay").fadeIn(fadeTime);
+      // select
+      $(".sceneItem").unbind().click(function(){
+        selectedSceneName = $(this).html();
+        $('.listItem').removeClass('selected'); $(this).addClass('selected');
+      });
+      // validate
+      $(".validateFoler").unbind().click(function(){
+        $("#sceneOverlay").fadeOut(fadeTime);
+        $('.sceneEditor').html(selectedSceneName);
+        $.each(project.allScenes,function(index,scene){
+          if(scene.name==selectedSceneName){ scene.loadScene(); }
+        });
+      });
+    }
+  });
+
+
 
 
   ////////////////////////////////////////////////////////////
@@ -332,23 +479,73 @@ $(function() {
   ////////////////////////////////////////////////////////////
 
 
-  $('.sceneEditor').click(function(){
-    $('#sceneOverlay').fadeIn(fadeTime);
-  });
 
-  function sceneObject(){
+
+
+  function sceneObject(sceneName){
 
     var that = this;
-    that.allSequences = new Array();
+    this.isActive = false;
+    this.name = sceneName;
+    this.allSequences = new Array();
+    this.allMedias = new Array();
+
+
+
+    this.loadScene = function(){
+      // active
+      $.each(project.allScenes,function(index,scene){ scene.isActive=false; });
+      that.isActive = true;
+      //scene names dom
+      $('.seqName').each(function(index,div){
+        $(div).html(that.allSequences[index]);
+      });
+      //medias
+      $.each(that.allMedias,function(index,media){
+        $('.box').each(function(index,div){
+          var xIndex = $(div).parent().index();
+          var yIndex = $(div).index()-1;
+          if((xIndex==media.x)&&(yIndex==media.y)){
+            $(this).find('.mediaSelector').html(media.media);
+          }
+        });
+      });
+
+      console.log('scene loaded: '+that.name);
+    }
+
+
+    // create empty medias
+    // this.createMediasArray = function(){
+    //   $.each(pool.allDispos,function(indexY,dispo){
+    //     for (var indexX = 0; indexX < 20; indexX++) {
+    //       that.allMedias.push(new media(indexX,indexY,'...','none'));
+    //     }
+    //   });
+    // }
+    // this.createMediasArray();
+
 
 
   }
+
+
+
+  function media(x,y,media,loop){
+    this.x = x;
+    this.y = y;
+    this.media = media;
+    this.loop = loop;
+  }
+
+
 
 
   ////////////////////////////////////////////////////////////
   //////////////////////    SEQUENCE    //////////////////////
   ////////////////////////////////////////////////////////////
 
+  // SEQUENCE CHANGE
   var editedSequence;
 
   $('.seqName').click(function(){
@@ -368,6 +565,14 @@ $(function() {
       $("#textToEdit").blur();
       $("#textOverlay").fadeOut(fadeTime);
       $(editedSequence).html($("#textToEdit").val());
+      $.each(project.allScenes,function(index,scene){
+        if(scene.isActive==true){
+          console.log(scene.name);
+          var indexOfEditedScene = $(that).parent().parent().index();
+          scene.allSequences[indexOfEditedScene] = $("#textToEdit").val();
+          // console.log(scene.allSequences);
+        }
+      });
     }
   });
 
