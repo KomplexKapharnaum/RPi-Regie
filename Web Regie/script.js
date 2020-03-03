@@ -106,12 +106,12 @@ $(function() {
     // SAVE - interval
     this.savePoolInterval = function(){
       setInterval(function(){
-        that.fillExportArray();
         that.savePool();
       }, 10000);
     }
-    // SAVE - Pre export array
-    this.fillExportArray = function(){
+    // SAVE
+    this.savePool = function(){
+      // FILL EXPORT ARRAY
       poolExport = [];
       $.each(that.allDispos,function(index,dispo){
         poolExport.push({
@@ -119,9 +119,7 @@ $(function() {
           operator:dispo.operator
         });
       });
-    }
-    // SAVE - for real
-    this.savePool = function(){
+      // AJAX
       $.ajax({
         url: "data/save.php",
         dataType: "json",
@@ -235,6 +233,7 @@ $(function() {
         $("#textOverlay").fadeOut(fadeTime);
         $(that.operatorDiv).html($("#textToEdit").val());
         that.operator = $("#textToEdit").val();
+        pool.savePool();
       }
     });
 
@@ -254,7 +253,9 @@ $(function() {
           $("#dispoOverlay").fadeOut(fadeTime);
           $(that.nameDiv).html(selectedDispo);
           that.name = selectedDispo;
+          pool.savePool();
         });
+
       }
     });
 
@@ -301,8 +302,9 @@ $(function() {
           $(that.mediaDiv).html(selectedMedia);
           that.media = selectedMedia;
           // Save it in project
-          var xIndex = $(that.box).parent().index();
-          var yIndex = $(that.box).index()-1;
+          var xIndex = $(that.box).index()-1;
+          var yIndex = $(that.box).parent().index();
+          console.log(xIndex,yIndex);
           $.each(project.allScenes,function(index,scene){
             if(scene.isActive==true){
               $.each(scene.allMedias,function(index,media){
@@ -313,6 +315,7 @@ $(function() {
               });
             }
           });
+          project.saveProject();
 
         });
       }else{
@@ -328,7 +331,7 @@ $(function() {
   ////////////////////////////////////////////////////////////
 
   allScenesTemp = ['scene1','scene2','scene3','scene4','scene5','scene6','scene7','scene8','scene9','scene10'];
-  allSequencesTemp = ['seq1','seq2','seq3','seq4','seq5','seq6','seq7','seq8','seq9','seq10','seq11','seq12','seq13','seq14','seq15','seq16','seq17','seq18','seq19','seq20', ];
+  allSequencesTemp = ['seq1','seq2','seq3','seq4','seq5','seq6','seq7','seq8','seq9','seq10','seq11','seq12','seq13','seq14','seq15','seq16','seq17','seq18','seq19','seq20' ];
   projectExport = [];
   projectImport = [];
 
@@ -349,19 +352,17 @@ $(function() {
     // SAVE - interval
     this.saveProjectInterval = function(){
       setInterval(function(){
-        that.fillExportArray();
         that.saveProject();
       }, 2000);
     }
-    // SAVE - Pre export array
-    this.fillExportArray = function(){
+
+    // SAVE
+    this.saveProject = function(){
+      // FILL EXPORT ARRAY
       projectExport = [];
-      // projectExport.length = 0;
       projectExport.push(that.allScenes);
       // console.log(projectExport[0][0].allSequences);
-    }
-    // SAVE - for real
-    this.saveProject = function(){
+      // AJAX
       $.ajax({
         url: "data/save.php",
         dataType: "json",
@@ -395,7 +396,6 @@ $(function() {
       .done(function(reponse) {
         if (reponse.status == 'success')
         {
-          console.log('LOADING FROM JSON');
           // FROM JSON
           that.allScenes=[];
           projectImport = JSON.parse(reponse.contents);
@@ -426,8 +426,8 @@ $(function() {
           //   $.each(allSequencesTemp,function(index,seqName){
           //     scene.allSequences.push(seqName);
           //   });
-          //   $.each(pool.allDispos,function(indexY,dispo){
-          //     for (var indexX = 0; indexX < 20; indexX++) {
+          //   $.each(pool.allDispos,function(indexX,dispo){
+          //     for (var indexY = 0; indexY < 20; indexY++) {
           //       scene.allMedias.push(new media(indexX,indexY,'...','none'));
           //     }
           //   });
@@ -479,9 +479,6 @@ $(function() {
   ////////////////////////////////////////////////////////////
 
 
-
-
-
   function sceneObject(sceneName){
 
     var that = this;
@@ -489,7 +486,6 @@ $(function() {
     this.name = sceneName;
     this.allSequences = new Array();
     this.allMedias = new Array();
-
 
 
     this.loadScene = function(){
@@ -503,8 +499,8 @@ $(function() {
       //medias
       $.each(that.allMedias,function(index,media){
         $('.box').each(function(index,div){
-          var xIndex = $(div).parent().index();
-          var yIndex = $(div).index()-1;
+          var xIndex = $(div).index()-1;
+          var yIndex = $(div).parent().index();
           if((xIndex==media.x)&&(yIndex==media.y)){
             $(this).find('.mediaSelector').html(media.media);
           }
@@ -515,21 +511,11 @@ $(function() {
     }
 
 
-    // create empty medias
-    // this.createMediasArray = function(){
-    //   $.each(pool.allDispos,function(indexY,dispo){
-    //     for (var indexX = 0; indexX < 20; indexX++) {
-    //       that.allMedias.push(new media(indexX,indexY,'...','none'));
-    //     }
-    //   });
-    // }
-    // this.createMediasArray();
-
-
-
   }
 
-
+  ////////////////////////////////////////////////////////////
+  //////////////////////     MEDIA     //////////////////////
+  ////////////////////////////////////////////////////////////
 
   function media(x,y,media,loop){
     this.x = x;
@@ -573,7 +559,84 @@ $(function() {
           // console.log(scene.allSequences);
         }
       });
+      project.saveProject();
     }
+  });
+
+
+  // ERASE
+  $(".eraseSequence").click(function(){
+    var emptyMedia = '...';
+    // dom
+    var that=this;
+    var seqLine = $(this).parent().parent().parent();
+    $(seqLine).find('.box').each(function(index,box){
+      $(box).find('.mediaSelector').html(emptyMedia);
+    })
+    // data
+    var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
+    console.log(yIndex);
+    $.each(project.allScenes,function(index,scene){
+      if(scene.isActive==true){
+        $.each(scene.allMedias,function(index,media){
+          if(media.y==yIndex){ media.media=emptyMedia; }
+        });
+      }
+    });
+  });
+
+
+  // COPY / PASTE
+  var copying = false;
+  var clipboard = [];
+  $('.copyPasteSequence').click(function(){
+    var that = this;
+    // COPY
+    if(copying==false){
+      $('.copyPasteSequence').removeClass('fa-clipboard').addClass('fa-files-o');
+      copying=true;
+      clipboard = [];
+      var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
+      $.each(project.allScenes,function(index,scene){
+        if(scene.isActive==true){
+          $.each(scene.allMedias,function(index,media){
+            if(media.y==yIndex){clipboard.push(media);}
+          });
+        }
+      });
+      console.log(clipboard);
+      return;
+    }
+    // PASTE
+    if(copying==true){
+      $('.copyPasteSequence').removeClass('fa-files-o').addClass('fa-clipboard');
+      copying=false;
+      var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
+      // dom
+      $(that).parent().parent().parent().find('.mediaSelector').each(function(indexX,div){
+        $.each(clipboard,function(index,media){
+          if(media.x==indexX){ $(div).html(media.media); }
+        });
+      });
+      // memory
+      $.each(project.allScenes,function(index,scene){
+        if(scene.isActive==true){
+          $.each(scene.allMedias,function(index, media){
+            if(media.y==yIndex){
+              $.each(clipboard,function(index, clipboardmedia){
+                if(media.x==clipboardmedia.x){ media.media = clipboardmedia.media; media.loop = clipboardmedia.loop; }
+              });
+              console.log(media);
+            }
+          });
+        }
+      });
+      project.saveProject();
+      return;
+    }
+
+
+
   });
 
 
