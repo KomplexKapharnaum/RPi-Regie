@@ -90,15 +90,35 @@ $(function() {
     // ADD
     this.addDispo = function(){
       that.allDispos.push(new dispoObject('name dispo','name operator'));
+      // Expand allMedias Array
+      // project.addDispo();
+      var xToAdd = that.allDispos.length-1;
+      console.log("adding medias with index X: "+xToAdd);
+      $.each(project.allScenes,function(index,scene){
+        for (var indexY = 0; indexY < 20; indexY++) {
+          scene.allMedias.push(new media(xToAdd,indexY,'...','none'));
+        }
+      });
+
+
     }
     // DEV
     this.removeDispo = function(){
       // remove dispo & dispo div
       that.allDispos.pop();
       $("#dispos").find('th:nth-last-child(2)').remove();
-      // REMOVE MEDIA IN SCENE TO !! TODO
+      // Remove boxes
       $('.seqLine').each(function(index,div){
         $(div).find('.box:last-child').remove();
+      });
+      // Reduce allMedias Array
+      // project.removeDispo();
+      var xToRemove = that.allDispos.length;
+      console.log("adding medias with index X: "+xToRemove);
+      $.each(project.allScenes,function(index,scene){
+        scene.allMedias = scene.allMedias.filter(function( media ) {
+          return media.x !== xToRemove;
+        });
       });
 
     }
@@ -416,7 +436,7 @@ $(function() {
           });
 
           // // FROM SCRATCH
-          // // NEW SCENES
+          // NEW SCENES
           // $.each(allScenesTemp,function(index){
           //   that.allScenes.push(new sceneObject(allScenesTemp[index]) );
           // });
