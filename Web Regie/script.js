@@ -309,34 +309,49 @@ $(function() {
     $(this.box).click(function(){
       var selectedMedia = 'none';
       if(editionMode==true){
+        //update
         $('.listItem').removeClass('selected');
         $("#mediaOverlay").fadeIn(fadeTime);
+        // update that.media (because on init (loadPool & loadProject), loadProject edits scene obj -> media + DOM but not box object )
+        that.media=$(this).text();
+        bindColorPicker();
         // select
         $(".mediaItem").unbind().click(function(){
+          var selectedDiv = this;
           selectedMedia = $(this).html();
           $('.listItem').removeClass('selected'); $(this).addClass('selected');
+
+          // if( media = color ) bindColorPicker PLUS change selected media
+          if($(selectedDiv).hasClass('mediaColor')){
+            $("#mediaColorEdit").unbind().on('change',function(){
+              $('.mediaColor').html('color '+$("#mediaColorEdit").val());
+              selectedMedia = 'color '+$("#mediaColorEdit").val();
+            });
+          }
+          
         });
         // validate
         $(".validateMedia").unbind().click(function(){
           $("#mediaOverlay").fadeOut(fadeTime);
-          $(that.mediaDiv).html(selectedMedia);
           that.media = selectedMedia;
-          // Save it in project
-          var xIndex = $(that.box).index()-1;
-          var yIndex = $(that.box).parent().index();
-          console.log(xIndex,yIndex);
-          $.each(project.allScenes,function(index,scene){
-            if(scene.isActive==true){
-              $.each(scene.allMedias,function(index,media){
-                if((media.x==xIndex)&&(media.y==yIndex)){
-                  media.media = selectedMedia;
-                  console.log('editing media x:'+xIndex+' y:'+yIndex+' '+media.media);
-                }
-              });
-            }
-          });
-          project.saveProject();
-
+          if(that.media!='none'){
+            $(that.mediaDiv).html(that.media);
+            // Save it in project
+            var xIndex = $(that.box).index()-1;
+            var yIndex = $(that.box).parent().index();
+            console.log(xIndex,yIndex);
+            $.each(project.allScenes,function(index,scene){
+              if(scene.isActive==true){
+                $.each(scene.allMedias,function(index,media){
+                  if((media.x==xIndex)&&(media.y==yIndex)){
+                    media.media = selectedMedia;
+                    console.log('editing media x:'+xIndex+' y:'+yIndex+' '+media.media);
+                  }
+                });
+              }
+            });
+            project.saveProject();
+          }
         });
       }else{
         //PLAY
@@ -344,6 +359,15 @@ $(function() {
     });
 
   }
+
+    ///////////////////    BOX - MORE    /////////////////////
+
+    function bindColorPicker(){
+      $("#mediaColorEdit").unbind().on('change',function(){
+        $('.mediaColor').html('color '+$("#mediaColorEdit").val());
+      });
+    }
+
 
 
   ////////////////////////////////////////////////////////////
@@ -658,6 +682,13 @@ $(function() {
 
 
   });
+
+
+
+
+
+
+
 
 
 

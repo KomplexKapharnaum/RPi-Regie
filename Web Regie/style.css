@@ -267,6 +267,29 @@ tbody th {
   padding-left: 5%;
 }
 
+/*ARGUMENTS*/
+.mediaArguments{
+  top: 0;
+  float: right;
+  padding-top:10px;
+  padding-left: 2%;
+  position: sticky;
+  width: 33%;
+  height: 100%;
+  background: #707070;
+}
+.mediaArguments > *{
+  margin-bottom: 10px;
+}
+.mediaArguments label{
+  margin-left:10px;
+}
+.mediaArguments .mediaColorPicker{
+  width: 50%;
+  outline: none;
+}
+
+
 #mediaOverlay .controls, #dispoOverlay .controls, #sceneOverlay .controls{
   height: 10%;
   margin: 3%;
@@ -337,8 +360,41 @@ textarea {
   background-color: #454545;
 }
 .selected{
-  background-color: #808080;
+  background-color: #707070;
 }
 .selected:hover{
-  background-color: #808080 !important;
+  background-color: #707070 !important;
+}
+
+
+
+
+
+/*CUSTOM RADIO*/
+input[type='radio']:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -2px;
+    left: -1px;
+    position: relative;
+    background-color: #707070;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+}
+
+input[type='radio']:checked:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -2px;
+    left: -1px;
+    position: relative;
+    background-color: #ffffff;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
 }
