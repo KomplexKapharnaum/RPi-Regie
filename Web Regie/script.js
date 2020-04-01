@@ -641,6 +641,7 @@ $(function() {
     var seqLine = $(this).parent().parent().parent();
     $(seqLine).find('.box').each(function(index,box){
       $(box).find('.mediaSelector').html(emptyMedia);
+      $(box).find('.loopInfoIcon').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-none');
     })
     // data
     var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
@@ -648,7 +649,7 @@ $(function() {
     $.each(project.allScenes,function(index,scene){
       if(scene.isActive==true){
         $.each(scene.allMedias,function(index,media){
-          if(media.y==yIndex){ media.media=emptyMedia; }
+          if(media.y==yIndex){ media.media=emptyMedia; media.loop='none'; }
         });
       }
     });
@@ -681,10 +682,16 @@ $(function() {
       $('.copyPasteSequence').removeClass('fa-files-o').addClass('fa-clipboard');
       copying=false;
       var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
-      // dom
+      // dom - Media
       $(that).parent().parent().parent().find('.mediaSelector').each(function(indexX,div){
         $.each(clipboard,function(index,media){
           if(media.x==indexX){ $(div).html(media.media); }
+        });
+      });
+      // dom - loop
+      $(that).parent().parent().parent().find('.loopInfoIcon').each(function(indexX,div){
+        $.each(clipboard,function(index,media){
+          if(media.x==indexX){ $(div).removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop); }
         });
       });
       // memory
