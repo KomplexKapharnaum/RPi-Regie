@@ -115,7 +115,7 @@ $(function() {
       // Reduce allMedias Array
       // project.removeDispo();
       var xToRemove = that.allDispos.length;
-      console.log("adding medias with index X: "+xToRemove);
+      console.log("removing medias with index X: "+xToRemove);
       $.each(project.allScenes,function(index,scene){
         scene.allMedias = scene.allMedias.filter(function( media ) {
           return media.x !== xToRemove;
@@ -305,11 +305,18 @@ $(function() {
     this.xIndex = xIndex;
     this.yIndex = yIndex;
 
-    this.updateMedia = function(){
+    this.getMedia = function(){
       that.media = $(that.box).text();
       if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-none')){ that.loop = 'none'; }
       if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-loop')){ that.loop = 'loop'; }
       if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-unloop')){ that.loop = 'unloop'; }
+    }
+
+    this.setMedia = function(media,loop){
+      that.loop = loop;
+      that.media = media;
+      $(that.loopDiv).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+that.loop);
+      $(that.mediaDiv).html(that.media);
     }
 
     this.updateConnectionState = function(state){
@@ -371,16 +378,15 @@ $(function() {
         $(that.mediaDiv).html(that.media);
 
         // Save it in project
-        var xIndex = $(that.box).index()-1;
-        var yIndex = $(that.box).parent().index();
-        console.log(xIndex,yIndex);
+        // var xIndex = $(that.box).index()-1;
+        // var yIndex = $(that.box).parent().index();
         $.each(project.allScenes,function(index,scene){
           if(scene.isActive==true){
             $.each(scene.allMedias,function(index,media){
-              if((media.x==xIndex)&&(media.y==yIndex)){
+              if((media.x==that.xIndex)&&(media.y==that.yIndex)){
                 media.media = that.media;
                 media.loop = that.loop;
-                console.log('editing media x:'+xIndex+' y:'+yIndex+' '+media.media+' '+media.loop);
+                console.log('editing media x:'+that.xIndex+' y:'+that.yIndex+' '+media.media+' '+media.loop);
               }
             });
           }
@@ -392,7 +398,7 @@ $(function() {
     }
 
     this.play=function(){
-      that.updateMedia();
+      that.getMedia();
       console.log('PLAY /dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop+' x '+that.xIndex+' y '+that.yIndex);
     }
 
@@ -579,16 +585,26 @@ $(function() {
         $(div).html(that.allSequences[index]);
       });
       //medias
+      // $.each(that.allMedias,function(index,media){
+      //   $('.box').each(function(index,div){
+      //     var xIndex = $(div).index()-1;
+      //     var yIndex = $(div).parent().index();
+      //     if((xIndex==media.x)&&(yIndex==media.y)){
+      //       $(this).find('.mediaSelector').html(media.media);
+      //       $(this).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop);
+      //     }
+      //   });
+      // });
       $.each(that.allMedias,function(index,media){
-        $('.box').each(function(index,div){
-          var xIndex = $(div).index()-1;
-          var yIndex = $(div).parent().index();
-          if((xIndex==media.x)&&(yIndex==media.y)){
-            $(this).find('.mediaSelector').html(media.media);
-            $(this).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop);
-          }
+        $.each(pool.allDispos,function(index,dispo){
+          $.each(dispo.allBoxes,function(index,box){
+            if((box.xIndex==media.x)&&(box.yIndex==media.y)){
+              box.setMedia(media.media,media.loop)
+            }
+          });
         });
       });
+
 
       console.log('scene loaded: '+that.name);
     }
@@ -621,6 +637,8 @@ $(function() {
     var that = this;
     editedSequence = this;
     var seqName = $(editedSequence).html();
+    var sequenceNumber = $(this).parent().parent().index(); // sequence number / Y
+
     if(editionMode==true){
       $("#textToEditTitle").html("Nom de la séquence :");
       $("#textOverlay").fadeIn(fadeTime);
@@ -630,11 +648,9 @@ $(function() {
       $('.validateText').unbind().click(function(){ that.validateText(); });
     }else{
       console.log('play sequence');
-      var yIndex = $(this).parent().parent().index(); // sequence number / Y
-      // console.log(yIndex);
       $.each(pool.allDispos,function(index,dispo){
         $.each(dispo.allBoxes,function(index,box){
-          if(box.yIndex==yIndex){box.play();}
+          if(box.yIndex==sequenceNumber){box.play();}
         });
       });
     }
@@ -645,10 +661,7 @@ $(function() {
       $(editedSequence).html($("#textToEdit").val());
       $.each(project.allScenes,function(index,scene){
         if(scene.isActive==true){
-          console.log(scene.name);
-          var indexOfEditedScene = $(that).parent().parent().index();
-          scene.allSequences[indexOfEditedScene] = $("#textToEdit").val();
-          // console.log(scene.allSequences);
+          scene.allSequences[sequenceNumber] = $("#textToEdit").val();
         }
       });
       project.saveProject();
@@ -658,20 +671,24 @@ $(function() {
 
   // ERASE
   $(".eraseSequence").click(function(){
-    var emptyMedia = '...';
-    // dom
     var that=this;
-    var seqLine = $(this).parent().parent().parent();
-    $(seqLine).find('.box').each(function(index,box){
-      $(box).find('.mediaSelector').html(emptyMedia);
-      $(box).find('.loopInfoIcon').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-none');
-    })
+    var sequenceNumber = $(this).parent().parent().parent().index();
+    // dom
+    // var seqLine = $(this).parent().parent().parent();
+    // $(seqLine).find('.box').each(function(index,box){
+    //   $(box).find('.mediaSelector').html('...');
+    //   $(box).find('.loopInfoIcon').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-none');
+    // });
+    $.each(pool.allDispos,function(index,dispo){
+      $.each(dispo.allBoxes,function(index,box){
+        if(box.yIndex==sequenceNumber){box.setMedia('...','none');}
+      });
+    });
     // data
-    var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
     $.each(project.allScenes,function(index,scene){
       if(scene.isActive==true){
         $.each(scene.allMedias,function(index,media){
-          if(media.y==yIndex){ media.media=emptyMedia; media.loop='none'; }
+          if(media.y==sequenceNumber){ media.media='...'; media.loop='none'; }
         });
       }
     });
@@ -683,44 +700,53 @@ $(function() {
   var clipboard = [];
   $('.copyPasteSequence').click(function(){
     var that = this;
+    var sequenceNumber = $(this).parent().parent().parent().index(); // sequence number / Y
     // COPY
     if(copying==false){
       $('.copyPasteSequence').removeClass('fa-clipboard').addClass('fa-files-o');
       copying=true;
       clipboard = [];
-      var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
       $.each(project.allScenes,function(index,scene){
         if(scene.isActive==true){
           $.each(scene.allMedias,function(index,media){
-            if(media.y==yIndex){clipboard.push(media);}
+            if(media.y==sequenceNumber){clipboard.push(media);}
           });
         }
       });
-      console.log(clipboard);
       return;
     }
     // PASTE
     if(copying==true){
       $('.copyPasteSequence').removeClass('fa-files-o').addClass('fa-clipboard');
       copying=false;
-      var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
+      // Dom
       // dom - Media
-      $(that).parent().parent().parent().find('.mediaSelector').each(function(indexX,div){
-        $.each(clipboard,function(index,media){
-          if(media.x==indexX){ $(div).html(media.media); }
+      // $(that).parent().parent().parent().find('.mediaSelector').each(function(indexX,div){
+      //   $.each(clipboard,function(index,media){
+      //     if(media.x==indexX){ $(div).html(media.media); }
+      //   });
+      // });
+      // // dom - loop
+      // $(that).parent().parent().parent().find('.loopInfoIcon').each(function(indexX,div){
+      //   $.each(clipboard,function(index,media){
+      //     if(media.x==indexX){ $(div).removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop); }
+      //   });
+      // });
+      $.each(clipboard,function(index,media){
+        $.each(pool.allDispos,function(index,dispo){
+          $.each(dispo.allBoxes,function(index,box){
+            if((box.xIndex==media.x)&&(box.yIndex==sequenceNumber)){
+              box.setMedia(media.media,media.loop)
+            }
+          });
         });
       });
-      // dom - loop
-      $(that).parent().parent().parent().find('.loopInfoIcon').each(function(indexX,div){
-        $.each(clipboard,function(index,media){
-          if(media.x==indexX){ $(div).removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop); }
-        });
-      });
+
       // memory
       $.each(project.allScenes,function(index,scene){
         if(scene.isActive==true){
           $.each(scene.allMedias,function(index, media){
-            if(media.y==yIndex){
+            if(media.y==sequenceNumber){
               $.each(clipboard,function(index, clipboardmedia){
                 if(media.x==clipboardmedia.x){ media.media = clipboardmedia.media; media.loop = clipboardmedia.loop; }
               });
