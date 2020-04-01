@@ -89,7 +89,8 @@ $(function() {
 
     // ADD
     this.addDispo = function(){
-      that.allDispos.push(new dispoObject('name dispo','name operator'));
+      var xIndex = that.allDispos.length-1;
+      that.allDispos.push(new dispoObject('name dispo','name operator', xIndex));
       // Expand allMedias Array
       // project.addDispo();
       var xToAdd = that.allDispos.length-1;
@@ -175,7 +176,7 @@ $(function() {
         {
           poolImport = JSON.parse(reponse.contents);
           $.each(poolImport, function( index, dispo ) {
-            that.allDispos.push(new dispoObject(dispo.name, dispo.operator));
+            that.allDispos.push(new dispoObject(dispo.name, dispo.operator, index));
           });
           initProject();
         }
@@ -194,13 +195,14 @@ $(function() {
   /////////////////////////   DISPO   ////////////////////////
   ////////////////////////////////////////////////////////////
 
-  function dispoObject(name, operator){
+  function dispoObject(name, operator, xIndex){
 
     var that = this;
 
     // input
     this.name = name;
     this.operator = operator;
+    this.xIndex = xIndex;
 
     // divs
     this.dispoHeader = $('<th><div class="dispo"></div></th>').insertBefore('#addRemoveDispos');
@@ -217,9 +219,10 @@ $(function() {
     this.pause = $('<i class="fa fa-pause btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
 
 
+
     this.allBoxes = new Array();
-    $('.seqDiv').each(function(index,div){
-      that.allBoxes.push(new boxObject(div));
+    $('.seqDiv').each(function(yIndex,seqdiv){
+      that.allBoxes.push(new boxObject(seqdiv,that.name, that.xIndex, yIndex));
     });
 
     // Connection State
@@ -290,14 +293,24 @@ $(function() {
   /////////////////////////   BOX     ////////////////////////
   ////////////////////////////////////////////////////////////
 
-  function boxObject(div){
+  function boxObject(seqdiv, dispo, xIndex, yIndex){
 
-    this.box = $('<td class="box"></td>').appendTo($(div).parent());
+    var that = this;
+    this.box = $('<td class="box"></td>').appendTo($(seqdiv).parent());
     this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
     this.loopDiv = $('<div class="loopInfo"><i class="fa fa-repeat loopInfoIcon loopInfo-none" aria-hidden="true"></i></div>').appendTo($(this.box));
-    var that = this;
     this.media='?';
     this.loop='?';
+    this.dispo = dispo;
+    this.xIndex = xIndex;
+    this.yIndex = yIndex;
+
+    this.updateMedia = function(){
+      that.media = $(that.box).text();
+      if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-none')){ that.loop = 'none'; }
+      if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-loop')){ that.loop = 'loop'; }
+      if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-unloop')){ that.loop = 'unloop'; }
+    }
 
     this.updateConnectionState = function(state){
       if(state=='disconnected'){
@@ -322,7 +335,7 @@ $(function() {
       $('.listItem').removeClass('selected');
       $("#mediaOverlay").fadeIn(fadeTime);
       // update that.media (because on init (loadPool & loadProject), loadProject edits scene obj -> media + DOM but not box object )
-      that.media=$(this).text();
+      that.media=$(that.box).text();
       bindColorPicker();
       // Radio
       $("input[name='loopArg']").each(function(){
@@ -379,7 +392,8 @@ $(function() {
     }
 
     this.play=function(){
-      console.log('play box');
+      that.updateMedia();
+      console.log('PLAY /dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop+' x '+that.xIndex+' y '+that.yIndex);
     }
 
   }
@@ -614,6 +628,15 @@ $(function() {
       $("#textToEdit").val(seqName);
       $('#textToEdit').unbind().keypress(function(e){ if(e.keyCode == 13){ e.preventDefault(); that.validateText(); } });
       $('.validateText').unbind().click(function(){ that.validateText(); });
+    }else{
+      console.log('play sequence');
+      var yIndex = $(this).parent().parent().index(); // sequence number / Y
+      // console.log(yIndex);
+      $.each(pool.allDispos,function(index,dispo){
+        $.each(dispo.allBoxes,function(index,box){
+          if(box.yIndex==yIndex){box.play();}
+        });
+      });
     }
     // OK
     this.validateText = function(){
@@ -645,7 +668,6 @@ $(function() {
     })
     // data
     var yIndex = $(this).parent().parent().parent().index(); // sequence number / Y
-    console.log(yIndex);
     $.each(project.allScenes,function(index,scene){
       if(scene.isActive==true){
         $.each(scene.allMedias,function(index,media){
@@ -714,6 +736,13 @@ $(function() {
 
 
   });
+
+
+  ////////////////////////////////////////////////////////////
+  ////////////////////////   SOCKET   ////////////////////////
+  ////////////////////////////////////////////////////////////
+
+
 
 
 

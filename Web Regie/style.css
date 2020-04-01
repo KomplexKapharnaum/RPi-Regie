@@ -337,9 +337,11 @@ tbody th {
 }
 .btnOn{
   opacity: 1;
+  transition: 0.1s;
 }
 .btnOff{
   opacity: 0.4;
+  transition: 0.1s;
 }
 
 .btnSmall{
@@ -356,9 +358,11 @@ tbody th {
 }
 .btn:hover{
   opacity:0.8;
+  transition: 0.1s;
 }
 .btn:active{
   opacity:0.4;
+  transition: 0.1s;
 }
 textarea {
   outline: none;
@@ -375,6 +379,14 @@ textarea {
 }
 .selected:hover{
   background-color: #505050 !important;
+}
+.box:hover{
+  background-color: #404040;
+  transition: 0.1s;
+}
+.box:active{
+  background-color: #808080;
+  transition: 0.1s;
 }
 
 
