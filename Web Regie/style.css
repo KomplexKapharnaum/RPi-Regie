@@ -102,17 +102,28 @@ thead th:first-child{
 }
 
 /* COLUMN WIDTH*/
-.dispo, .mediaSelector{
+.dispo,.box .mediaSelector,.box .loopInfo{
   font-weight: normal;
   width: 200px;
 }
-.mediaSelector{
+.box .mediaSelector,.box .loopInfo{
   text-align: center;
   vertical-align: middle;
   text-overflow: ellipsis;
   overflow-x: hidden;
   white-space: nowrap;
 }
+.loopInfo .loopInfo-none{
+  opacity:0;
+}
+.loopInfo .loopInfo-loop{
+  color: #ffffff;
+}
+.loopInfo .loopInfo-unloop{
+  color: #606060;
+}
+
+
 
 table {
   position: relative;
@@ -276,7 +287,7 @@ tbody th {
   position: sticky;
   width: 33%;
   height: 100%;
-  background: #707070;
+  background: #505050;
 }
 .mediaArguments > *{
   margin-bottom: 10px;
@@ -360,10 +371,10 @@ textarea {
   background-color: #454545;
 }
 .selected{
-  background-color: #707070;
+  background-color: #505050;
 }
 .selected:hover{
-  background-color: #707070 !important;
+  background-color: #505050 !important;
 }
 
 
@@ -378,7 +389,7 @@ input[type='radio']:after {
     top: -2px;
     left: -1px;
     position: relative;
-    background-color: #707070;
+    background-color: #505050;
     content: '';
     display: inline-block;
     visibility: visible;

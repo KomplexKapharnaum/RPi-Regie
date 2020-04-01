@@ -294,8 +294,10 @@ $(function() {
 
     this.box = $('<td class="box"></td>').appendTo($(div).parent());
     this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
+    this.loopDiv = $('<div class="loopInfo"><i class="fa fa-repeat loopInfoIcon loopInfo-none" aria-hidden="true"></i></div>').appendTo($(this.box));
     var that = this;
     this.media='?';
+    this.loop='?';
 
     this.updateConnectionState = function(state){
       if(state=='disconnected'){
@@ -307,56 +309,78 @@ $(function() {
     }
 
     $(this.box).click(function(){
-      var selectedMedia = 'none';
       if(editionMode==true){
-        //update
-        $('.listItem').removeClass('selected');
-        $("#mediaOverlay").fadeIn(fadeTime);
-        // update that.media (because on init (loadPool & loadProject), loadProject edits scene obj -> media + DOM but not box object )
-        that.media=$(this).text();
-        bindColorPicker();
-        // select
-        $(".mediaItem").unbind().click(function(){
-          var selectedDiv = this;
-          selectedMedia = $(this).html();
-          $('.listItem').removeClass('selected'); $(this).addClass('selected');
-
-          // if( media = color ) bindColorPicker PLUS change selected media
-          if($(selectedDiv).hasClass('mediaColor')){
-            $("#mediaColorEdit").unbind().on('change',function(){
-              $('.mediaColor').html('color '+$("#mediaColorEdit").val());
-              selectedMedia = 'color '+$("#mediaColorEdit").val();
-            });
-          }
-          
-        });
-        // validate
-        $(".validateMedia").unbind().click(function(){
-          $("#mediaOverlay").fadeOut(fadeTime);
-          that.media = selectedMedia;
-          if(that.media!='none'){
-            $(that.mediaDiv).html(that.media);
-            // Save it in project
-            var xIndex = $(that.box).index()-1;
-            var yIndex = $(that.box).parent().index();
-            console.log(xIndex,yIndex);
-            $.each(project.allScenes,function(index,scene){
-              if(scene.isActive==true){
-                $.each(scene.allMedias,function(index,media){
-                  if((media.x==xIndex)&&(media.y==yIndex)){
-                    media.media = selectedMedia;
-                    console.log('editing media x:'+xIndex+' y:'+yIndex+' '+media.media);
-                  }
-                });
-              }
-            });
-            project.saveProject();
-          }
-        });
+        that.edit();
       }else{
-        //PLAY
+        that.play();
       }
     });
+
+    this.edit=function(){
+
+      var selectedMedia = 'none';
+      $('.listItem').removeClass('selected');
+      $("#mediaOverlay").fadeIn(fadeTime);
+      // update that.media (because on init (loadPool & loadProject), loadProject edits scene obj -> media + DOM but not box object )
+      that.media=$(this).text();
+      bindColorPicker();
+      // Radio
+      $("input[name='loopArg']").each(function(){
+        $(this).prop('checked', false);
+      });
+
+      // Select
+      $(".mediaItem").unbind().click(function(){
+        var selectedDiv = this;
+        selectedMedia = $(this).html();
+        $('.listItem').removeClass('selected'); $(this).addClass('selected');
+        // Color picker
+        // if( media = color ) bindColorPicker PLUS change selected media
+        if($(selectedDiv).hasClass('mediaColor')){
+          $("#mediaColorEdit").unbind().on('change',function(){
+            $('.mediaColor').html('color '+$("#mediaColorEdit").val());
+            selectedMedia = 'color '+$("#mediaColorEdit").val();
+          });
+        }
+
+      });
+
+      // validate
+      ///////////////////////   SAVE BOX    //////////////////////
+      $(".validateMedia").unbind().click(function(){
+
+        $("#mediaOverlay").fadeOut(fadeTime);
+        that.media = selectedMedia;
+        that.loop = $("input[name='loopArg']:checked").val();
+        if(that.loop==undefined){ that.loop = 'none' }
+        if(that.media=='none'){ that.media = '...'; }
+        $(that.loopDiv).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+that.loop);
+        $(that.mediaDiv).html(that.media);
+
+        // Save it in project
+        var xIndex = $(that.box).index()-1;
+        var yIndex = $(that.box).parent().index();
+        console.log(xIndex,yIndex);
+        $.each(project.allScenes,function(index,scene){
+          if(scene.isActive==true){
+            $.each(scene.allMedias,function(index,media){
+              if((media.x==xIndex)&&(media.y==yIndex)){
+                media.media = that.media;
+                media.loop = that.loop;
+                console.log('editing media x:'+xIndex+' y:'+yIndex+' '+media.media+' '+media.loop);
+              }
+            });
+          }
+        });
+        project.saveProject();
+
+      });
+
+    }
+
+    this.play=function(){
+      console.log('play box');
+    }
 
   }
 
@@ -547,6 +571,7 @@ $(function() {
           var yIndex = $(div).parent().index();
           if((xIndex==media.x)&&(yIndex==media.y)){
             $(this).find('.mediaSelector').html(media.media);
+            $(this).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop);
           }
         });
       });
