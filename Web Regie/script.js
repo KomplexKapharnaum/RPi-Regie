@@ -34,6 +34,8 @@ $(function() {
     if(editionMode==true){
       $('.editToggle').removeClass('btnOn').addClass('btnOff');
       $('body').removeClass('editionMode').addClass('playMode');
+      // $('.textbtn').addClass('btn');
+      $('.textbtn').each(function(index,div){ $(div).removeClass('btn'); });
       $('.seqControls').fadeOut(fadeTime,function(){
         editionMode=false;
       });
@@ -41,6 +43,8 @@ $(function() {
     if(editionMode==false){
       $('.editToggle').removeClass('btnOff').addClass('btnOn');
       $('body').removeClass('playMode').addClass('editionMode');
+      // $('.textbtn').removeClass('btn');
+      $('.textbtn').each(function(index,div){ $(div).addClass('btn'); });
       $('.seqControls').fadeIn(fadeTime,function(){
         editionMode=true;
       });
@@ -67,6 +71,9 @@ $(function() {
   });
 
 
+  $('.stopAll').click(function(){
+    console.log('STOP ALL');
+  });
   // $('.listItem').click(function(){
   //   $('.listItem').removeClass('selected'); $(this).addClass('selected');
   // });
@@ -208,16 +215,15 @@ $(function() {
     this.dispoHeader = $('<th><div class="dispo"></div></th>').insertBefore('#addRemoveDispos');
     // naming
     this.dispoNaming =$('<div class="dispoNaming"></div>').appendTo(this.dispoHeader.children());
-    this.operatorDiv = $('<div class="operatorEditor">'+that.operator+'</div>').appendTo(this.dispoNaming);
-    this.nameDiv = $('<div class="nameEditor">'+that.name+'</div>').appendTo(this.dispoNaming);
+    this.operatorDiv = $('<div class="operatorEditor textbtn btn">'+that.operator+'</div>').appendTo(this.dispoNaming);
+    this.nameDiv = $('<div class="nameEditor textbtn btn">'+that.name+'</div>').appendTo(this.dispoNaming);
     //stopper
-    this.stop = $('<i class="fa fa-stop btnBig stopDispo" aria-hidden="true"></i>').appendTo(this.dispoHeader.children());
+    this.stop = $('<i class="fa fa-stop btn btnBig stopDispo" aria-hidden="true"></i>').appendTo(this.dispoHeader.children());
     //more btns
     this.dispoMore =$('<div class="dispoMore"></div>').appendTo(this.dispoHeader.children());
-    this.mute = $('<i class="fa fa-volume-up btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
-    this.loop = $('<i class="fa fa-repeat btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
-    this.pause = $('<i class="fa fa-pause btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
-
+    this.mute = $('<i class="fa fa-volume-up btn btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
+    this.loop = $('<i class="fa fa-repeat btn btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
+    this.pause = $('<i class="fa fa-pause btn btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
 
 
     this.allBoxes = new Array();
@@ -281,6 +287,24 @@ $(function() {
 
       }
     });
+
+    // INTERACTIONS - OUT
+    this.stop.click(function(){
+      console.log('STOP /dispo '+that.name);
+    });
+
+    this.mute.click(function(){
+      console.log('MUTE /dispo '+that.name);
+    });
+
+    this.loop.click(function(){
+      console.log('LOOP /dispo '+that.name);
+    });
+
+    this.pause.click(function(){
+      console.log('PAUSE  /dispo '+that.name);
+    });
+
 
 
     // init
