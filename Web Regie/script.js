@@ -34,8 +34,7 @@ $(function() {
     if(editionMode==true){
       $('.editToggle').removeClass('btnOn').addClass('btnOff');
       $('body').removeClass('editionMode').addClass('playMode');
-      // $('.textbtn').addClass('btn');
-      $('.textbtn').each(function(index,div){ $(div).removeClass('btn'); });
+      $('.textbtn').removeClass('btn');
       $('.seqControls').fadeOut(fadeTime,function(){
         editionMode=false;
       });
@@ -43,8 +42,7 @@ $(function() {
     if(editionMode==false){
       $('.editToggle').removeClass('btnOff').addClass('btnOn');
       $('body').removeClass('playMode').addClass('editionMode');
-      // $('.textbtn').removeClass('btn');
-      $('.textbtn').each(function(index,div){ $(div).addClass('btn'); });
+      $('.textbtn').addClass('btn');
       $('.seqControls').fadeIn(fadeTime,function(){
         editionMode=true;
       });
@@ -74,9 +72,21 @@ $(function() {
   $('.stopAll').click(function(){
     console.log('STOP ALL');
   });
-  // $('.listItem').click(function(){
-  //   $('.listItem').removeClass('selected'); $(this).addClass('selected');
-  // });
+
+
+  
+  // AUDIO-VIDEO OR LIGHT
+  $("input[name='mediaType']").click(function(){
+    if($(this).val()=='audiovideo'){
+      $('.lightList').hide();
+      $('.mediaListDynamic').show();
+    }
+    if($(this).val()=='light'){
+      $('.mediaListDynamic').hide();
+      $('.lightList').show();
+    }
+  });
+
 
 
 
@@ -365,12 +375,13 @@ $(function() {
       var selectedMedia = 'none';
       $('.listItem').removeClass('selected');
       $("#mediaOverlay").fadeIn(fadeTime);
-      // update that.media (because on init (loadPool & loadProject), loadProject edits scene obj -> media + DOM but not box object )
-      that.media=$(that.box).text();
       bindColorPicker();
-      // Radio
-      $("input[name='loopArg']").each(function(){
-        $(this).prop('checked', false);
+
+      // update Radio
+      $('input:radio[name="loopArg"]').filter('[value='+that.loop+']').prop('checked', true);
+      // update media
+      $(".mediaItem").each(function(index,div){
+        if($(div).html()==that.media){$(div).addClass('selected');}
       });
 
       // Select
@@ -394,10 +405,9 @@ $(function() {
       $(".validateMedia").unbind().click(function(){
 
         $("#mediaOverlay").fadeOut(fadeTime);
-        that.media = selectedMedia;
+        if(selectedMedia!='none') {that.media = selectedMedia;}
         that.loop = $("input[name='loopArg']:checked").val();
         if(that.loop==undefined){ that.loop = 'none' }
-        if(that.media=='none'){ that.media = '...'; }
         $(that.loopDiv).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+that.loop);
         $(that.mediaDiv).html(that.media);
 
