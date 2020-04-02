@@ -74,7 +74,7 @@ $(function() {
   });
 
 
-  
+
   // AUDIO-VIDEO OR LIGHT
   $("input[name='mediaType']").click(function(){
     if($(this).val()=='audiovideo'){
@@ -454,7 +454,7 @@ $(function() {
 
   allScenesTemp = ['scene1','scene2','scene3','scene4','scene5','scene6','scene7','scene8','scene9','scene10'];
   allSequencesTemp = ['seq1','seq2','seq3','seq4','seq5','seq6','seq7','seq8','seq9','seq10','seq11','seq12','seq13','seq14','seq15','seq16','seq17','seq18','seq19','seq20' ];
-  projectExport = [];
+  // projectExport = [];
   projectImport = [];
 
   var project;
@@ -481,9 +481,19 @@ $(function() {
     // SAVE
     this.saveProject = function(){
       // FILL EXPORT ARRAY
-      projectExport = [];
-      projectExport.push(that.allScenes);
-      // console.log(projectExport[0][0].allSequences);
+      var projectExport = [];
+      // OLD WAY - SAVE ALL SCENES
+      // projectExport.push(that.allScenes);
+      // NEW WAY - SAVE ALL SCENES QUI SONT ONT UN DOSSIER CORRESPONDANT DANS LE FILETREE - Permet de supprimer les scenes qui n'ont pas de folder
+      var allScenesExport = [];
+      $.each(fileTree,function(index,folder){
+        $.each(that.allScenes,function(index,scene){
+          if(scene.name==folder.name){ allScenesExport.push(scene);}
+        });
+      });
+      projectExport.push(allScenesExport);
+
+
       // AJAX
       $.ajax({
         url: "data/save.php",
@@ -538,7 +548,7 @@ $(function() {
           });
 
           // // FROM SCRATCH
-          // NEW SCENES
+          // //NEW SCENES
           // $.each(allScenesTemp,function(index){
           //   that.allScenes.push(new sceneObject(allScenesTemp[index]) );
           // });
@@ -555,12 +565,29 @@ $(function() {
           //   });
           // });
 
+          // LOAD FILE SYSTEM
+          initFileTree();
           // LOAD FIRST SCENE
           project.allScenes[0].loadScene();
           $('.sceneEditor').html(project.allScenes[0].name);
         }
       });
 
+    }
+
+    this.createScene = function(newFolderName){
+      var newScene = new sceneObject(newFolderName)
+      // fill Sequences
+      $.each(allSequencesTemp,function(index,seqName){
+        newScene.allSequences.push(seqName);
+      });
+      // fill medias
+      $.each(pool.allDispos,function(indexX,dispo){
+        for (var indexY = 0; indexY < 20; indexY++) {
+          newScene.allMedias.push(new media(indexX,indexY,'...','none'));
+        }
+      });
+      that.allScenes.push(newScene);
     }
 
 
@@ -618,7 +645,7 @@ $(function() {
       $('.seqName').each(function(index,div){
         $(div).html(that.allSequences[index]);
       });
-      //medias
+      //medias in boxes
       // $.each(that.allMedias,function(index,media){
       //   $('.box').each(function(index,div){
       //     var xIndex = $(div).index()-1;
@@ -638,7 +665,15 @@ $(function() {
           });
         });
       });
-
+      // mediaList in mediaOverlay
+      $('.mediaListDynamic').empty();
+      $.each(fileTree,function(index,folder){
+        if(folder.name==that.name){
+          $.each(folder.files,function(index,fileName){
+            $('<div class="listItem mediaItem">'+fileName+'</div>').appendTo($('.mediaListDynamic'));
+          });
+        }
+      });
 
       console.log('scene loaded: '+that.name);
     }
@@ -784,7 +819,6 @@ $(function() {
               $.each(clipboard,function(index, clipboardmedia){
                 if(media.x==clipboardmedia.x){ media.media = clipboardmedia.media; media.loop = clipboardmedia.loop; }
               });
-              console.log(media);
             }
           });
         }
@@ -799,8 +833,54 @@ $(function() {
 
 
   ////////////////////////////////////////////////////////////
-  ////////////////////////   SOCKET   ////////////////////////
+  ///////////////////////    FILES    ////////////////////////
   ////////////////////////////////////////////////////////////
+
+  var folder1 = { name: 'scene1', files: ["media1-1.mp4","media1-2.mp4","media1-3.mp4","media1-4.mp4","media1-5.mp4","media1-6.mp4","media1-7.mp4","media1-8.mp4","media1-9.mp4"] };
+  var folder2 = { name: 'scene2', files: ["media2-1.mp4","media2-2.mp4","media2-3.mp4","media2-4.mp4","media2-5.mp4","media2-6.mp4","media2-7.mp4","media2-8.mp4","media2-9.mp4"] };
+  var folder3 = { name: 'scene3', files: ["media3-1.mp4","media3-2.mp4","media3-3.mp4","media3-4.mp4","media3-5.mp4","media3-6.mp4","media3-7.mp4","media3-8.mp4","media3-9.mp4"] };
+  var folder4 = { name: 'scene4', files: ["media4-1.mp4","media4-2.mp4","media4-3.mp4","media4-4.mp4","media4-5.mp4","media4-6.mp4","media4-7.mp4","media4-8.mp4","media4-9.mp4"] };
+  var folder5 = { name: 'scene5', files: ["media5-1.mp4","media5-2.mp4","media5-3.mp4","media5-4.mp4","media5-5.mp4","media5-6.mp4","media5-7.mp4","media5-8.mp4","media5-9.mp4"] };
+  var folder6 = { name: 'scene6', files: ["media6-1.mp4","media6-2.mp4","media6-3.mp4","media6-4.mp4","media6-5.mp4","media6-6.mp4","media6-7.mp4","media6-8.mp4","media6-9.mp4"] };
+  var folder7 = { name: 'scene7', files: ["media7-1.mp4","media7-2.mp4","media7-3.mp4","media7-4.mp4","media7-5.mp4","media7-6.mp4","media7-7.mp4","media7-8.mp4","media7-9.mp4"] };
+  var folder8 = { name: 'scene8', files: ["media8-1.mp4","media8-2.mp4","media8-3.mp4","media8-4.mp4","media8-5.mp4","media8-6.mp4","media8-7.mp4","media8-8.mp4","media8-9.mp4"] };
+  var folder9 = { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] };
+
+  var fileTree = new Array();
+  fileTree.push(folder1);
+  fileTree.push(folder2);
+  fileTree.push(folder3);
+  fileTree.push(folder4);
+  fileTree.push(folder5);
+  fileTree.push(folder6);
+  fileTree.push(folder7);
+  fileTree.push(folder8);
+  fileTree.push(folder9);
+
+
+  // ATTENTION - à réception du filetree en socket, vider le tableau fileTree et le remplacer par celui recu,
+  // PUIS initFileTree
+
+  function initFileTree(){
+
+    // DOM
+    $('.sceneList').empty();
+    $.each(fileTree,function(index,folder){
+      $('<div class="listItem sceneItem">'+folder.name+'</div>').appendTo($('.sceneList'));
+    });
+
+    // NEW SCENE (IF NEW FOLDER)
+    var allSceneNames = [];
+    $.each(project.allScenes,function(index,scene){ allSceneNames.push(scene.name);});
+    $.each(fileTree,function(index,folder){
+      if($.inArray(folder.name,allSceneNames)==-1){
+        project.createScene(folder.name);
+      }
+    });
+
+  }
+
+
 
 
 
