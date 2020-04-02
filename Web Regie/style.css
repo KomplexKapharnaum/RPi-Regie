@@ -367,6 +367,12 @@ tbody th {
 textarea {
   outline: none;
 }
+.stateOn{
+  opacity:1;
+}
+.stateOff{
+  opacity:0.4;
+}
 
 .listItem:active{
   background-color: #454545;

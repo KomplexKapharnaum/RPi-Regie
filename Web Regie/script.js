@@ -70,7 +70,7 @@ $(function() {
 
 
   $('.stopAll').click(function(){
-    console.log('STOP ALL');
+    console.log('STOP /all');
   });
 
 
@@ -231,9 +231,9 @@ $(function() {
     this.stop = $('<i class="fa fa-stop btn btnBig stopDispo" aria-hidden="true"></i>').appendTo(this.dispoHeader.children());
     //more btns
     this.dispoMore =$('<div class="dispoMore"></div>').appendTo(this.dispoHeader.children());
-    this.mute = $('<i class="fa fa-volume-up btn btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
-    this.loop = $('<i class="fa fa-repeat btn btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
-    this.pause = $('<i class="fa fa-pause btn btnMedium" aria-hidden="true"></i>').appendTo(this.dispoMore);
+    this.mute = $('<i class="fa fa-volume-up btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
+    this.loop = $('<i class="fa fa-repeat btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
+    this.pause = $('<i class="fa fa-pause btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
 
 
     this.allBoxes = new Array();
@@ -241,19 +241,6 @@ $(function() {
       that.allBoxes.push(new boxObject(seqdiv,that.name, that.xIndex, yIndex));
     });
 
-    // Connection State
-    this.connected = true;
-
-    this.updateConnectionState = function(){
-      if(that.connected==false){
-        this.dispoHeader.css({opacity:0.4});
-        $.each(that.allBoxes,function(index,box){ box.updateConnectionState('disconnected'); });
-      }
-      if(that.connected==true){
-        this.dispoHeader.css({opacity:1});
-        $.each(that.allBoxes,function(index,box){ box.updateConnectionState('connected'); });
-      }
-    }
 
     // OPERATOR EDIT
     $(that.operatorDiv).click(function(){
@@ -298,27 +285,73 @@ $(function() {
       }
     });
 
+    // STATES - IN
+    this.isConnected = true;
+    this.isPaused = false;
+    this.isLooping = false;
+    this.isMuted = false;
+
+    this.checkStates = function(){
+      $.each(disposIncoming,function(index,dispoIn){
+        if(that.name==dispoIn.name){
+          if(that.isConnected!=dispoIn.isConnected){ that.isConnected=dispoIn.isConnected; that.updateConnectionState(); }
+          if(that.isPaused!=dispoIn.isPaused){ that.isPaused=dispoIn.isPaused; that.updatePauseState(); }
+          if(that.isLooping!=dispoIn.isLooping){ that.isLooping=dispoIn.isLooping; that.updateLoopingState(); }
+          if(that.isMuted!=dispoIn.isMuted){ that.isMuted=dispoIn.isMuted; that.updateMuteState(); }
+        }
+      });
+    }
+
+    this.updateConnectionState = function(){
+      console.log(that.isConnected);
+      if(that.isConnected==false){
+        this.dispoHeader.css({opacity:0.4});
+        $.each(that.allBoxes,function(index,box){ box.updateConnectionState('disconnected'); });
+      }
+      if(that.isConnected==true){
+        this.dispoHeader.css({opacity:1});
+        $.each(that.allBoxes,function(index,box){ box.updateConnectionState('connected'); });
+      }
+    }
+    this.updatePauseState = function(){
+      if(that.isPaused==false){ $(that.pause).removeClass('stateOn').addClass('stateOff'); }
+      if(that.isPaused==true){ $(that.pause).removeClass('stateOff').addClass('stateOn'); }
+    }
+    this.updateLoopingState = function(){
+      if(that.isLooping==false){ $(that.loop).removeClass('stateOn').addClass('stateOff'); }
+      if(that.isLooping==true){ $(that.loop).removeClass('stateOff').addClass('stateOn'); }
+    }
+    this.updateMuteState = function(){
+      if(that.isMuted==true){ $(that.mute).removeClass('stateOn').addClass('stateOff'); }
+      if(that.isMuted==false){ $(that.mute).removeClass('stateOff').addClass('stateOn'); }
+    }
+    this.updateConnectionState();
+    this.updatePauseState();
+    this.updateLoopingState();
+    this.updateMuteState();
+
+
     // INTERACTIONS - OUT
     this.stop.click(function(){
       console.log('STOP /dispo '+that.name);
     });
 
     this.mute.click(function(){
-      console.log('MUTE /dispo '+that.name);
+      console.log('MUTE /dispo '+that.name+' /isMuted '+that.isMuted);
     });
 
     this.loop.click(function(){
-      console.log('LOOP /dispo '+that.name);
+      console.log('LOOP /dispo '+that.name+' /isLooping '+that.isLooping);
     });
 
     this.pause.click(function(){
-      console.log('PAUSE  /dispo '+that.name);
+      console.log('PAUSE /dispo '+that.name+' /isPaused '+that.isPaused);
     });
 
 
 
     // init
-    this.updateConnectionState();
+    this.checkStates();
 
   }
 
@@ -433,7 +466,7 @@ $(function() {
 
     this.play=function(){
       that.getMedia();
-      console.log('PLAY /dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop+' x '+that.xIndex+' y '+that.yIndex);
+      console.log('PLAY /dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop);
     }
 
   }
@@ -566,7 +599,7 @@ $(function() {
           // });
 
           // LOAD FILE SYSTEM
-          initFileTree();
+          loadFileTree();
           // LOAD FIRST SCENE
           project.allScenes[0].loadScene();
           $('.sceneEditor').html(project.allScenes[0].name);
@@ -833,42 +866,34 @@ $(function() {
 
 
   ////////////////////////////////////////////////////////////
-  ///////////////////////    FILES    ////////////////////////
+  ///////////////////////   INCOMING  ////////////////////////
   ////////////////////////////////////////////////////////////
 
-  var folder1 = { name: 'scene1', files: ["media1-1.mp4","media1-2.mp4","media1-3.mp4","media1-4.mp4","media1-5.mp4","media1-6.mp4","media1-7.mp4","media1-8.mp4","media1-9.mp4"] };
-  var folder2 = { name: 'scene2', files: ["media2-1.mp4","media2-2.mp4","media2-3.mp4","media2-4.mp4","media2-5.mp4","media2-6.mp4","media2-7.mp4","media2-8.mp4","media2-9.mp4"] };
-  var folder3 = { name: 'scene3', files: ["media3-1.mp4","media3-2.mp4","media3-3.mp4","media3-4.mp4","media3-5.mp4","media3-6.mp4","media3-7.mp4","media3-8.mp4","media3-9.mp4"] };
-  var folder4 = { name: 'scene4', files: ["media4-1.mp4","media4-2.mp4","media4-3.mp4","media4-4.mp4","media4-5.mp4","media4-6.mp4","media4-7.mp4","media4-8.mp4","media4-9.mp4"] };
-  var folder5 = { name: 'scene5', files: ["media5-1.mp4","media5-2.mp4","media5-3.mp4","media5-4.mp4","media5-5.mp4","media5-6.mp4","media5-7.mp4","media5-8.mp4","media5-9.mp4"] };
-  var folder6 = { name: 'scene6', files: ["media6-1.mp4","media6-2.mp4","media6-3.mp4","media6-4.mp4","media6-5.mp4","media6-6.mp4","media6-7.mp4","media6-8.mp4","media6-9.mp4"] };
-  var folder7 = { name: 'scene7', files: ["media7-1.mp4","media7-2.mp4","media7-3.mp4","media7-4.mp4","media7-5.mp4","media7-6.mp4","media7-7.mp4","media7-8.mp4","media7-9.mp4"] };
-  var folder8 = { name: 'scene8', files: ["media8-1.mp4","media8-2.mp4","media8-3.mp4","media8-4.mp4","media8-5.mp4","media8-6.mp4","media8-7.mp4","media8-8.mp4","media8-9.mp4"] };
-  var folder9 = { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] };
 
-  var fileTree = new Array();
-  fileTree.push(folder1);
-  fileTree.push(folder2);
-  fileTree.push(folder3);
-  fileTree.push(folder4);
-  fileTree.push(folder5);
-  fileTree.push(folder6);
-  fileTree.push(folder7);
-  fileTree.push(folder8);
-  fileTree.push(folder9);
+  ////////////////////////   FILES  /////////////////////////
+  var fileTree = [
+    { name: 'scene1', files: ["media1-1.mp4","media1-2.mp4","media1-3.mp4","media1-4.mp4","media1-5.mp4","media1-6.mp4","media1-7.mp4","media1-8.mp4","media1-9.mp4"] },
+    { name: 'scene2', files: ["media2-1.mp4","media2-2.mp4","media2-3.mp4","media2-4.mp4","media2-5.mp4","media2-6.mp4","media2-7.mp4","media2-8.mp4","media2-9.mp4"] },
+    { name: 'scene3', files: ["media3-1.mp4","media3-2.mp4","media3-3.mp4","media3-4.mp4","media3-5.mp4","media3-6.mp4","media3-7.mp4","media3-8.mp4","media3-9.mp4"] },
+    { name: 'scene4', files: ["media4-1.mp4","media4-2.mp4","media4-3.mp4","media4-4.mp4","media4-5.mp4","media4-6.mp4","media4-7.mp4","media4-8.mp4","media4-9.mp4"] },
+    { name: 'scene5', files: ["media5-1.mp4","media5-2.mp4","media5-3.mp4","media5-4.mp4","media5-5.mp4","media5-6.mp4","media5-7.mp4","media5-8.mp4","media5-9.mp4"] },
+    { name: 'scene6', files: ["media6-1.mp4","media6-2.mp4","media6-3.mp4","media6-4.mp4","media6-5.mp4","media6-6.mp4","media6-7.mp4","media6-8.mp4","media6-9.mp4"] },
+    { name: 'scene7', files: ["media7-1.mp4","media7-2.mp4","media7-3.mp4","media7-4.mp4","media7-5.mp4","media7-6.mp4","media7-7.mp4","media7-8.mp4","media7-9.mp4"] },
+    { name: 'scene8', files: ["media8-1.mp4","media8-2.mp4","media8-3.mp4","media8-4.mp4","media8-5.mp4","media8-6.mp4","media8-7.mp4","media8-8.mp4","media8-9.mp4"] },
+    { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] }
+  ]
 
 
   // ATTENTION - à réception du filetree en socket, vider le tableau fileTree et le remplacer par celui recu,
-  // PUIS initFileTree
+  // PUIS loadFileTree
 
-  function initFileTree(){
+  function loadFileTree(){
 
     // DOM
     $('.sceneList').empty();
     $.each(fileTree,function(index,folder){
       $('<div class="listItem sceneItem">'+folder.name+'</div>').appendTo($('.sceneList'));
     });
-
     // NEW SCENE (IF NEW FOLDER)
     var allSceneNames = [];
     $.each(project.allScenes,function(index,scene){ allSceneNames.push(scene.name);});
@@ -880,6 +905,37 @@ $(function() {
 
   }
 
+
+  ////////////////////////   DISPOS   /////////////////////////
+
+
+  var disposIncoming = [
+    { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'RPi2', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'RPi3', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'RPi4', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'Bus', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'Camion', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'Panneau', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'Charrette', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'Poubelle', isConnected: true, isPaused: false, isLooping: false, isMuted: false }
+  ];
+
+  function loadDispoNames(){
+    $(".dispoList").empty();
+    $.each(disposIncoming,function(index,dispo){
+      $('<div class="listItem dispoItem">'+dispo.name+'</div>').appendTo($('.dispoList'));
+    });
+  }
+
+  function updateDispoStates(){
+    $.each(pool.allDispos,function(index,dispo){
+      dispo.checkStates();
+    });
+  }
+
+  loadDispoNames();
+  updateDispoStates();
 
 
 
