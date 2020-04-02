@@ -13,7 +13,7 @@
     <script src="script.js"></script>
   </HEAD>
 
-<BODY class="editionMode">
+<BODY class="playMode">
 
 <!-- OVERLAYS -->
 <div class="overlay" id=mediaOverlay>
@@ -30,9 +30,9 @@
         <input type="radio" id="unloop" name="loopArg" value="unloop"><label for="unloop">unloop</label>
         <p>NEW COLOR</p>
         <input class="mediaColorPicker" type="color" id="mediaColorEdit" value="#ffffff">
-        <p>DISPLAY MEDIA TYPE</p>
-        <input type="radio" id="audiovideo" name="mediaType" value="audiovideo" checked><label for="none">AUDIO & VIDEO</label><br>
-        <input type="radio" id="light" name="mediaType" value="light"><label for="loop">LIGHT</label><br>
+        <p>MEDIA TYPE</p>
+        <input type="radio" id="audiovideo" name="mediaType" value="audiovideo" checked><label for="none">Audio & Video</label><br>
+        <input type="radio" id="light" name="mediaType" value="light"><label for="loop">Light</label><br>
       </div>
       <div class="mediaListStatic">
         <div class="listItem mediaItem mediaNone">...</div>
@@ -178,11 +178,11 @@
       <tr id="dispos">
         <th>
           <div class="masterControls">
-            <!-- <div class="connectionState"> <div class="connectionLed circle"></div> </div> -->
+            <div class="connectionState"> <div class="connectionLed circle disconnected"></div> </div>
             <div class="sceneEditor textbtn btn">SCENE A</div>
             <i class="btn fa fa-chevron-up btnMedium dispoToggle" aria-hidden="true"></i>
             <i class="btn fa fa-stop btnBig stopAll masterBtn" aria-hidden="true"></i>
-            <i class="btn fa fa-cog btnOn btnBig editToggle masterBtn" aria-hidden="true"></i>
+            <i class="btn fa fa-cog btnOff btnBig editToggle masterBtn" aria-hidden="true"></i>
           </div>
         </th>
 

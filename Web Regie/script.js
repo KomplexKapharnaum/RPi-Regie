@@ -7,12 +7,11 @@ $(function() {
   /////////////////////////  GENERAL  ////////////////////////
   ////////////////////////////////////////////////////////////
 
-  var editionMode = true;
+  var editionMode = false;
   var expandedMode = true;
   var fadeTime = 200;
 
   $('.dispoToggle').click(function(){
-    // $('.dispoMore').slideToggle(200);
     if(expandedMode==true){
       $('.dispoToggle').removeClass('fa-chevron-down').addClass('fa-chevron-up');
       $('#addRemoveDispos').fadeIn(fadeTime);
@@ -29,6 +28,7 @@ $(function() {
     }
 
   });
+
 
   $('.editToggle').click(function(){
     if(editionMode==true){
@@ -225,8 +225,8 @@ $(function() {
     this.dispoHeader = $('<th><div class="dispo"></div></th>').insertBefore('#addRemoveDispos');
     // naming
     this.dispoNaming =$('<div class="dispoNaming"></div>').appendTo(this.dispoHeader.children());
-    this.operatorDiv = $('<div class="operatorEditor textbtn btn">'+that.operator+'</div>').appendTo(this.dispoNaming);
-    this.nameDiv = $('<div class="nameEditor textbtn btn">'+that.name+'</div>').appendTo(this.dispoNaming);
+    this.operatorDiv = $('<div class="operatorEditor textbtn">'+that.operator+'</div>').appendTo(this.dispoNaming);
+    this.nameDiv = $('<div class="nameEditor textbtn">'+that.name+'</div>').appendTo(this.dispoNaming);
     //stopper
     this.stop = $('<i class="fa fa-stop btn btnBig stopDispo" aria-hidden="true"></i>').appendTo(this.dispoHeader.children());
     //more btns
@@ -280,6 +280,7 @@ $(function() {
           $(that.nameDiv).html(selectedDispo);
           that.name = selectedDispo;
           pool.savePool();
+          that.checkStates();
         });
 
       }
@@ -303,7 +304,6 @@ $(function() {
     }
 
     this.updateConnectionState = function(){
-      console.log(that.isConnected);
       if(that.isConnected==false){
         this.dispoHeader.css({opacity:0.4});
         $.each(that.allBoxes,function(index,box){ box.updateConnectionState('disconnected'); });
@@ -911,8 +911,8 @@ $(function() {
 
   var disposIncoming = [
     { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'RPi2', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'RPi3', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
+    { name: 'RPi2', isConnected: true, isPaused: false, isLooping: true, isMuted: false },
+    { name: 'RPi3', isConnected: false, isPaused: false, isLooping: false, isMuted: false },
     { name: 'RPi4', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
     { name: 'Bus', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
     { name: 'Camion', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
@@ -938,6 +938,9 @@ $(function() {
   updateDispoStates();
 
 
+  // on receive
+  // clear timeout, settimeout 2s
+  // $('.connectionLed').removeClass('disconnected').addClass('connected');
 
 
 

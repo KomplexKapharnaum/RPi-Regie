@@ -40,10 +40,11 @@ thead th:first-child{
 .masterControls .masterBtn:last-of-type{
   text-align: right;
 }
-
-.sceneEditor{
+.masterControls .connectionLed{
+  margin-top: 7px;
+}
+.masterControls .sceneEditor{
   float:left;
-  margin-top: 10px;
   font-size: 20px;
   width: 80%;
   white-space: nowrap;
@@ -202,6 +203,7 @@ tbody th {
   color: rgb(101, 132, 150, 1);
   float:left;
   width:100%;
+  display: none;
 }
 .seqControls i{
   text-align: center;
@@ -327,10 +329,16 @@ tbody th {
 .circle{
   width: 10px;
   height: 10px;
-  background: #f0624d;
+
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
   border-radius: 50%;
+}
+.connected{
+ background: #00ab3f
+}
+.disconnected{
+  background: #f0624d;
 }
 .stopAll,.stopDispo{
   color:#f0624d;
