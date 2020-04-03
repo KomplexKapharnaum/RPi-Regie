@@ -70,7 +70,7 @@ $(function() {
 
 
   $('.stopAll').click(function(){
-    console.log('STOP /all');
+    socketEmit('STOP', '/all');
   });
 
 
@@ -333,19 +333,20 @@ $(function() {
 
     // INTERACTIONS - OUT
     this.stop.click(function(){
-      console.log('STOP /dispo '+that.name);
+      socketEmit('STOP', '/dispo '+that.name);
     });
 
     this.mute.click(function(){
-      console.log('MUTE /dispo '+that.name+' /isMuted '+that.isMuted);
+      socketEmit('MUTE', '/dispo '+that.name+' /isMuted '+that.isMuted);
     });
 
     this.loop.click(function(){
-      console.log('LOOP /dispo '+that.name+' /isLooping '+that.isLooping);
+      socketEmit('LOOP', '/dispo '+that.name+' /isLooping '+that.isLooping);
     });
 
     this.pause.click(function(){
-      console.log('PAUSE /dispo '+that.name+' /isPaused '+that.isPaused);
+      socketEmit('PAUSE', '/dispo '+that.name+' /isPaused '+that.isPaused);
+
     });
 
 
@@ -466,7 +467,7 @@ $(function() {
 
     this.play=function(){
       that.getMedia();
-      console.log('PLAY /dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop);
+      socketEmit('PLAY', '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop);
     }
 
   }
@@ -938,12 +939,41 @@ $(function() {
   updateDispoStates();
 
 
-  // on receive
-  // clear timeout, settimeout 2s
-  // $('.connectionLed').removeClass('disconnected').addClass('connected');
+  ////////////////////////////////////////////////////////////
+  ///////////////////////   SOCKETIO  ////////////////////////
+  ////////////////////////////////////////////////////////////
 
+  url = 'http://localhost:1111';
+  var socket = io(url);
 
+  // CONNECT
+  socket.on('connect', function(){
+    console.log('Connected to Server: '+url);
+    $('.connectionStateText').text('connecté');
+    $('.connectionState').removeClass('disconnected').addClass('connected');
+  });
 
+  socket.on('disconnect', function(){
+    $('.connectionStateText').text('recherche');
+    $('.connectionState').removeClass('connected').addClass('disconnected');
+  });
+
+  // RECEIVE
+  socket.on('fileTree', function(data){
+    console.log(data);
+  });
+  socket.on('disposInfos', function(data){
+    console.log(data);
+    disposIncoming = data;
+    loadDispoNames();
+    updateDispoStates();
+  });
+
+  // SEND
+  function socketEmit(msgType, msg){
+    console.log(msgType+' '+msg);
+    socket.emit(msgType, msg);
+  }
 
 
 

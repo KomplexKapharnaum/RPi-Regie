@@ -5,11 +5,13 @@
     <title>REGIE WEB</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <!-- JQUERY -->
+    <!-- JS -->
     <script type='text/javascript' src='lib/jquery-3.4.1.min.js'></script>
-    <!-- INT -->
-    <link rel="stylesheet" type="text/css" href="style.css?rnd=132">
+    <script src="lib/socket.io.js"></script>
+    <!-- CSS -->
     <link rel="stylesheet" href="style/fa4.7/css/font-awesome.min.css">
+    <!-- MY -->
+    <link rel="stylesheet" type="text/css" href="style.css?rnd=132">
     <script src="script.js"></script>
   </HEAD>
 
@@ -178,7 +180,10 @@
       <tr id="dispos">
         <th>
           <div class="masterControls">
-            <div class="connectionState"> <div class="connectionLed circle disconnected"></div> </div>
+            <!-- <div class="connectionState"> <div class="connectionLed circle disconnected"></div></div> -->
+            <div class="connectionState disconnected"> <i class="fa fa-circle-o-notch fa-spin" aria-hidden="true"></i> <i class="fa fa-circle-o" aria-hidden="true"></i> <i class="connectionStateText">recherche</i> </div>
+
+
             <div class="sceneEditor textbtn btn">SCENE A</div>
             <i class="btn fa fa-chevron-up btnMedium dispoToggle" aria-hidden="true"></i>
             <i class="btn fa fa-stop btnBig stopAll masterBtn" aria-hidden="true"></i>

@@ -334,12 +334,24 @@ tbody th {
   -webkit-border-radius: 50%;
   border-radius: 50%;
 }
+.connectionState{
+  font-weight: lighter;
+  font-style: italic;
+  font-size: 12px;
+}
+.connected .fa-circle-o-notch{
+  display:none;
+}
+.disconnected .fa-circle-o{
+  display:none;
+}
 .connected{
- background: #00ab3f
+ color: #00ab3f
 }
 .disconnected{
-  background: #f0624d;
+  color: #f0624d;
 }
+
 .stopAll,.stopDispo{
   color:#f0624d;
 }
