@@ -17,8 +17,8 @@ var fileTreeOutput = [
   { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] }
 ]
 var disposInfosOutput = [
-  { name: 'RPi1', isConnected: false, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'RPi2', isConnected: false, isPaused: true, isLooping: true, isMuted: true },
+  { name: 'RPi1', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
+  { name: 'RPi2', isConnected: true, isPaused: true, isLooping: true, isMuted: true },
   { name: 'RPi3', isConnected: false, isPaused: true, isLooping: false, isMuted: true },
   { name: 'RPi4', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
   { name: 'Bus', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
@@ -41,6 +41,9 @@ server.on("connection", (socket) => {
     socket.on("PLAY", function(msg){
       console.log("PLAY "+msg);
     });
+    socket.on("PLAYSEQ", function(msg){
+      console.log("PLAYSEQ "+msg);
+    });
 
     socket.on("MUTE", function(msg){
       console.log("MUTE "+msg);
@@ -57,5 +60,6 @@ server.on("connection", (socket) => {
 
     setInterval(() => {
       socket.emit("disposInfos", disposInfosOutput);
-    }, 1000);
+      socket.emit("fileTree", fileTreeOutput);
+    }, 3000);
 });

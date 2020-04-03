@@ -177,6 +177,7 @@ tbody th {
 }
 .seqDiv{
   height:100px;
+  z-index:2;
 }
 .seqName{
   width: 157px;
@@ -246,6 +247,20 @@ tbody th {
   text-align: left;
   float: left;
 }
+#confirmOverlay .overlayTitle{
+  margin: 30px 0% 0% 15%;
+  padding:0;
+  width: 40%;
+  text-align: left;
+}
+#confirmOverlay .controls{
+  margin: 20px 0% 0% 0%;
+    float: left;
+    width:45%;
+}
+#confirmOverlay .controls i{
+  margin-right: 20%;
+}
 #textOverlay .overlayTitle{
   margin: 8% 0% 0% 15%;
   padding:0;
@@ -256,13 +271,17 @@ tbody th {
   height : 80%;
   width : 80%;
 }
-#dispoOverlay .overlayContent, #sceneOverlay .overlayContent, #textOverlay .overlayContent{
+#dispoOverlay .overlayContent, #sceneOverlay .overlayContent{
   width: 50%;
   height : 80%;
 }
 #textOverlay .overlayContent{
   width: 50%;
   height: 42%;
+}
+#confirmOverlay .overlayContent{
+  width: 40%;
+  height: 100px;
 }
 .mediaList, .dispoList, .sceneList{
   height: 83%;

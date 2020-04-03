@@ -65,7 +65,15 @@ $(function() {
   });
   ///////// Add dispo
   $('.removeDispo').click(function(){
-    pool.removeDispo();
+    $('#confirmOverlay').fadeIn(fadeTime);
+    $('.validateDelete').unbind().click(function(){
+        $('#confirmOverlay').fadeOut(fadeTime);
+        pool.removeDispo();
+    });
+    $('.cancelDelete').unbind().click(function(){
+        $('#confirmOverlay').fadeOut(fadeTime);
+    });
+
   });
 
 
@@ -264,36 +272,44 @@ $(function() {
     });
 
     // NAME EDIT
-    $(that.nameDiv).click(function(){
-      var selectedDispo = 'none';
-      if(editionMode==true){
-        $('.listItem').removeClass('selected');
-        $("#dispoOverlay").fadeIn(fadeTime);
-        // select
-        $(".dispoItem").unbind().click(function(){
-          selectedDispo = $(this).html();
-          $('.listItem').removeClass('selected'); $(this).addClass('selected');
-        });
-        // validate
-        $(".validateDispo").unbind().click(function(){
-          $("#dispoOverlay").fadeOut(fadeTime);
-          $(that.nameDiv).html(selectedDispo);
-          that.name = selectedDispo;
-          pool.savePool();
-          that.checkStates();
-        });
+    this.bindDispoSelection = function(){
+      $(that.nameDiv).unbind().click(function(){
+        console.log('CLICK');
+        var selectedDispo = 'none';
+        if(editionMode==true){
+          $('.listItem').removeClass('selected');
+          $("#dispoOverlay").fadeIn(fadeTime);
+          // select
+          // $(".dispoItem").unbind().click(function(){
+          // Use "on" on parent element because click event doesn't work on newly created elements
+          $(".dispoList").on("click", ".dispoItem" ,function(){
+            console.log('CLICK dispoItem');
+            selectedDispo = $(this).html();
+            $('.listItem').removeClass('selected'); $(this).addClass('selected');
+          });
+          // validate
+          $(".validateDispo").unbind().click(function(){
+            $("#dispoOverlay").fadeOut(fadeTime);
+            $(that.nameDiv).html(selectedDispo);
+            that.name = selectedDispo;
+            pool.savePool();
+            that.checkStates();
+          });
 
-      }
-    });
+        }
+      });
+    }
+    this.bindDispoSelection();
+
 
     // STATES - IN
-    this.isConnected = true;
+    this.isConnected = false;
     this.isPaused = false;
     this.isLooping = false;
     this.isMuted = false;
 
     this.checkStates = function(){
-      $.each(disposIncoming,function(index,dispoIn){
+      $.each(disposStates,function(index,dispoIn){
         if(that.name==dispoIn.name){
           if(that.isConnected!=dispoIn.isConnected){ that.isConnected=dispoIn.isConnected; that.updateConnectionState(); }
           if(that.isPaused!=dispoIn.isPaused){ that.isPaused=dispoIn.isPaused; that.updatePauseState(); }
@@ -467,7 +483,13 @@ $(function() {
 
     this.play=function(){
       that.getMedia();
-      socketEmit('PLAY', '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop);
+      var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
+      socketEmit('PLAY', playPhrase);
+    }
+    this.playSequence=function(){
+      that.getMedia();
+      var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
+      playSequenceArray.push(playPhrase);
     }
 
   }
@@ -735,6 +757,7 @@ $(function() {
 
   // SEQUENCE CHANGE
   var editedSequence;
+  playSequenceArray = new Array();
 
   $('.seqName').click(function(){
     var that = this;
@@ -750,12 +773,13 @@ $(function() {
       $('#textToEdit').unbind().keypress(function(e){ if(e.keyCode == 13){ e.preventDefault(); that.validateText(); } });
       $('.validateText').unbind().click(function(){ that.validateText(); });
     }else{
-      console.log('play sequence');
+      playSequenceArray = [];
       $.each(pool.allDispos,function(index,dispo){
         $.each(dispo.allBoxes,function(index,box){
-          if(box.yIndex==sequenceNumber){box.play();}
+          if(box.yIndex==sequenceNumber){box.playSequence(); }
         });
       });
+      socketEmit('PLAYSEQ', playSequenceArray );
     }
     // OK
     this.validateText = function(){
@@ -910,7 +934,7 @@ $(function() {
   ////////////////////////   DISPOS   /////////////////////////
 
 
-  var disposIncoming = [
+  var disposStates = [
     { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
     { name: 'RPi2', isConnected: true, isPaused: false, isLooping: true, isMuted: false },
     { name: 'RPi3', isConnected: false, isPaused: false, isLooping: false, isMuted: false },
@@ -924,8 +948,11 @@ $(function() {
 
   function loadDispoNames(){
     $(".dispoList").empty();
-    $.each(disposIncoming,function(index,dispo){
+    $.each(disposStates,function(index,dispo){
       $('<div class="listItem dispoItem">'+dispo.name+'</div>').appendTo($('.dispoList'));
+    });
+    $.each(pool.allDispos,function(index,dispo){
+      dispo.bindDispoSelection();
     });
   }
 
@@ -959,13 +986,23 @@ $(function() {
   });
 
   // RECEIVE
-  socket.on('fileTree', function(data){
-    console.log(data);
+  socket.on('fileTree', function(fileTreeIncoming){
+    // CHECK VARIATION, etc etc
+    // fileTree = fileTreeIncoming;
+    // loadFileTree();
   });
-  socket.on('disposInfos', function(data){
-    console.log(data);
-    disposIncoming = data;
-    loadDispoNames();
+  socket.on('disposInfos', function(disposIncoming){
+    // check if dispo variation
+    var oldDispoNames = [];
+    var newDispoNames = [];
+    var disposHaveChanged = false;
+    $.each(disposStates,function(index,dispo){ oldDispoNames.push(dispo.name); });
+    $.each(disposIncoming,function(index,dispo){ newDispoNames.push(dispo.name); });
+    if(oldDispoNames.length!=newDispoNames.length){ disposHaveChanged = true; }
+    $.each(newDispoNames,function(index,name){ if($.inArray(name,oldDispoNames)==-1){ disposHaveChanged = true; } });
+
+    disposStates = disposIncoming;
+    if(disposHaveChanged){ loadDispoNames(); }
     updateDispoStates();
   });
 

@@ -18,7 +18,7 @@
 <BODY class="playMode">
 
 <!-- OVERLAYS -->
-<div class="overlay" id=mediaOverlay>
+<div class="overlay" id="mediaOverlay">
   <div class="overlayContent">
     <div class="overlayTitle"> SELECTIONNER UN MEDIA: </div>
     <div class="controls">
@@ -90,7 +90,7 @@
   </div>
 </div>
 
-<div class="overlay" id=dispoOverlay>
+<div class="overlay" id="dispoOverlay">
   <div class="overlayContent">
     <div class="overlayTitle"> SELECTIONNER UN DISPO: </div>
     <div class="controls">
@@ -123,7 +123,7 @@
 </div>
 
 
-<div class="overlay" id=sceneOverlay>
+<div class="overlay" id="sceneOverlay">
   <div class="overlayContent">
     <div class="overlayTitle"> SELECTIONNER UNE SCENE: </div>
     <div class="controls">
@@ -157,12 +157,24 @@
 </div>
 
 
-<div class="overlay" id=textOverlay>
+<div class="overlay" id="textOverlay">
   <div class="overlayContent">
     <div id="textToEditTitle" class="overlayTitle"> EDIT: </div>
     <textarea id="textToEdit">TEXT</textarea>
     <div class="controls">
       <i class="btn fa fa-check-circle btnBig validateText" aria-hidden="true"></i>
+    </div>
+    <br>
+  </div>
+</div>
+
+
+<div class="overlay" id="confirmOverlay">
+  <div class="overlayContent">
+    <div class="overlayTitle"> DELETE DISPO ? </div>
+    <div class="controls">
+      <i class="btn fa fa-check-circle btnBig validateDelete" aria-hidden="true"></i>
+      <i class="btn fa fa-close btnBig cancelDelete" aria-hidden="true"></i>
     </div>
     <br>
   </div>
