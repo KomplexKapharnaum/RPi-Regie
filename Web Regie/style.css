@@ -148,13 +148,10 @@ thead th:first-child{
   position: absolute;
   top: 37%;
   right: 5px;
-  /* color: #00ab3f; */
+  opacity:0;
 }
 .validPlay-true{
   opacity:0.4;
-}
-.validPlay-false{
-  opacity:0;
 }
 
 

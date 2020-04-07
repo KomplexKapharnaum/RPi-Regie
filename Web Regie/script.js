@@ -82,9 +82,9 @@ $(function() {
       $.each(dispo.allBoxes,function(index,box){
         box.justPlayed = false;
         $(box.box).removeClass('justPlayed');
+        $(box.validPlayDiv).removeClass('validPlay-true');
       });
     });
-    // $('.box').removeClass('justPlayed');
   });
 
 
@@ -347,7 +347,9 @@ $(function() {
           if(that.isMuted!=dispoIn.isMuted){ that.isMuted=dispoIn.isMuted; that.updateMuteState(); }
         }
       });
+      $.each(that.allBoxes,function(index,box){ box.updatePlayState(); });
     }
+
 
     this.updateConnectionState = function(){
       if(that.isConnected==false){
@@ -380,7 +382,7 @@ $(function() {
     // INTERACTIONS - OUT
     this.stop.click(function(){
       socketEmit('STOP', '/dispo '+that.name);
-      $.each(that.allBoxes,function(index,box){ box.justPlayed=false; $(box.box).removeClass('justPlayed'); });
+      $.each(that.allBoxes,function(index,box){ box.justPlayed=false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
     });
 
     this.mute.click(function(){
@@ -414,7 +416,7 @@ $(function() {
     this.box = $('<td class="box"></td>').appendTo($(seqdiv).parent());
     this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
     this.loopDiv = $('<div class="loopInfo"><i class="fa fa-repeat loopInfoIcon loopInfo-none" aria-hidden="true"></i></div>').appendTo($(this.box));
-    this.validPlayDiv = $('<div class="validPlayInfo"><i class="fa fa-check validPlay-false" aria-hidden="true"></i></div>').appendTo($(this.box));
+    this.validPlayDiv = $('<div class="validPlayInfo"><i class="fa fa-check" aria-hidden="true"></i></div>').appendTo($(this.box));
 
     this.media='?';
     this.loop='?';
@@ -442,6 +444,18 @@ $(function() {
       }
       if(state=='connected'){
         this.box.css({opacity:1});
+      }
+    }
+
+    this.updatePlayState = function(){
+      if(that.justPlayed==true){
+        var media_Played;
+        $.each(disposStates,function(index,dispoIn){
+          if(dispoIn.name==that.dispo){ media_Played = dispoIn.playing; }
+        });
+        if(media_Played==that.media){
+          $(that.validPlayDiv).addClass('validPlay-true');
+        }
       }
     }
 
@@ -516,7 +530,7 @@ $(function() {
 
     this.play=function(){
       $.each(pool.allDispos,function(index,dispo){
-        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); });
+        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
       });
       that.justPlayed = true;
       $(that.box).addClass('justPlayed');
@@ -526,7 +540,7 @@ $(function() {
     }
     this.playSequence=function(){
       $.each(pool.allDispos,function(index,dispo){
-        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); });
+        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
       });
       that.justPlayed = true;
       $(that.box).addClass('justPlayed');
@@ -772,9 +786,9 @@ $(function() {
         $.each(dispo.allBoxes,function(index,box){
           box.justPlayed = false;
           $(box.box).removeClass('justPlayed');
+          $(box.validPlayDiv).removeClass('validPlay-true');
         });
       });
-      // $('.box').removeClass('justPlayed');
       $('.sceneEditor').html(that.name);
 
       console.log('scene loaded: '+that.name);
@@ -992,15 +1006,15 @@ $(function() {
 
 
   var disposStates = [
-    { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'RPi2', isConnected: true, isPaused: false, isLooping: true, isMuted: false },
-    { name: 'RPi3', isConnected: false, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'RPi4', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'Bus', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'Camion', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'Panneau', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'Charrette', isConnected: true, isPaused: false, isLooping: false, isMuted: false },
-    { name: 'Poubelle', isConnected: true, isPaused: false, isLooping: false, isMuted: false }
+    { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+    { name: 'RPi2', isConnected: true, isPaused: false, isLooping: true, isMuted: false, playing:'stop' },
+    { name: 'RPi3', isConnected: false, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+    { name: 'RPi4', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+    { name: 'Bus', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+    { name: 'Camion', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+    { name: 'Panneau', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+    { name: 'Charrette', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+    { name: 'Poubelle', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' }
   ];
 
   function updateDispoNames(){

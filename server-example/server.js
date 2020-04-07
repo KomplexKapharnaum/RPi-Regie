@@ -17,15 +17,15 @@ var fileTreeOutput = [
   { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] }
 ]
 var disposInfosOutput = [
-  { name: 'RPi1', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'RPi2', isConnected: true, isPaused: true, isLooping: true, isMuted: true },
-  { name: 'RPi3', isConnected: false, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'RPi4', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'Bus', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'Camion', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'Panneau', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'Charrette', isConnected: true, isPaused: true, isLooping: false, isMuted: true },
-  { name: 'Poubelle', isConnected: true, isPaused: true, isLooping: false, isMuted: true }
+  { name: 'RPi1', isConnected: true, isPaused: true, isLooping: false, isMuted: true, playing:'media1-1.mp4' },
+  { name: 'RPi2', isConnected: true, isPaused: true, isLooping: true, isMuted: true, playing:'stop' },
+  { name: 'RPi3', isConnected: false, isPaused: true, isLooping: false, isMuted: true, playing:'stop' },
+  { name: 'RPi4', isConnected: true, isPaused: true, isLooping: false, isMuted: true, playing:'stop' },
+  { name: 'Bus', isConnected: true, isPaused: true, isLooping: false, isMuted: true, playing:'stop' },
+  { name: 'Camion', isConnected: true, isPaused: true, isLooping: false, isMuted: true, playing:'media1-4.mp4' },
+  { name: 'Panneau', isConnected: true, isPaused: true, isLooping: false, isMuted: true, playing:'media1-4.mp4' },
+  { name: 'Charrette', isConnected: true, isPaused: true, isLooping: false, isMuted: true, playing:'media1-4.mp4' },
+  { name: 'Poubelle', isConnected: true, isPaused: true, isLooping: false, isMuted: true, playing:'media1-4.mp4' }
 ];
 
 server.on("connection", (socket) => {
