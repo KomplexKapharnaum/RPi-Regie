@@ -13,15 +13,13 @@ $(function() {
 
   $('.dispoToggle').click(function(){
     if(expandedMode==true){
-      $('.dispoToggle').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-      $('#addRemoveDispos').fadeIn(fadeTime);
+      $('.dispoToggle').removeClass('fa-chevron-circle-down').addClass('fa-chevron-circle-up');
       $('.dispoMore').slideDown(fadeTime,function(){
         expandedMode=false;
       });
     }
     if(expandedMode==false){
-      $('.dispoToggle').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-      $('#addRemoveDispos').fadeOut(fadeTime);
+      $('.dispoToggle').removeClass('fa-chevron-circle-up').addClass('fa-chevron-circle-down');
       $('.dispoMore').slideUp(fadeTime,function(){
         expandedMode=true;
       });
@@ -35,7 +33,7 @@ $(function() {
       $('.editToggle').removeClass('btnOn').addClass('btnOff');
       $('body').removeClass('editionMode').addClass('playMode');
       $('.textbtn').removeClass('btn');
-      $('.seqControls').fadeOut(fadeTime,function(){
+      $('.seqControls, #addRemoveDispos').fadeOut(fadeTime,function(){
         editionMode=false;
       });
     }
@@ -43,7 +41,7 @@ $(function() {
       $('.editToggle').removeClass('btnOff').addClass('btnOn');
       $('body').removeClass('playMode').addClass('editionMode');
       $('.textbtn').addClass('btn');
-      $('.seqControls').fadeIn(fadeTime,function(){
+      $('.seqControls, #addRemoveDispos').fadeIn(fadeTime,function(){
         editionMode=true;
       });
     }
@@ -76,9 +74,31 @@ $(function() {
 
   });
 
-
+  // STOP ALL
   $('.stopAll').click(function(){
     socketEmit('STOP', '/all');
+    $('.box').removeClass('justPlayed');
+  });
+
+
+  // PREV NEXT SCENE
+  $('.quickScene').click(function(){
+
+    var indexOfActiveScene, indexToGo = 0;
+    $.each(project.allScenes,function(index,scene){ if(scene.isActive) indexOfActiveScene = index; });
+
+    if(($(this).hasClass('prevScene'))&&(indexOfActiveScene>0)){
+      indexToGo = indexOfActiveScene - 1 ;
+      console.log('prev');
+      project.allScenes[indexToGo].loadScene();
+    }
+    if(($(this).hasClass('nextScene'))&&(indexOfActiveScene<project.allScenes.length-1)){
+      indexToGo = indexOfActiveScene + 1 ;
+      console.log('next');
+      project.allScenes[indexToGo].loadScene();
+    }else return;
+
+
   });
 
 
@@ -128,7 +148,7 @@ $(function() {
 
 
     }
-    // DEV
+    // REMOVE
     this.removeDispo = function(){
       // remove dispo & dispo div
       that.allDispos.pop();
@@ -281,8 +301,9 @@ $(function() {
           $("#dispoOverlay").fadeIn(fadeTime);
           // select
           // $(".dispoItem").unbind().click(function(){
-          // Use "on" on parent element because click event doesn't work on newly created elements
-          $(".dispoList").on("click", ".dispoItem" ,function(){
+          // prefer this method so that if elements have been updated (".dispoItem" deleted & refilled) the event still works
+          // otherwise, user have to close & reopen window to bind ".dispoItem" click again
+          $(document).on("click", ".dispoItem" ,function(){
             console.log('CLICK dispoItem');
             selectedDispo = $(this).html();
             $('.listItem').removeClass('selected'); $(this).addClass('selected');
@@ -350,6 +371,7 @@ $(function() {
     // INTERACTIONS - OUT
     this.stop.click(function(){
       socketEmit('STOP', '/dispo '+that.name);
+      $.each(that.allBoxes,function(index,box){ console.log(box); $(box.box).removeClass('justPlayed'); });
     });
 
     this.mute.click(function(){
@@ -448,6 +470,8 @@ $(function() {
           });
         }
 
+        $(".validateMedia").click();
+
       });
 
       // validate
@@ -462,8 +486,6 @@ $(function() {
         $(that.mediaDiv).html(that.media);
 
         // Save it in project
-        // var xIndex = $(that.box).index()-1;
-        // var yIndex = $(that.box).parent().index();
         $.each(project.allScenes,function(index,scene){
           if(scene.isActive==true){
             $.each(scene.allMedias,function(index,media){
@@ -482,11 +504,19 @@ $(function() {
     }
 
     this.play=function(){
+      $.each(pool.allDispos,function(index,dispo){
+        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ $(box.box).removeClass('justPlayed'); });
+      });
+      $(that.box).addClass('justPlayed');
       that.getMedia();
       var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
       socketEmit('PLAY', playPhrase);
     }
     this.playSequence=function(){
+      $.each(pool.allDispos,function(index,dispo){
+        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ $(box.box).removeClass('justPlayed'); });
+      });
+      $(that.box).addClass('justPlayed');
       that.getMedia();
       var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
       playSequenceArray.push(playPhrase);
@@ -622,7 +652,7 @@ $(function() {
           // });
 
           // LOAD FILE SYSTEM
-          loadFileTree();
+          updateFileTree();
           // LOAD FIRST SCENE
           project.allScenes[0].loadScene();
           $('.sceneEditor').html(project.allScenes[0].name);
@@ -647,34 +677,45 @@ $(function() {
     }
 
 
-
     this.saveProjectInterval();
 
 
   }
 
 
+
   // SCENE CHANGE
-  $('.sceneEditor').click(function(){
-    if(editionMode==true){
-      var selectedSceneName;
-      $('.listItem').removeClass('selected');
-      $("#sceneOverlay").fadeIn(fadeTime);
-      // select
-      $(".sceneItem").unbind().click(function(){
-        selectedSceneName = $(this).html();
-        $('.listItem').removeClass('selected'); $(this).addClass('selected');
-      });
-      // validate
-      $(".validateFoler").unbind().click(function(){
-        $("#sceneOverlay").fadeOut(fadeTime);
-        $('.sceneEditor').html(selectedSceneName);
-        $.each(project.allScenes,function(index,scene){
-          if(scene.name==selectedSceneName){ scene.loadScene(); }
+
+  bindSceneSelection = function(){
+    $('.sceneEditor').unbind().click(function(){
+      if(editionMode==true){
+        var selectedSceneName;
+        $('.listItem').removeClass('selected');
+        $("#sceneOverlay").fadeIn(fadeTime);
+        // select
+        // $(".sceneItem").unbind().click(function(){
+        // prefer this method so that if elements have been updated (".sceneItem" deleted & refilled) the event still works
+        // otherwise, user have to close & reopen window to bind ".sceneItem" click again
+        $(document).on("click",".sceneItem",function(){
+          console.log('scene item click');
+          selectedSceneName = $(this).html();
+          $('.listItem').removeClass('selected'); $(this).addClass('selected');
         });
-      });
-    }
-  });
+        // validate
+        $(".validateFoler").unbind().click(function(){
+          $("#sceneOverlay").fadeOut(fadeTime);
+          $.each(project.allScenes,function(index,scene){
+            if(scene.name==selectedSceneName){ scene.loadScene(); }
+          });
+        });
+      }
+    });
+
+  }
+
+  bindSceneSelection();
+
+
 
 
 
@@ -702,16 +743,6 @@ $(function() {
         $(div).html(that.allSequences[index]);
       });
       //medias in boxes
-      // $.each(that.allMedias,function(index,media){
-      //   $('.box').each(function(index,div){
-      //     var xIndex = $(div).index()-1;
-      //     var yIndex = $(div).parent().index();
-      //     if((xIndex==media.x)&&(yIndex==media.y)){
-      //       $(this).find('.mediaSelector').html(media.media);
-      //       $(this).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop);
-      //     }
-      //   });
-      // });
       $.each(that.allMedias,function(index,media){
         $.each(pool.allDispos,function(index,dispo){
           $.each(dispo.allBoxes,function(index,box){
@@ -730,6 +761,9 @@ $(function() {
           });
         }
       });
+      //No box just played
+      $('.box').removeClass('justPlayed');
+      $('.sceneEditor').html(that.name);
 
       console.log('scene loaded: '+that.name);
     }
@@ -801,11 +835,6 @@ $(function() {
     var that=this;
     var sequenceNumber = $(this).parent().parent().parent().index();
     // dom
-    // var seqLine = $(this).parent().parent().parent();
-    // $(seqLine).find('.box').each(function(index,box){
-    //   $(box).find('.mediaSelector').html('...');
-    //   $(box).find('.loopInfoIcon').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-none');
-    // });
     $.each(pool.allDispos,function(index,dispo){
       $.each(dispo.allBoxes,function(index,box){
         if(box.yIndex==sequenceNumber){box.setMedia('...','none');}
@@ -847,18 +876,6 @@ $(function() {
       $('.copyPasteSequence').removeClass('fa-files-o').addClass('fa-clipboard');
       copying=false;
       // Dom
-      // dom - Media
-      // $(that).parent().parent().parent().find('.mediaSelector').each(function(indexX,div){
-      //   $.each(clipboard,function(index,media){
-      //     if(media.x==indexX){ $(div).html(media.media); }
-      //   });
-      // });
-      // // dom - loop
-      // $(that).parent().parent().parent().find('.loopInfoIcon').each(function(indexX,div){
-      //   $.each(clipboard,function(index,media){
-      //     if(media.x==indexX){ $(div).removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+media.loop); }
-      //   });
-      // });
       $.each(clipboard,function(index,media){
         $.each(pool.allDispos,function(index,dispo){
           $.each(dispo.allBoxes,function(index,box){
@@ -909,16 +926,16 @@ $(function() {
   ]
 
 
-  // ATTENTION - à réception du filetree en socket, vider le tableau fileTree et le remplacer par celui recu,
-  // PUIS loadFileTree
-
-  function loadFileTree(){
+  function updateFileTree(){
 
     // DOM
     $('.sceneList').empty();
     $.each(fileTree,function(index,folder){
       $('<div class="listItem sceneItem">'+folder.name+'</div>').appendTo($('.sceneList'));
     });
+
+    bindSceneSelection();
+
     // NEW SCENE (IF NEW FOLDER)
     var allSceneNames = [];
     $.each(project.allScenes,function(index,scene){ allSceneNames.push(scene.name);});
@@ -927,6 +944,12 @@ $(function() {
         project.createScene(folder.name);
       }
     });
+    // pas besoin de supprimer scene si folder en moins, car à la sauvegarde on  ne sauve que les scenes qui ont un folder correspondant
+    // see projectObject.saveProject()
+
+  }
+
+  function backupFileTree(){
 
   }
 
@@ -946,7 +969,7 @@ $(function() {
     { name: 'Poubelle', isConnected: true, isPaused: false, isLooping: false, isMuted: false }
   ];
 
-  function loadDispoNames(){
+  function updateDispoNames(){
     $(".dispoList").empty();
     $.each(disposStates,function(index,dispo){
       $('<div class="listItem dispoItem">'+dispo.name+'</div>').appendTo($('.dispoList'));
@@ -962,7 +985,7 @@ $(function() {
     });
   }
 
-  loadDispoNames();
+  updateDispoNames();
   updateDispoStates();
 
 
@@ -985,14 +1008,22 @@ $(function() {
     $('.connectionState').removeClass('connected').addClass('disconnected');
   });
 
-  // RECEIVE
+  // RECEIVE FILETREE
+
   socket.on('fileTree', function(fileTreeIncoming){
-    // CHECK VARIATION, etc etc
-    // fileTree = fileTreeIncoming;
-    // loadFileTree();
+    // Check any variation of filetree
+    if(JSON.stringify(fileTree)==JSON.stringify(fileTreeIncoming)){
+      fileTree = fileTreeIncoming;
+      updateFileTree();
+      // & BACKUP ???
+    }
+
   });
+
+  // RECEIVE DISPOS INFOS
+
   socket.on('disposInfos', function(disposIncoming){
-    // check if dispo variation
+    // Check variation of dispo names
     var oldDispoNames = [];
     var newDispoNames = [];
     var disposHaveChanged = false;
@@ -1002,8 +1033,9 @@ $(function() {
     $.each(newDispoNames,function(index,name){ if($.inArray(name,oldDispoNames)==-1){ disposHaveChanged = true; } });
 
     disposStates = disposIncoming;
-    if(disposHaveChanged){ loadDispoNames(); }
+    if(disposHaveChanged){ updateDispoNames(); } // & BACKUP ???
     updateDispoStates();
+
   });
 
   // SEND

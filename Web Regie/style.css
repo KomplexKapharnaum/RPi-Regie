@@ -27,29 +27,40 @@ https://stackoverflow.com/questions/15811653/table-with-fixed-header-and-fixed-c
   margin:0;
   text-align: initial;
 }
+
 thead th:first-child{
   vertical-align: top;
 }
-.masterControls .masterBtn{
-  width:48%;
-  margin: 0;
+.masterControls .masterText{
+  width: 60%;
 }
-.masterControls .masterBtn:first-of-type{
-  text-align: left;
+.masterControls .stopAll{
+  margin-top: 3px;
 }
-.masterControls .masterBtn:last-of-type{
-  text-align: right;
+
+.masterControls .nextScene, .masterControls .dispoToggle, .masterControls .editToggle{
+  margin-right: 11px;
 }
-.masterControls .connectionLed{
-  margin-top: 7px;
+
+.masterControls .masterText{
+  float:left;
+  width: 75%;
+}
+.masterControls .connectionState{
+
 }
 .masterControls .sceneEditor{
-  float:left;
   font-size: 20px;
-  width: 80%;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.masterControls .quickScene{
+  vertical-align: super;
+}
+.masterControls .masterControls_line2 > i{
+  width: 20%;
 }
 .dispoToggle{
 
@@ -62,6 +73,11 @@ thead th:first-child{
   height:100%;
   overflow: scroll;
   position: relative;
+}
+
+#addRemoveDispos{
+  /* color: rgb(101, 132, 150, 1); */
+  display:none;
 }
 
 
@@ -166,7 +182,7 @@ thead th {
 }
 thead th:first-child {
   left: 0;
-  z-index: 1;
+  z-index: 3;
 }
 /*SEQ*/
 tbody th {
@@ -357,6 +373,7 @@ tbody th {
   font-weight: lighter;
   font-style: italic;
   font-size: 12px;
+  margin-top: 10px;
 }
 .connected .fa-circle-o-notch{
   display:none;
@@ -431,6 +448,14 @@ textarea {
 }
 .box:active{
   background-color: #808080;
+  transition: 0.1s;
+}
+.justPlayed{
+  background-color: #404040 !important;
+  transition: 0.1s;
+}
+.justWhat{
+  background-color: red !important;
   transition: 0.1s;
 }
 
