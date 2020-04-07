@@ -77,7 +77,14 @@ $(function() {
   // STOP ALL
   $('.stopAll').click(function(){
     socketEmit('STOP', '/all');
-    $('.box').removeClass('justPlayed');
+    // No box just played
+    $.each(pool.allDispos,function(index,dispo){
+      $.each(dispo.allBoxes,function(index,box){
+        box.justPlayed = false;
+        $(box.box).removeClass('justPlayed');
+      });
+    });
+    // $('.box').removeClass('justPlayed');
   });
 
 
@@ -329,6 +336,8 @@ $(function() {
     this.isLooping = false;
     this.isMuted = false;
 
+    this.justPlayed = false;
+
     this.checkStates = function(){
       $.each(disposStates,function(index,dispoIn){
         if(that.name==dispoIn.name){
@@ -371,7 +380,7 @@ $(function() {
     // INTERACTIONS - OUT
     this.stop.click(function(){
       socketEmit('STOP', '/dispo '+that.name);
-      $.each(that.allBoxes,function(index,box){ console.log(box); $(box.box).removeClass('justPlayed'); });
+      $.each(that.allBoxes,function(index,box){ box.justPlayed=false; $(box.box).removeClass('justPlayed'); });
     });
 
     this.mute.click(function(){
@@ -405,6 +414,8 @@ $(function() {
     this.box = $('<td class="box"></td>').appendTo($(seqdiv).parent());
     this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
     this.loopDiv = $('<div class="loopInfo"><i class="fa fa-repeat loopInfoIcon loopInfo-none" aria-hidden="true"></i></div>').appendTo($(this.box));
+    this.validPlayDiv = $('<div class="validPlayInfo"><i class="fa fa-check validPlay-false" aria-hidden="true"></i></div>').appendTo($(this.box));
+
     this.media='?';
     this.loop='?';
     this.dispo = dispo;
@@ -505,8 +516,9 @@ $(function() {
 
     this.play=function(){
       $.each(pool.allDispos,function(index,dispo){
-        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ $(box.box).removeClass('justPlayed'); });
+        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); });
       });
+      that.justPlayed = true;
       $(that.box).addClass('justPlayed');
       that.getMedia();
       var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
@@ -514,8 +526,9 @@ $(function() {
     }
     this.playSequence=function(){
       $.each(pool.allDispos,function(index,dispo){
-        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ $(box.box).removeClass('justPlayed'); });
+        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); });
       });
+      that.justPlayed = true;
       $(that.box).addClass('justPlayed');
       that.getMedia();
       var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
@@ -753,6 +766,22 @@ $(function() {
         });
       });
       // mediaList in mediaOverlay
+      that.updateMediasSelector();
+      //No box just played
+      $.each(pool.allDispos,function(index,dispo){
+        $.each(dispo.allBoxes,function(index,box){
+          box.justPlayed = false;
+          $(box.box).removeClass('justPlayed');
+        });
+      });
+      // $('.box').removeClass('justPlayed');
+      $('.sceneEditor').html(that.name);
+
+      console.log('scene loaded: '+that.name);
+    }
+
+
+    this.updateMediasSelector = function(){
       $('.mediaListDynamic').empty();
       $.each(fileTree,function(index,folder){
         if(folder.name==that.name){
@@ -761,11 +790,6 @@ $(function() {
           });
         }
       });
-      //No box just played
-      $('.box').removeClass('justPlayed');
-      $('.sceneEditor').html(that.name);
-
-      console.log('scene loaded: '+that.name);
     }
 
 
@@ -947,8 +971,18 @@ $(function() {
     // pas besoin de supprimer scene si folder en moins, car à la sauvegarde on  ne sauve que les scenes qui ont un folder correspondant
     // see projectObject.saveProject()
 
+    // update Active Scene Medias
+    $.each(project.allScenes,function(index,scene){
+      if(scene.isActive==true){
+        scene.updateMediasSelector();
+      }
+    });
+
   }
 
+  function loadLocalFileTree(){
+
+  }
   function backupFileTree(){
 
   }
@@ -989,6 +1023,14 @@ $(function() {
   updateDispoStates();
 
 
+  function loadLocalDisposStates(){
+
+  }
+  function backupDispoStates(){
+
+  }
+
+
   ////////////////////////////////////////////////////////////
   ///////////////////////   SOCKETIO  ////////////////////////
   ////////////////////////////////////////////////////////////
@@ -1012,7 +1054,7 @@ $(function() {
 
   socket.on('fileTree', function(fileTreeIncoming){
     // Check any variation of filetree
-    if(JSON.stringify(fileTree)==JSON.stringify(fileTreeIncoming)){
+    if(JSON.stringify(fileTree)!=JSON.stringify(fileTreeIncoming)){
       fileTree = fileTreeIncoming;
       updateFileTree();
       // & BACKUP ???

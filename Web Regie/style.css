@@ -123,6 +123,10 @@ thead th:first-child{
   font-weight: normal;
   width: 200px;
 }
+.box{
+  z-index:0;
+  position:relative;
+}
 .box .mediaSelector,.box .loopInfo{
   text-align: center;
   vertical-align: middle;
@@ -140,6 +144,18 @@ thead th:first-child{
   color: #606060;
 }
 
+.validPlayInfo{
+  position: absolute;
+  top: 37%;
+  right: 5px;
+  /* color: #00ab3f; */
+}
+.validPlay-true{
+  opacity:0.4;
+}
+.validPlay-false{
+  opacity:0;
+}
 
 
 table {
@@ -179,6 +195,7 @@ thead th {
   position: sticky;
   top: 0;
   background: #202020;
+  z-index: 10;
 }
 thead th:first-child {
   left: 0;
@@ -452,10 +469,6 @@ textarea {
 }
 .justPlayed{
   background-color: #404040 !important;
-  transition: 0.1s;
-}
-.justWhat{
-  background-color: red !important;
   transition: 0.1s;
 }
 
