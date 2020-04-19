@@ -1067,9 +1067,19 @@ $(function() {
   // RECEIVE FILETREE
 
   socket.on('fileTree', function(fileTreeIncoming){
-    // Check any variation of filetree
-    if(JSON.stringify(fileTree)!=JSON.stringify(fileTreeIncoming)){
-      fileTree = fileTreeIncoming;
+    // console.log("incoming fileTree", fileTreeIncoming)
+      
+    fileTreePrepared = []
+    k = 0
+    for (key in fileTreeIncoming)
+        fileTreePrepared[k++] = {
+            'name': key,
+            'files': fileTreeIncoming[key]
+        }
+    
+    // Check any variation of filetree 
+    if(JSON.stringify(fileTree)!=JSON.stringify(fileTreePrepared)){
+      fileTree = fileTreePrepared;
       updateFileTree();
       // & BACKUP ???
     }
