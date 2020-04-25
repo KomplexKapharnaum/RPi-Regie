@@ -230,7 +230,7 @@ $(function() {
           $.each(poolImport, function( index, dispo ) {
             that.allDispos.push(new dispoObject(dispo.name, dispo.operator, index));
           });
-          initProject();
+          project.loadProject();
         }
       });
     }
@@ -331,52 +331,41 @@ $(function() {
 
 
     // STATES - IN
-    this.isConnected = false;
-    this.isPaused = false;
-    this.isLooping = false;
-    this.isMuted = false;
+    this.state = {
+      'settings': {loop:0, volume: 50, mute: false, audiomode: "stereo", pan: [100,100], autoplay: false, flip: false},
+      'status':   {isPlaying: false, isPaused: false, media: null, time: 0, duration: 0},
+      'link':     0
+    }
 
     this.justPlayed = false;
 
-    this.checkStates = function(){
-      $.each(disposStates,function(index,dispoIn){
-        if(that.name==dispoIn.name){
-          if(that.isConnected!=dispoIn.isConnected){ that.isConnected=dispoIn.isConnected; that.updateConnectionState(); }
-          if(that.isPaused!=dispoIn.isPaused){ that.isPaused=dispoIn.isPaused; that.updatePauseState(); }
-          if(that.isLooping!=dispoIn.isLooping){ that.isLooping=dispoIn.isLooping; that.updateLoopingState(); }
-          if(that.isMuted!=dispoIn.isMuted){ that.isMuted=dispoIn.isMuted; that.updateMuteState(); }
-        }
-      });
-      $.each(that.allBoxes,function(index,box){ box.updatePlayState(); });
-    }
+    this.checkStates = function(key, data)
+    { 
+        if (key) this.state[key] = data       // update provided
 
+        // mute
+        let isMute = this.state['settings']['mute']
+        $(this.mute).toggleClass('stateOn', !isMute)
+        $(this.mute).toggleClass('stateOff', isMute)
 
-    this.updateConnectionState = function(){
-      if(that.isConnected==false){
-        this.dispoHeader.css({opacity:0.4});
-        $.each(that.allBoxes,function(index,box){ box.updateConnectionState('disconnected'); });
-      }
-      if(that.isConnected==true){
-        this.dispoHeader.css({opacity:1});
-        $.each(that.allBoxes,function(index,box){ box.updateConnectionState('connected'); });
-      }
+        // loop
+        let isLoop = this.state['settings']['loop'] > 0
+        $(this.loop).toggleClass('stateOn',   isLoop)
+        $(this.loop).toggleClass('stateOff', !isLoop)
+
+        // pause
+        let isPause = this.state['status']['isPaused']
+        $(this.pause).toggleClass('stateOn',   isPause)
+        $(this.pause).toggleClass('stateOff', !isPause)
+
+        // link
+        let isLinked = this.state['link'] > 0
+        this.dispoHeader.css({opacity: (isLinked)? 1.0 : 0.4 });
+        this.allBoxes.forEach( b => b.updateOpacity((isLinked)? 1.0 : 0.4) )
+
+        // play state
+        $.each(that.allBoxes,function(index,box){ box.updatePlayState(); });
     }
-    this.updatePauseState = function(){
-      if(that.isPaused==false){ $(that.pause).removeClass('stateOn').addClass('stateOff'); }
-      if(that.isPaused==true){ $(that.pause).removeClass('stateOff').addClass('stateOn'); }
-    }
-    this.updateLoopingState = function(){
-      if(that.isLooping==false){ $(that.loop).removeClass('stateOn').addClass('stateOff'); }
-      if(that.isLooping==true){ $(that.loop).removeClass('stateOff').addClass('stateOn'); }
-    }
-    this.updateMuteState = function(){
-      if(that.isMuted==true){ $(that.mute).removeClass('stateOn').addClass('stateOff'); }
-      if(that.isMuted==false){ $(that.mute).removeClass('stateOff').addClass('stateOn'); }
-    }
-    this.updateConnectionState();
-    this.updatePauseState();
-    this.updateLoopingState();
-    this.updateMuteState();
 
 
     // INTERACTIONS - OUT
@@ -386,15 +375,15 @@ $(function() {
     });
 
     this.mute.click(function(){
-      socketEmit('MUTE', '/dispo '+that.name+' /isMuted '+that.isMuted);
+      socketEmit('TOGGLEMUTE', '/dispo '+that.name);
     });
 
     this.loop.click(function(){
-      socketEmit('LOOP', '/dispo '+that.name+' /isLooping '+that.isLooping);
+      socketEmit('TOGGLELOOP', '/dispo '+that.name);
     });
 
     this.pause.click(function(){
-      socketEmit('PAUSE', '/dispo '+that.name+' /isPaused '+that.isPaused);
+      socketEmit('TOGGLEPAUSE', '/dispo '+that.name);
 
     });
 
@@ -438,13 +427,8 @@ $(function() {
       $(that.mediaDiv).html(that.media);
     }
 
-    this.updateConnectionState = function(state){
-      if(state=='disconnected'){
-        this.box.css({opacity:0.4});
-      }
-      if(state=='connected'){
-        this.box.css({opacity:1});
-      }
+    this.updateOpacity = function(op){
+      this.box.css({opacity:op})
     }
 
     this.updatePlayState = function(){
@@ -570,13 +554,7 @@ $(function() {
   // projectExport = [];
   projectImport = [];
 
-  var project;
-
-
-  function initProject(){
-    project = new projectObject();
-    project.loadProject();
-  }
+  var project = new projectObject()
 
 
   function projectObject(){
@@ -679,7 +657,8 @@ $(function() {
           // });
 
           // LOAD FILE SYSTEM
-          updateFileTree();
+          // updateFileTree();
+
           // LOAD FIRST SCENE
           project.allScenes[0].loadScene();
           $('.sceneEditor').html(project.allScenes[0].name);
@@ -952,15 +931,15 @@ $(function() {
 
   ////////////////////////   FILES  /////////////////////////
   var fileTree = [
-    { name: 'scene1', files: ["media1-1.mp4","media1-2.mp4","media1-3.mp4","media1-4.mp4","media1-5.mp4","media1-6.mp4","media1-7.mp4","media1-8.mp4","media1-9.mp4"] },
-    { name: 'scene2', files: ["media2-1.mp4","media2-2.mp4","media2-3.mp4","media2-4.mp4","media2-5.mp4","media2-6.mp4","media2-7.mp4","media2-8.mp4","media2-9.mp4"] },
-    { name: 'scene3', files: ["media3-1.mp4","media3-2.mp4","media3-3.mp4","media3-4.mp4","media3-5.mp4","media3-6.mp4","media3-7.mp4","media3-8.mp4","media3-9.mp4"] },
-    { name: 'scene4', files: ["media4-1.mp4","media4-2.mp4","media4-3.mp4","media4-4.mp4","media4-5.mp4","media4-6.mp4","media4-7.mp4","media4-8.mp4","media4-9.mp4"] },
-    { name: 'scene5', files: ["media5-1.mp4","media5-2.mp4","media5-3.mp4","media5-4.mp4","media5-5.mp4","media5-6.mp4","media5-7.mp4","media5-8.mp4","media5-9.mp4"] },
-    { name: 'scene6', files: ["media6-1.mp4","media6-2.mp4","media6-3.mp4","media6-4.mp4","media6-5.mp4","media6-6.mp4","media6-7.mp4","media6-8.mp4","media6-9.mp4"] },
-    { name: 'scene7', files: ["media7-1.mp4","media7-2.mp4","media7-3.mp4","media7-4.mp4","media7-5.mp4","media7-6.mp4","media7-7.mp4","media7-8.mp4","media7-9.mp4"] },
-    { name: 'scene8', files: ["media8-1.mp4","media8-2.mp4","media8-3.mp4","media8-4.mp4","media8-5.mp4","media8-6.mp4","media8-7.mp4","media8-8.mp4","media8-9.mp4"] },
-    { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] }
+    // { name: 'scene1', files: ["media1-1.mp4","media1-2.mp4","media1-3.mp4","media1-4.mp4","media1-5.mp4","media1-6.mp4","media1-7.mp4","media1-8.mp4","media1-9.mp4"] },
+    // { name: 'scene2', files: ["media2-1.mp4","media2-2.mp4","media2-3.mp4","media2-4.mp4","media2-5.mp4","media2-6.mp4","media2-7.mp4","media2-8.mp4","media2-9.mp4"] },
+    // { name: 'scene3', files: ["media3-1.mp4","media3-2.mp4","media3-3.mp4","media3-4.mp4","media3-5.mp4","media3-6.mp4","media3-7.mp4","media3-8.mp4","media3-9.mp4"] },
+    // { name: 'scene4', files: ["media4-1.mp4","media4-2.mp4","media4-3.mp4","media4-4.mp4","media4-5.mp4","media4-6.mp4","media4-7.mp4","media4-8.mp4","media4-9.mp4"] },
+    // { name: 'scene5', files: ["media5-1.mp4","media5-2.mp4","media5-3.mp4","media5-4.mp4","media5-5.mp4","media5-6.mp4","media5-7.mp4","media5-8.mp4","media5-9.mp4"] },
+    // { name: 'scene6', files: ["media6-1.mp4","media6-2.mp4","media6-3.mp4","media6-4.mp4","media6-5.mp4","media6-6.mp4","media6-7.mp4","media6-8.mp4","media6-9.mp4"] },
+    // { name: 'scene7', files: ["media7-1.mp4","media7-2.mp4","media7-3.mp4","media7-4.mp4","media7-5.mp4","media7-6.mp4","media7-7.mp4","media7-8.mp4","media7-9.mp4"] },
+    // { name: 'scene8', files: ["media8-1.mp4","media8-2.mp4","media8-3.mp4","media8-4.mp4","media8-5.mp4","media8-6.mp4","media8-7.mp4","media8-8.mp4","media8-9.mp4"] },
+    // { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] }
   ]
 
 
@@ -1005,44 +984,40 @@ $(function() {
   ////////////////////////   DISPOS   /////////////////////////
 
 
-  var disposStates = [
-    { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-    { name: 'RPi2', isConnected: true, isPaused: false, isLooping: true, isMuted: false, playing:'stop' },
-    { name: 'RPi3', isConnected: false, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-    { name: 'RPi4', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-    { name: 'Bus', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-    { name: 'Camion', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-    { name: 'Panneau', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-    { name: 'Charrette', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-    { name: 'Poubelle', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' }
-  ];
+  // var disposStates = [
+  //   { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+  //   { name: 'RPi2', isConnected: true, isPaused: false, isLooping: true, isMuted: false, playing:'stop' },
+  //   { name: 'RPi3', isConnected: false, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+  //   { name: 'RPi4', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+  //   { name: 'Bus', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+  //   { name: 'Camion', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+  //   { name: 'Panneau', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+  //   { name: 'Charrette', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
+  //   { name: 'Poubelle', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' }
+  // ];
 
-  function updateDispoNames(){
-    $(".dispoList").empty();
-    $.each(disposStates,function(index,dispo){
-      $('<div class="listItem dispoItem">'+dispo.name+'</div>').appendTo($('.dispoList'));
-    });
-    $.each(pool.allDispos,function(index,dispo){
-      dispo.bindDispoSelection();
-    });
-  }
+  var dispoNames = []
 
-  function updateDispoStates(){
-    $.each(pool.allDispos,function(index,dispo){
-      dispo.checkStates();
-    });
-  }
+  function updateDispo(name, key, data) 
+  { 
+    // name list
+    if (!dispoNames.includes(name)) {
+    
+      dispoNames.push(name)
+      
+      $(".dispoList").empty();    
+      for (let name of dispoNames.sort() )
+      $('<div class="listItem dispoItem">'+name+'</div>').appendTo($('.dispoList'));
+      
+      pool.allDispos.forEach(d => d.bindDispoSelection())
+    }
 
-  updateDispoNames();
-  updateDispoStates();
-
-
-  function loadLocalDisposStates(){
+    // update state
+    dispos = pool.allDispos.filter(d => d.name == name)
+    for (let d of dispos) d.checkStates(key, data)
 
   }
-  function backupDispoStates(){
 
-  }
 
 
   ////////////////////////////////////////////////////////////
@@ -1085,6 +1060,27 @@ $(function() {
     }
 
   });
+
+  // RECEIVE DISPO STATUS
+  socket.on('peer.status', (data) => {
+    console.log('peer.status', data)
+
+    updateDispo(data['peer'], 'status', data['data'])    
+  })
+
+  // RECEIVE DISPO SETTINGS
+  socket.on('peer.settings', (data) => {
+    console.log('peer.settings', data)
+
+    updateDispo(data['peer'], 'settings', data['data'])
+  })
+
+  // RECEIVE DISPO LINK
+  socket.on('peer.link', (data) => {
+    console.log('peer.link', data)
+
+    updateDispo(data['peer'], 'link', data['data'])
+  })
 
   // RECEIVE DISPOS INFOS
 
