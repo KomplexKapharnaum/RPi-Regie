@@ -622,6 +622,8 @@ $(function() {
           // FROM JSON
           that.allScenes=[];
           projectImport = JSON.parse(reponse.contents);
+          console.log(projectImport)
+
           // NEW SCENES
           $.each(projectImport[0], function( index, incomingScene ) {
             that.allScenes.push(new sceneObject(incomingScene.name) );
@@ -660,8 +662,10 @@ $(function() {
           // updateFileTree();
 
           // LOAD FIRST SCENE
-          project.allScenes[0].loadScene();
-          $('.sceneEditor').html(project.allScenes[0].name);
+          if (project.allScenes.length > 0) {
+            project.allScenes[0].loadScene();
+            $('.sceneEditor').html(project.allScenes[0].name);
+          }
         }
       });
 
