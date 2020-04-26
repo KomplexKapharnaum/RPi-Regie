@@ -76,7 +76,11 @@ $(function() {
 
   // STOP ALL
   $('.stopAll').click(function(){
-    socketEmit('STOP', '/all');
+    emitEvent({ 
+      'peer':   '_all_', 
+      'event':  'stop'
+    })
+
     // No box just played
     $.each(pool.allDispos,function(index,dispo){
       $.each(dispo.allBoxes,function(index,box){
@@ -329,7 +333,6 @@ $(function() {
     }
     this.bindDispoSelection();
 
-
     // STATES - IN
     this.state = {
       'settings': {loop:0, volume: 50, mute: false, audiomode: "stereo", pan: [100,100], autoplay: false, flip: false},
@@ -370,22 +373,52 @@ $(function() {
 
     // INTERACTIONS - OUT
     this.stop.click(function(){
-      socketEmit('STOP', '/dispo '+that.name);
+      emitEvent({ 
+        'peer':   that.name, 
+        'event':  'stop'
+      })
       $.each(that.allBoxes,function(index,box){ box.justPlayed=false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
     });
 
+    this.pause.click(function(){
+      if (that.state['status']['isPaused']) 
+        emitEvent({ 
+          'peer':   that.name, 
+          'event':  'resume'
+        })
+      else if (that.state['status']['isPlaying']) 
+        emitEvent({ 
+          'peer':   that.name, 
+          'event':  'pause'
+        })
+    });
+
     this.mute.click(function(){
-      socketEmit('TOGGLEMUTE', '/dispo '+that.name);
+      if (that.state['settings']['mute']) 
+        emitEvent({ 
+          'peer':   that.name, 
+          'event':  'unmute'
+        })
+      else 
+        emitEvent({ 
+          'peer':   that.name, 
+          'event':  'mute'
+        })
     });
 
     this.loop.click(function(){
-      socketEmit('TOGGLELOOP', '/dispo '+that.name);
+      if (that.state['settings']['loop'] > 0)
+        emitEvent({ 
+          'peer':   that.name, 
+          'event':  'unloop'
+        })
+      else 
+        emitEvent({ 
+          'peer':   that.name, 
+          'event':  'pause'
+        })
     });
 
-    this.pause.click(function(){
-      socketEmit('TOGGLEPAUSE', '/dispo '+that.name);
-
-    });
 
 
 
@@ -434,9 +467,13 @@ $(function() {
     this.updatePlayState = function(){
       if(that.justPlayed==true){
         var media_Played;
+// 
+        pool.allDispos.find(d => d.name == that.dispo)
+// 
         $.each(disposStates,function(index,dispoIn){
           if(dispoIn.name==that.dispo){ media_Played = dispoIn.playing; }
         });
+//  
         if(media_Played==that.media){
           $(that.validPlayDiv).addClass('validPlay-true');
         }
@@ -512,6 +549,36 @@ $(function() {
 
     }
 
+    this.getAction = function() {
+      var msg = {'peer': this.dispo}
+
+      if (this.media == 'stop') {
+        msg['event'] = 'stop'
+      }
+      else if (this.media == '...') {
+        msg['event'] = 'continue'
+      }
+      else if (this.media == 'pause') {
+        msg['event'] = 'pause'
+      }
+      else if (this.media == 'fade out') {
+        msg['event'] = 'fade'
+      }
+      else if (this.media.startsWith('color')) {
+        msg['event'] = 'fade'
+        msg['data'] = this.media.split(' ')[1]
+      }
+      else {
+        if (this.loop == 'unloop')    msg['event'] = 'playonce'
+        else if (this.loop == 'loop') msg['event'] = 'playloop'
+        else                          msg['event'] = 'play'
+
+        msg['data'] = this.media
+      }
+
+      return msg
+    }
+
     this.play=function(){
       $.each(pool.allDispos,function(index,dispo){
         if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
@@ -519,8 +586,9 @@ $(function() {
       that.justPlayed = true;
       $(that.box).addClass('justPlayed');
       that.getMedia();
-      var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
-      socketEmit('PLAY', playPhrase);
+
+      emitEvent(this.getAction());
+
     }
     this.playSequence=function(){
       $.each(pool.allDispos,function(index,dispo){
@@ -529,8 +597,8 @@ $(function() {
       that.justPlayed = true;
       $(that.box).addClass('justPlayed');
       that.getMedia();
-      var playPhrase = '/dispo '+that.dispo+' /media '+that.media+' /loop '+that.loop;
-      playSequenceArray.push(playPhrase);
+
+      playSequenceArray.push(this.getAction());
     }
 
   }
@@ -834,7 +902,8 @@ $(function() {
           if(box.yIndex==sequenceNumber){box.playSequence(); }
         });
       });
-      socketEmit('PLAYSEQ', playSequenceArray );
+
+      emitEvent(playSequenceArray)
     }
     // OK
     this.validateText = function(){
@@ -1067,23 +1136,20 @@ $(function() {
 
   // RECEIVE DISPO STATUS
   socket.on('peer.status', (data) => {
-    console.log('peer.status', data)
-
-    updateDispo(data['peer'], 'status', data['data'])    
+    // console.log('peer.status', data)
+    updateDispo(data['name'], 'status', data['data'])    
   })
 
   // RECEIVE DISPO SETTINGS
   socket.on('peer.settings', (data) => {
-    console.log('peer.settings', data)
-
-    updateDispo(data['peer'], 'settings', data['data'])
+    // console.log('peer.settings', data)
+    updateDispo(data['name'], 'settings', data['data'])
   })
 
   // RECEIVE DISPO LINK
   socket.on('peer.link', (data) => {
-    console.log('peer.link', data)
-
-    updateDispo(data['peer'], 'link', data['data'])
+    // console.log('peer.link', data)
+    updateDispo(data['name'], 'link', data['data'])
   })
 
   // RECEIVE DISPOS INFOS
@@ -1104,10 +1170,16 @@ $(function() {
 
   });
 
-  // SEND
-  function socketEmit(msgType, msg){
-    console.log(msgType+' '+msg);
-    socket.emit(msgType, msg);
+  // SEND to Regie controller
+  function emitCtrl(msg, data){
+    socket.emit(msg, data)
+    console.log(msg, data);
+  }
+
+  function emitEvent(msg) {
+    if (!Array.isArray(msg)) msg = [msg]
+    socket.emit('event', msg)
+    console.log('event', msg)
   }
 
 
