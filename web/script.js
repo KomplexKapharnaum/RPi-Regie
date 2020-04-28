@@ -367,7 +367,11 @@ $(function() {
         this.allBoxes.forEach( b => b.updateOpacity((isLinked)? 1.0 : 0.4) )
 
         // play state
-        $.each(that.allBoxes,function(index,box){ box.updatePlayState(); });
+        playBox = this.allBoxes.find( b => b.justPlayed)
+        if (playBox) console.log(playBox.media, this.state['status'])
+        if (playBox && this.state['status']['media'])
+          if (this.state['status']['media'].endsWith(playBox.media)) 
+            playBox.validPlay();
     }
 
 
@@ -464,20 +468,8 @@ $(function() {
       this.box.css({opacity:op})
     }
 
-    this.updatePlayState = function(){
-      if(that.justPlayed==true){
-        var media_Played;
-// 
-        pool.allDispos.find(d => d.name == that.dispo)
-// 
-        $.each(disposStates,function(index,dispoIn){
-          if(dispoIn.name==that.dispo){ media_Played = dispoIn.playing; }
-        });
-//  
-        if(media_Played==that.media){
-          $(that.validPlayDiv).addClass('validPlay-true');
-        }
-      }
+    this.validPlay = function(){
+      $(this.validPlayDiv).addClass('validPlay-true');
     }
 
     $(this.box).click(function(){
@@ -496,7 +488,7 @@ $(function() {
       bindColorPicker();
 
       // update Radio
-      $('input:radio[name="loopArg"]').filter('[value='+that.loop+']').prop('checked', true);
+      $('input:radio[name="loopArg"]').filter('[value="'+that.loop+'"]').prop('checked', true);
       // update media
       $(".mediaItem").each(function(index,div){
         if($(div).html()==that.media){$(div).addClass('selected');}
@@ -524,13 +516,15 @@ $(function() {
       ///////////////////////   SAVE BOX    //////////////////////
       $(".validateMedia").unbind().click(function(){
 
+
+        
         $("#mediaOverlay").fadeOut(fadeTime);
         if(selectedMedia!='none') {that.media = selectedMedia;}
         that.loop = $("input[name='loopArg']:checked").val();
         if(that.loop==undefined){ that.loop = 'none' }
         $(that.loopDiv).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+that.loop);
         $(that.mediaDiv).html(that.media);
-
+        
         // Save it in project
         $.each(project.allScenes,function(index,scene){
           if(scene.isActive==true){
@@ -572,8 +566,9 @@ $(function() {
         if (this.loop == 'unloop')    msg['event'] = 'playonce'
         else if (this.loop == 'loop') msg['event'] = 'playloop'
         else                          msg['event'] = 'play'
-
-        msg['data'] = this.media
+        
+        scene = project.allScenes.find(s => s.isActive).name
+        msg['data'] = scene +'/'+ this.media
       }
 
       return msg
@@ -652,6 +647,7 @@ $(function() {
       });
       projectExport.push(allScenesExport);
 
+      console.log('saving', projectExport[0][0]['allMedias'])
 
       // AJAX
       $.ajax({
@@ -666,10 +662,10 @@ $(function() {
         }
       })
       .done(function(reponse){
-        // console.log(reponse.status);
+        console.log(reponse.status);
       })
       .fail(function(){
-        // console.log('save failed');
+        console.log('save failed');
       });
     }
 
@@ -1136,8 +1132,8 @@ $(function() {
 
   // RECEIVE DISPO STATUS
   socket.on('peer.status', (data) => {
-    // console.log('peer.status', data)
-    updateDispo(data['name'], 'status', data['data'])    
+    console.log('peer.status', data)
+    updateDispo(data['name'], 'status', data['data'][0])    
   })
 
   // RECEIVE DISPO SETTINGS
