@@ -128,11 +128,16 @@ thead th:first-child{
   position:relative;
 }
 .box .mediaSelector,.box .loopInfo{
+  position: absolute;
+  top: 42%;
+  width: 100%;
   text-align: center;
-  vertical-align: middle;
   text-overflow: ellipsis;
   overflow-x: hidden;
   white-space: nowrap;
+}
+.loopInfo {
+  margin-top: 10px;
 }
 .loopInfo .loopInfo-none{
   opacity:0;
@@ -153,6 +158,25 @@ thead th:first-child{
 .validPlay-true{
   opacity:0.4;
 }
+
+.stateiDiv{
+  position: absolute;
+  top: 19%;
+  width: 100%;
+  text-align: center;
+  /* right: 50%; */
+  opacity:0.4;
+}
+
+.loopiDiv{
+  position: absolute;
+  top: 66%;
+  width: 100%;
+  text-align: center;
+  /* right: 50%; */
+  opacity:0.4;
+}
+
 
 
 table {

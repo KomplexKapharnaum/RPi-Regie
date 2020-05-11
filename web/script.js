@@ -1,3 +1,5 @@
+const SEQ_SIZE = 20 
+
 
 $(function() {
 
@@ -76,17 +78,15 @@ $(function() {
 
   // STOP ALL
   $('.stopAll').click(function(){
-    emitEvent({ 
-      'peer':   '_all_', 
-      'event':  'stop'
-    })
+    emitEvent( {'event':  'stop'} )
 
     // No box just played
     $.each(pool.allDispos,function(index,dispo){
       $.each(dispo.allBoxes,function(index,box){
-        box.justPlayed = false;
-        $(box.box).removeClass('justPlayed');
-        $(box.validPlayDiv).removeClass('validPlay-true');
+        // box.justPlayed = false;
+        // box.setStateIcon('none')
+        // $(box.box).removeClass('justPlayed');
+        // $(box.validPlayDiv).removeClass('validPlay-true');
       });
     });
   });
@@ -152,7 +152,7 @@ $(function() {
       var xToAdd = that.allDispos.length-1;
       console.log("adding medias with index X: "+xToAdd);
       $.each(project.allScenes,function(index,scene){
-        for (var indexY = 0; indexY < 20; indexY++) {
+        for (var indexY = 0; indexY < SEQ_SIZE; indexY++) {
           scene.allMedias.push(new media(xToAdd,indexY,'...','none'));
         }
       });
@@ -342,88 +342,105 @@ $(function() {
 
     this.justPlayed = false;
 
-    this.checkStates = function(key, data)
+    // UPDATE specific part of dispo state
+    this.updateState = function(key, data)
     { 
-        if (key) this.state[key] = data       // update provided
+        if (data !== undefined) {
+          if (key == 'status') data = data[0]     // keep status of first player
+          this.state[key] = data        // update provided
+        }
 
-        // mute
-        let isMute = this.state['settings']['mute']
-        $(this.mute).toggleClass('stateOn', !isMute)
-        $(this.mute).toggleClass('stateOff', isMute)
+        if (key == 'status') 
+        {
+          // pause
+          let isPause = this.state['status']['isPaused']
+          $(this.pause).toggleClass('stateOn',   isPause)
+          $(this.pause).toggleClass('stateOff', !isPause)
 
-        // loop
-        let isLoop = this.state['settings']['loop'] > 0
-        $(this.loop).toggleClass('stateOn',   isLoop)
-        $(this.loop).toggleClass('stateOff', !isLoop)
+          // play state 
+          let playbox = this.allBoxes.find( b => b.justPlayed)
+          if (playbox) {
+            let isPlaying = this.state['status']['media'] && this.state['status']['media'].endsWith(playbox.media)
+            isPlaying = isPlaying && (this.state['status']['isPlaying'] || this.state['status']['isPaused'])
 
-        // pause
-        let isPause = this.state['status']['isPaused']
-        $(this.pause).toggleClass('stateOn',   isPause)
-        $(this.pause).toggleClass('stateOff', !isPause)
+            // console.log(isPlaying, this.state['status'])
 
-        // link
-        let isLinked = this.state['link'] > 0
-        this.dispoHeader.css({opacity: (isLinked)? 1.0 : 0.4 });
-        this.allBoxes.forEach( b => b.updateOpacity((isLinked)? 1.0 : 0.4) )
+            if (isPlaying && this.state['status']['isPlaying']) 
+              playbox.setStateIcon('play')
+            else if (isPlaying && this.state['status']['isPaused']) 
+              playbox.setStateIcon('pause')
+            else 
+              playbox.setStateIcon('stop')
+          }
+        }
 
-        // play state
-        playBox = this.allBoxes.find( b => b.justPlayed)
-        if (playBox) console.log(playBox.media, this.state['status'])
-        if (playBox && this.state['status']['media'])
-          if (this.state['status']['media'].endsWith(playBox.media)) 
-            playBox.validPlay();
+        else if (key == 'settings') 
+        {
+          // mute
+          let isMute = this.state['settings']['mute']
+          $(this.mute).toggleClass('stateOn', !isMute)
+          $(this.mute).toggleClass('stateOff', isMute)
+
+          // loop
+          let isLoop = this.state['settings']['loop'] > 0
+          $(this.loop).toggleClass('stateOn',   isLoop)
+          $(this.loop).toggleClass('stateOff', !isLoop)
+        }
+
+        else if (key == 'link') 
+        {
+          // link
+          let isLinked = this.state['link'] > 0
+          this.dispoHeader.css({opacity: (isLinked)? 1.0 : 0.4 });
+          this.allBoxes.forEach( b => b.updateOpacity((isLinked)? 1.0 : 0.4) )
+        }
+    }
+
+    // FULL update
+    this.checkStates = function()
+    { 
+      for (let key in this.state) this.updateState(key)
     }
 
 
+    // EMIT with name
+    this.emit = function(event) {
+      emitEvent({ 
+        'peer':   this.name, 
+        'event':  event
+      })
+    }
+
     // INTERACTIONS - OUT
     this.stop.click(function(){
-      emitEvent({ 
-        'peer':   that.name, 
-        'event':  'stop'
-      })
-      $.each(that.allBoxes,function(index,box){ box.justPlayed=false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
+      that.emit('stop')
+      // $.each(that.allBoxes,function(index,box){ 
+      //   box.justPlayed=false; 
+      //   $(box.box).removeClass('justPlayed'); 
+      //   $(box.validPlayDiv).removeClass('validPlay-true'); 
+      // });
     });
 
     this.pause.click(function(){
       if (that.state['status']['isPaused']) 
-        emitEvent({ 
-          'peer':   that.name, 
-          'event':  'resume'
-        })
+        that.emit('resume')
       else if (that.state['status']['isPlaying']) 
-        emitEvent({ 
-          'peer':   that.name, 
-          'event':  'pause'
-        })
+        that.emit('pause')
     });
 
     this.mute.click(function(){
       if (that.state['settings']['mute']) 
-        emitEvent({ 
-          'peer':   that.name, 
-          'event':  'unmute'
-        })
+        that.emit('unmute')
       else 
-        emitEvent({ 
-          'peer':   that.name, 
-          'event':  'mute'
-        })
+        that.emit('mute')
     });
 
     this.loop.click(function(){
       if (that.state['settings']['loop'] > 0)
-        emitEvent({ 
-          'peer':   that.name, 
-          'event':  'unloop'
-        })
+        that.emit('unloop')
       else 
-        emitEvent({ 
-          'peer':   that.name, 
-          'event':  'pause'
-        })
+        that.emit('loop')
     });
-
-
 
 
     // init
@@ -441,8 +458,31 @@ $(function() {
     var that = this;
     this.box = $('<td class="box"></td>').appendTo($(seqdiv).parent());
     this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
-    this.loopDiv = $('<div class="loopInfo"><i class="fa fa-repeat loopInfoIcon loopInfo-none" aria-hidden="true"></i></div>').appendTo($(this.box));
-    this.validPlayDiv = $('<div class="validPlayInfo"><i class="fa fa-check" aria-hidden="true"></i></div>').appendTo($(this.box));
+    
+    // this.loopDiv = $('<div class="loopInfo"><i class="fa fa-repeat loopInfoIcon loopInfo-none" aria-hidden="true"></i></div>').appendTo($(this.box));
+    // this.validPlayDiv = $('<div class="validPlayInfo"><i class="fa fa-check" aria-hidden="true"></i></div>').appendTo($(this.box));
+    
+    this.stateiDiv = $('<div class="stateiDiv">').appendTo(this.box)
+    this.stateIcons = {
+      play:   $('<i class="fa fa-play" aria-hidden="true"></i>').appendTo(this.stateiDiv),
+      pause:  $('<i class="fa fa-pause" aria-hidden="true"></i>').appendTo(this.stateiDiv),
+      stop:   $('<i class="fa fa-stop" aria-hidden="true"></i>').appendTo(this.stateiDiv)
+    }
+    this.loopiDiv = $('<div class="loopiDiv">').appendTo(this.box)
+    this.loopIcons = {
+      loop:   $('<i class="fa fa-repeat" aria-hidden="true"></i>').appendTo(this.loopiDiv),
+      unloop:  $('<i class="fa fa-share" aria-hidden="true"></i>').appendTo(this.loopiDiv),
+    }
+
+    this.setStateIcon = function(state) {
+      Object.values(this.stateIcons).every( i => i.hide())
+      if (state in this.stateIcons) this.stateIcons[state].show()
+    }
+
+    this.setLoopIcon = function(loop) {
+      Object.values(this.loopIcons).every( i => i.hide())
+      if (loop in this.loopIcons) this.loopIcons[loop].show()
+    }
 
     this.media='?';
     this.loop='?';
@@ -450,17 +490,11 @@ $(function() {
     this.xIndex = xIndex;
     this.yIndex = yIndex;
 
-    this.getMedia = function(){
-      that.media = $(that.box).text();
-      if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-none')){ that.loop = 'none'; }
-      if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-loop')){ that.loop = 'loop'; }
-      if($(that.loopDiv).find('.loopInfoIcon').hasClass('loopInfo-unloop')){ that.loop = 'unloop'; }
-    }
-
     this.setMedia = function(media,loop){
       that.loop = loop;
       that.media = media;
-      $(that.loopDiv).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+that.loop);
+
+      that.setLoopIcon(loop)
       $(that.mediaDiv).html(that.media);
     }
 
@@ -469,14 +503,14 @@ $(function() {
     }
 
     this.validPlay = function(){
-      $(this.validPlayDiv).addClass('validPlay-true');
+      // $(this.validPlayDiv).addClass('validPlay-true');
     }
 
     $(this.box).click(function(){
       if(editionMode==true){
         that.edit();
       }else{
-        that.play();
+        emitEvent(that.action());
       }
     });
 
@@ -522,28 +556,41 @@ $(function() {
         if(selectedMedia!='none') {that.media = selectedMedia;}
         that.loop = $("input[name='loopArg']:checked").val();
         if(that.loop==undefined){ that.loop = 'none' }
-        $(that.loopDiv).find('.loopInfoIcon').removeClass('loopInfo-none').removeClass('loopInfo-loop').removeClass('loopInfo-unloop').addClass('loopInfo-'+that.loop);
+
         $(that.mediaDiv).html(that.media);
-        
+        that.setLoopIcon(that.loop)
+
         // Save it in project
-        $.each(project.allScenes,function(index,scene){
-          if(scene.isActive==true){
-            $.each(scene.allMedias,function(index,media){
-              if((media.x==that.xIndex)&&(media.y==that.yIndex)){
-                media.media = that.media;
-                media.loop = that.loop;
-                console.log('editing media x:'+that.xIndex+' y:'+that.yIndex+' '+media.media+' '+media.loop);
-              }
-            });
+        $.each(project.activeScene().allMedias,function(index,media){
+          if((media.x==that.xIndex)&&(media.y==that.yIndex)){
+            media.media = that.media;
+            media.loop = that.loop;
+            console.log('editing media x:'+that.xIndex+' y:'+that.yIndex+' '+media.media+' '+media.loop);
           }
         });
+
         project.saveProject();
 
       });
 
     }
 
-    this.getAction = function() {
+    this.action = function() 
+    {
+      // Prepare UI
+      if (this.media != '...') {
+        pool.allDispos.find(d => d.xIndex == that.xIndex).allBoxes.forEach(box => {
+          box.justPlayed = false; 
+          $(box.box).removeClass('justPlayed'); 
+          // $(box.validPlayDiv).removeClass('validPlay-true'); 
+          box.setStateIcon('none')
+        })
+
+        that.justPlayed = true;
+        $(that.box).addClass('justPlayed');
+      }
+
+      // Build action
       var msg = {'peer': this.dispo}
 
       if (this.media == 'stop') {
@@ -567,33 +614,11 @@ $(function() {
         else if (this.loop == 'loop') msg['event'] = 'playloop'
         else                          msg['event'] = 'play'
         
-        scene = project.allScenes.find(s => s.isActive).name
+        scene = project.activeScene().name
         msg['data'] = scene +'/'+ this.media
       }
 
       return msg
-    }
-
-    this.play=function(){
-      $.each(pool.allDispos,function(index,dispo){
-        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
-      });
-      that.justPlayed = true;
-      $(that.box).addClass('justPlayed');
-      that.getMedia();
-
-      emitEvent(this.getAction());
-
-    }
-    this.playSequence=function(){
-      $.each(pool.allDispos,function(index,dispo){
-        if(dispo.xIndex==that.xIndex) $.each(dispo.allBoxes,function(index,box){ box.justPlayed = false; $(box.box).removeClass('justPlayed'); $(box.validPlayDiv).removeClass('validPlay-true'); });
-      });
-      that.justPlayed = true;
-      $(that.box).addClass('justPlayed');
-      that.getMedia();
-
-      playSequenceArray.push(this.getAction());
     }
 
   }
@@ -623,7 +648,17 @@ $(function() {
   function projectObject(){
 
     var that = this;
-    that.allScenes = new Array();
+    this.allScenes = new Array();
+
+    // GET active Scene
+    this.activeScene = function(){
+      return this.allScenes.find(s => s.isActive)
+    }
+
+    // GET scene by Name
+    this.sceneByName = function(name){
+      return this.allScenes.find(s => s.name == name)
+    }
 
     // SAVE - interval
     this.saveProjectInterval = function(){
@@ -647,7 +682,12 @@ $(function() {
       });
       projectExport.push(allScenesExport);
 
-      console.log('saving', projectExport[0][0]['allMedias'])
+      if (projectExport.length == 0) {
+        console.log('not saving empty project..')
+        return
+      }
+
+      // console.log('saving', projectExport[0][0]['allMedias'])
 
       // AJAX
       $.ajax({
@@ -662,10 +702,10 @@ $(function() {
         }
       })
       .done(function(reponse){
-        console.log(reponse.status);
+        // console.log(reponse.status);
       })
       .fail(function(){
-        console.log('save failed');
+        // console.log('save failed');
       });
     }
 
@@ -688,22 +728,25 @@ $(function() {
           projectImport = JSON.parse(reponse.contents);
           console.log(projectImport)
 
-          // NEW SCENES
+          // SCENES
           $.each(projectImport[0], function( index, incomingScene ) {
-            that.allScenes.push(new sceneObject(incomingScene.name) );
-          });
-          // EDIT SCENE
-          $.each(that.allScenes,function(index,newScene){
-            // sequences
-            $.each(projectImport[0][index].allSequences,function(index,seqName){
-              newScene.allSequences.push(seqName);
-            });
-            // medias
-          $.each(projectImport[0][index].allMedias,function(index,incomingMedia){
-              newScene.allMedias.push(new media(incomingMedia.x,incomingMedia.y,incomingMedia.media,incomingMedia.loop));
-            });
-          });
+            
+            // import scene
+            newScene = that.createScene(incomingScene.name)
+            
+            // sequences (import and complete with empty)
+            newScene.allSequences = projectImport[0][index].allSequences
+            for (var y = newScene.allSequences.length; y < SEQ_SIZE; y++)
+            newScene.allSequences.push('seq'+y)
 
+            // medias
+            $.each(newScene.allMedias, (i,media) => {
+              m = projectImport[0][index].allMedias.find(m => (m.x == media.x && m.y == media.y))
+              if (m) newScene.allMedias[i] = m;
+            });
+
+          });
+          
           // // FROM SCRATCH
           // //NEW SCENES
           // $.each(allScenesTemp,function(index){
@@ -716,7 +759,7 @@ $(function() {
           //     scene.allSequences.push(seqName);
           //   });
           //   $.each(pool.allDispos,function(indexX,dispo){
-          //     for (var indexY = 0; indexY < 20; indexY++) {
+          //     for (var indexY = 0; indexY < SEQ_SIZE; indexY++) {
           //       scene.allMedias.push(new media(indexX,indexY,'...','none'));
           //     }
           //   });
@@ -730,6 +773,10 @@ $(function() {
             project.allScenes[0].loadScene();
             $('.sceneEditor').html(project.allScenes[0].name);
           }
+
+          // READY TO REQUEST INIT INFO ON SOCKETIO
+          emitCtrl('init')
+
         }
       });
 
@@ -743,11 +790,12 @@ $(function() {
       });
       // fill medias
       $.each(pool.allDispos,function(indexX,dispo){
-        for (var indexY = 0; indexY < 20; indexY++) {
+        for (var indexY = 0; indexY < SEQ_SIZE; indexY++) {
           newScene.allMedias.push(new media(indexX,indexY,'...','none'));
         }
       });
       that.allScenes.push(newScene);
+      return newScene
     }
 
 
@@ -778,9 +826,7 @@ $(function() {
         // validate
         $(".validateFoler").unbind().click(function(){
           $("#sceneOverlay").fadeOut(fadeTime);
-          $.each(project.allScenes,function(index,scene){
-            if(scene.name==selectedSceneName){ scene.loadScene(); }
-          });
+          project.sceneByName(selectedSceneName).loadScene()
         });
       }
     });
@@ -797,7 +843,7 @@ $(function() {
   ////////////////////////////////////////////////////////////
   //////////////////////      SCENE      /////////////////////
   ////////////////////////////////////////////////////////////
-
+  var fileTree = []
 
   function sceneObject(sceneName){
 
@@ -806,7 +852,6 @@ $(function() {
     this.name = sceneName;
     this.allSequences = new Array();
     this.allMedias = new Array();
-
 
     this.loadScene = function(){
       // active
@@ -828,14 +873,17 @@ $(function() {
       });
       // mediaList in mediaOverlay
       that.updateMediasSelector();
+
       //No box just played
       $.each(pool.allDispos,function(index,dispo){
         $.each(dispo.allBoxes,function(index,box){
           box.justPlayed = false;
-          $(box.box).removeClass('justPlayed');
-          $(box.validPlayDiv).removeClass('validPlay-true');
+          box.setStateIcon('none')
+          // $(box.box).removeClass('justPlayed');
+          // $(box.validPlayDiv).removeClass('validPlay-true');
         });
       });
+
       $('.sceneEditor').html(that.name);
 
       console.log('scene loaded: '+that.name);
@@ -895,7 +943,9 @@ $(function() {
       playSequenceArray = [];
       $.each(pool.allDispos,function(index,dispo){
         $.each(dispo.allBoxes,function(index,box){
-          if(box.yIndex==sequenceNumber){box.playSequence(); }
+          if(box.yIndex==sequenceNumber){
+            playSequenceArray.push(box.action());
+          }
         });
       });
 
@@ -906,11 +956,7 @@ $(function() {
       $("#textToEdit").blur();
       $("#textOverlay").fadeOut(fadeTime);
       $(editedSequence).html($("#textToEdit").val());
-      $.each(project.allScenes,function(index,scene){
-        if(scene.isActive==true){
-          scene.allSequences[sequenceNumber] = $("#textToEdit").val();
-        }
-      });
+      project.activeScene().allSequences[sequenceNumber] = $("#textToEdit").val();
       project.saveProject();
     }
   });
@@ -927,13 +973,9 @@ $(function() {
       });
     });
     // data
-    $.each(project.allScenes,function(index,scene){
-      if(scene.isActive==true){
-        $.each(scene.allMedias,function(index,media){
-          if(media.y==sequenceNumber){ media.media='...'; media.loop='none'; }
-        });
-      }
-    });
+    project.activeScene().allMedias.forEach( media => {
+      if(media.y==sequenceNumber){ media.media='...'; media.loop='none'; }
+    })
   });
 
 
@@ -948,12 +990,8 @@ $(function() {
       $('.copyPasteSequence').removeClass('fa-clipboard').addClass('fa-files-o');
       copying=true;
       clipboard = [];
-      $.each(project.allScenes,function(index,scene){
-        if(scene.isActive==true){
-          $.each(scene.allMedias,function(index,media){
-            if(media.y==sequenceNumber){clipboard.push(media);}
-          });
-        }
+      $.each(project.activeScene().allMedias,function(index,media){
+        if(media.y==sequenceNumber){clipboard.push(media);}
       });
       return;
     }
@@ -973,14 +1011,10 @@ $(function() {
       });
 
       // memory
-      $.each(project.allScenes,function(index,scene){
-        if(scene.isActive==true){
-          $.each(scene.allMedias,function(index, media){
-            if(media.y==sequenceNumber){
-              $.each(clipboard,function(index, clipboardmedia){
-                if(media.x==clipboardmedia.x){ media.media = clipboardmedia.media; media.loop = clipboardmedia.loop; }
-              });
-            }
+      $.each(project.activeScene().allMedias,function(index, media){
+        if(media.y==sequenceNumber){
+          $.each(clipboard,function(index, clipboardmedia){
+            if(media.x==clipboardmedia.x){ media.media = clipboardmedia.media; media.loop = clipboardmedia.loop; }
           });
         }
       });
@@ -999,19 +1033,6 @@ $(function() {
 
 
   ////////////////////////   FILES  /////////////////////////
-  var fileTree = [
-    // { name: 'scene1', files: ["media1-1.mp4","media1-2.mp4","media1-3.mp4","media1-4.mp4","media1-5.mp4","media1-6.mp4","media1-7.mp4","media1-8.mp4","media1-9.mp4"] },
-    // { name: 'scene2', files: ["media2-1.mp4","media2-2.mp4","media2-3.mp4","media2-4.mp4","media2-5.mp4","media2-6.mp4","media2-7.mp4","media2-8.mp4","media2-9.mp4"] },
-    // { name: 'scene3', files: ["media3-1.mp4","media3-2.mp4","media3-3.mp4","media3-4.mp4","media3-5.mp4","media3-6.mp4","media3-7.mp4","media3-8.mp4","media3-9.mp4"] },
-    // { name: 'scene4', files: ["media4-1.mp4","media4-2.mp4","media4-3.mp4","media4-4.mp4","media4-5.mp4","media4-6.mp4","media4-7.mp4","media4-8.mp4","media4-9.mp4"] },
-    // { name: 'scene5', files: ["media5-1.mp4","media5-2.mp4","media5-3.mp4","media5-4.mp4","media5-5.mp4","media5-6.mp4","media5-7.mp4","media5-8.mp4","media5-9.mp4"] },
-    // { name: 'scene6', files: ["media6-1.mp4","media6-2.mp4","media6-3.mp4","media6-4.mp4","media6-5.mp4","media6-6.mp4","media6-7.mp4","media6-8.mp4","media6-9.mp4"] },
-    // { name: 'scene7', files: ["media7-1.mp4","media7-2.mp4","media7-3.mp4","media7-4.mp4","media7-5.mp4","media7-6.mp4","media7-7.mp4","media7-8.mp4","media7-9.mp4"] },
-    // { name: 'scene8', files: ["media8-1.mp4","media8-2.mp4","media8-3.mp4","media8-4.mp4","media8-5.mp4","media8-6.mp4","media8-7.mp4","media8-8.mp4","media8-9.mp4"] },
-    // { name: 'scene9', files: ["media9-1.mp4","media9-2.mp4","media9-3.mp4","media9-4.mp4","media9-5.mp4","media9-6.mp4","media9-7.mp4","media9-8.mp4","media9-9.mp4"] }
-  ]
-
-
   function updateFileTree(){
 
     // DOM
@@ -1034,12 +1055,8 @@ $(function() {
     // see projectObject.saveProject()
 
     // update Active Scene Medias
-    $.each(project.allScenes,function(index,scene){
-      if(scene.isActive==true){
-        scene.updateMediasSelector();
-      }
-    });
-
+    if (project.activeScene())
+      project.activeScene().updateMediasSelector()
   }
 
   function loadLocalFileTree(){
@@ -1051,19 +1068,6 @@ $(function() {
 
 
   ////////////////////////   DISPOS   /////////////////////////
-
-
-  // var disposStates = [
-  //   { name: 'RPi1', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-  //   { name: 'RPi2', isConnected: true, isPaused: false, isLooping: true, isMuted: false, playing:'stop' },
-  //   { name: 'RPi3', isConnected: false, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-  //   { name: 'RPi4', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-  //   { name: 'Bus', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-  //   { name: 'Camion', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-  //   { name: 'Panneau', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-  //   { name: 'Charrette', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' },
-  //   { name: 'Poubelle', isConnected: true, isPaused: false, isLooping: false, isMuted: false, playing:'stop' }
-  // ];
 
   var dispoNames = []
 
@@ -1083,7 +1087,7 @@ $(function() {
 
     // update state
     dispos = pool.allDispos.filter(d => d.name == name)
-    for (let d of dispos) d.checkStates(key, data)
+    for (let d of dispos) d.updateState(key, data)
 
   }
 
@@ -1092,6 +1096,14 @@ $(function() {
   ////////////////////////////////////////////////////////////
   ///////////////////////   SOCKETIO  ////////////////////////
   ////////////////////////////////////////////////////////////
+
+  var fuzzyTest = 300
+  function fuzzy() {
+    $('#seq1').click()
+    fuzzyTest -= 10
+    if (fuzzyTest<=50) fuzzyTest = 300
+    setTimeout(fuzzy, fuzzyTest)
+  }
 
   url = 'casa.local:9111';
   var socket = io(url);
@@ -1128,43 +1140,15 @@ $(function() {
       // & BACKUP ???
     }
 
+    //setTimeout(fuzzy , 2000)
+
   });
 
   // RECEIVE DISPO STATUS
-  socket.on('peer.status', (data) => {
-    console.log('peer.status', data)
-    updateDispo(data['name'], 'status', data['data'][0])    
+  socket.on('dispo', (data) => {
+    console.log(data['name'], data['type'], data['data'])
+    updateDispo(data['name'], data['type'], data['data'])    
   })
-
-  // RECEIVE DISPO SETTINGS
-  socket.on('peer.settings', (data) => {
-    // console.log('peer.settings', data)
-    updateDispo(data['name'], 'settings', data['data'])
-  })
-
-  // RECEIVE DISPO LINK
-  socket.on('peer.link', (data) => {
-    // console.log('peer.link', data)
-    updateDispo(data['name'], 'link', data['data'])
-  })
-
-  // RECEIVE DISPOS INFOS
-
-  socket.on('disposInfos', function(disposIncoming){
-    // Check variation of dispo names
-    var oldDispoNames = [];
-    var newDispoNames = [];
-    var disposHaveChanged = false;
-    $.each(disposStates,function(index,dispo){ oldDispoNames.push(dispo.name); });
-    $.each(disposIncoming,function(index,dispo){ newDispoNames.push(dispo.name); });
-    if(oldDispoNames.length!=newDispoNames.length){ disposHaveChanged = true; }
-    $.each(newDispoNames,function(index,name){ if($.inArray(name,oldDispoNames)==-1){ disposHaveChanged = true; } });
-
-    disposStates = disposIncoming;
-    if(disposHaveChanged){ updateDispoNames(); } // & BACKUP ???
-    updateDispoStates();
-
-  });
 
   // SEND to Regie controller
   function emitCtrl(msg, data){
@@ -1175,7 +1159,7 @@ $(function() {
   function emitEvent(msg) {
     if (!Array.isArray(msg)) msg = [msg]
     socket.emit('event', msg)
-    console.log('event', msg)
+    // console.log('event', msg)
   }
 
 
