@@ -603,10 +603,10 @@ $(function() {
       else if (this.media == 'pause') {
         msg['event'] = 'pause'
       }
-      else if (this.media == 'fade out') {
-        msg['event'] = 'fade'
+      else if (this.media == 'unfade') {
+        msg['event'] = 'unfade'
       }
-      else if (this.media.startsWith('color')) {
+      else if (this.media.startsWith('fade')) {
         msg['event'] = 'fade'
         msg['data'] = this.media.split(' ')[1]
       }
@@ -629,7 +629,7 @@ $(function() {
 
     function bindColorPicker(){
       $("#mediaColorEdit").unbind().on('change',function(){
-        $('.mediaColor').html('color '+$("#mediaColorEdit").val());
+        $('.mediaColor').html('fade '+$("#mediaColorEdit").val());
       });
     }
 
