@@ -575,25 +575,26 @@ $(function() {
 
     }
 
+    this.activeBox = function() {
+      pool.allDispos.find(d => d.xIndex == that.xIndex).allBoxes.forEach(box => {
+        box.justPlayed = false; 
+        $(box.box).removeClass('justPlayed'); 
+        // $(box.validPlayDiv).removeClass('validPlay-true'); 
+        box.setStateIcon('none')
+      })
+
+      that.justPlayed = true;
+      $(that.box).addClass('justPlayed');
+    }
+
     this.action = function() 
     {
-      // Prepare UI
-      if (this.media != '...') {
-        pool.allDispos.find(d => d.xIndex == that.xIndex).allBoxes.forEach(box => {
-          box.justPlayed = false; 
-          $(box.box).removeClass('justPlayed'); 
-          // $(box.validPlayDiv).removeClass('validPlay-true'); 
-          box.setStateIcon('none')
-        })
-
-        that.justPlayed = true;
-        $(that.box).addClass('justPlayed');
-      }
 
       // Build action
       var msg = {'peer': this.dispo}
 
       if (this.media == 'stop') {
+        this.activeBox()
         msg['event'] = 'stop'
       }
       else if (this.media == '...') {
@@ -610,6 +611,7 @@ $(function() {
         msg['data'] = this.media.split(' ')[1]
       }
       else {
+        this.activeBox()
         if (this.loop == 'unloop')    msg['event'] = 'playonce'
         else if (this.loop == 'loop') msg['event'] = 'playloop'
         else                          msg['event'] = 'play'
