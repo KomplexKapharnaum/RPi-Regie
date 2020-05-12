@@ -1,1 +1,18 @@
-[{"name":"casa","operator":"regie"},{"name":"screenR","operator":"Jhonny"}]
+[
+	{
+		"name": "casa",
+		"operator": "regie"
+	},
+	{
+		"name": "screenL",
+		"operator": "Jhonny"
+	},
+	{
+		"name": "screenR",
+		"operator": "operator"
+	},
+	{
+		"name": "proto",
+		"operator": "operator"
+	}
+]

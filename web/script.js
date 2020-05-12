@@ -31,7 +31,11 @@ $(function() {
 
 
   $('.editToggle').click(function(){
-    if(editionMode==true){
+    if(editionMode==true)
+    {
+      pool.savePool();
+      project.saveProject();
+
       $('.editToggle').removeClass('btnOn').addClass('btnOff');
       $('body').removeClass('editionMode').addClass('playMode');
       $('.textbtn').removeClass('btn');
@@ -39,7 +43,8 @@ $(function() {
         editionMode=false;
       });
     }
-    if(editionMode==false){
+    if(editionMode==false)
+    {
       $('.editToggle').removeClass('btnOff').addClass('btnOn');
       $('body').removeClass('playMode').addClass('editionMode');
       $('.textbtn').addClass('btn');
@@ -144,20 +149,25 @@ $(function() {
     that.allDispos = new Array();
 
     // ADD
-    this.addDispo = function(){
-      var xIndex = that.allDispos.length-1;
-      that.allDispos.push(new dispoObject('name dispo','name operator', xIndex));
+    this.addDispo = function()
+    {
+      // Index of future dispo
+      var xIndex = that.allDispos.length;
+      
       // Expand allMedias Array
-      // project.addDispo();
-      var xToAdd = that.allDispos.length-1;
-      console.log("adding medias with index X: "+xToAdd);
+      console.log("adding medias with index X: "+xIndex);
       $.each(project.allScenes,function(index,scene){
         for (var indexY = 0; indexY < SEQ_SIZE; indexY++) {
-          scene.allMedias.push(new media(xToAdd,indexY,'...','none'));
+          scene.allMedias.push(new media(xIndex,indexY,'...','none'));
         }
       });
+      
+      // Push new dispo
+      var dispo = new dispoObject('dispo','operator', xIndex)
+      this.allDispos.push( dispo )
 
-
+      // reset boxes
+      dispo.allBoxes.forEach(box => { box.reset() })
     }
     // REMOVE
     this.removeDispo = function(){
@@ -181,11 +191,12 @@ $(function() {
     }
 
     // SAVE - interval
-    this.savePoolInterval = function(){
-      setInterval(function(){
-        that.savePool();
-      }, 10000);
-    }
+    // this.savePoolInterval = function(){
+    //   setInterval(function(){
+    //     that.savePool();
+    //   }, 10000);
+    // }
+
     // SAVE
     this.savePool = function(){
       // FILL EXPORT ARRAY
@@ -202,7 +213,7 @@ $(function() {
         dataType: "json",
         type: "POST",
         data: {
-            contents: JSON.stringify(poolExport),
+            contents: JSON.stringify(poolExport, null, "\t"),
             filename: 'pool',
             timestamp: $.now(),
             type: 'pool'
@@ -241,7 +252,7 @@ $(function() {
 
     // INIT POOL
     this.loadPool();
-    this.savePoolInterval();
+    // this.savePoolInterval();
 
   }
 
@@ -275,11 +286,11 @@ $(function() {
     this.pause = $('<i class="fa fa-pause btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
 
 
+    // CREATE BOXES
     this.allBoxes = new Array();
     $('.seqDiv').each(function(yIndex,seqdiv){
-      that.allBoxes.push(new boxObject(seqdiv,that.name, that.xIndex, yIndex));
+      that.allBoxes.push(new boxObject(seqdiv, that, that.xIndex, yIndex));
     });
-
 
     // OPERATOR EDIT
     $(that.operatorDiv).click(function(){
@@ -298,7 +309,7 @@ $(function() {
         $("#textOverlay").fadeOut(fadeTime);
         $(that.operatorDiv).html($("#textToEdit").val());
         that.operator = $("#textToEdit").val();
-        pool.savePool();
+        // pool.savePool();
       }
     });
 
@@ -324,7 +335,8 @@ $(function() {
             $("#dispoOverlay").fadeOut(fadeTime);
             $(that.nameDiv).html(selectedDispo);
             that.name = selectedDispo;
-            pool.savePool();
+            // pool.savePool();
+            emitCtrl('init')
             that.checkStates();
           });
 
@@ -345,9 +357,10 @@ $(function() {
     // UPDATE specific part of dispo state
     this.updateState = function(key, data)
     { 
+        // update provided
         if (data !== undefined) {
-          if (key == 'status') data = data[0]     // keep status of first player
-          this.state[key] = data        // update provided
+          if (key == 'status') data = data[0]     // keep status of first player only
+          this.state[key] = data        
         }
 
         if (key == 'status') 
@@ -490,12 +503,25 @@ $(function() {
     this.xIndex = xIndex;
     this.yIndex = yIndex;
 
-    this.setMedia = function(media,loop){
-      that.loop = loop;
-      that.media = media;
+    // Media and loop from scenes data
+    this.update = function()
+    {
+      let mediadata = project.activeScene().allMedias.find(m => (m.x==this.xIndex && m.y==this.yIndex))
 
-      that.setLoopIcon(loop)
-      $(that.mediaDiv).html(that.media);
+      this.loop = mediadata.loop;
+      this.media = mediadata.media;
+
+      this.setLoopIcon(this.loop)
+      $(this.mediaDiv).html(this.media);
+    }
+
+    // Reset box 
+    this.reset = function() 
+    {
+      this.justPlayed = false
+      $(this.box).removeClass('justPlayed');
+      this.setStateIcon('none')
+      this.update()
     }
 
     this.updateOpacity = function(op){
@@ -569,7 +595,7 @@ $(function() {
           }
         });
 
-        project.saveProject();
+        // project.saveProject();
 
       });
 
@@ -591,7 +617,7 @@ $(function() {
     {
 
       // Build action
-      var msg = {'peer': this.dispo}
+      var msg = {'peer': this.dispo.name}
 
       if (this.media == 'stop') {
         this.activeBox()
@@ -663,11 +689,11 @@ $(function() {
     }
 
     // SAVE - interval
-    this.saveProjectInterval = function(){
-      setInterval(function(){
-        that.saveProject();
-      }, 2000);
-    }
+    // this.saveProjectInterval = function(){
+    //   setInterval(function(){
+    //     that.saveProject();
+    //   }, 2000);
+    // }
 
     // SAVE
     this.saveProject = function(){
@@ -689,7 +715,7 @@ $(function() {
         return
       }
 
-      // console.log('saving', projectExport[0][0]['allMedias'])
+      console.log('saving', projectExport)
 
       // AJAX
       $.ajax({
@@ -697,17 +723,17 @@ $(function() {
         dataType: "json",
         type: "POST",
         data: {
-            contents: JSON.stringify(projectExport),
+            contents: JSON.stringify(projectExport, null, "\t"),
             filename: 'project',
             timestamp: $.now(),
             type: 'project'
         }
       })
       .done(function(reponse){
-        // console.log(reponse.status);
+        console.log(reponse.status);
       })
       .fail(function(){
-        // console.log('save failed');
+        console.log('save failed');
       });
     }
 
@@ -801,7 +827,7 @@ $(function() {
     }
 
 
-    this.saveProjectInterval();
+    // this.saveProjectInterval();
 
 
   }
@@ -855,36 +881,26 @@ $(function() {
     this.allSequences = new Array();
     this.allMedias = new Array();
 
-    this.loadScene = function(){
-      // active
+    this.loadScene = function()
+    {
+      // set active
       $.each(project.allScenes,function(index,scene){ scene.isActive=false; });
       that.isActive = true;
+
       //scene names dom
       $('.seqName').each(function(index,div){
         $(div).html(that.allSequences[index]);
       });
-      //medias in boxes
-      $.each(that.allMedias,function(index,media){
-        $.each(pool.allDispos,function(index,dispo){
-          $.each(dispo.allBoxes,function(index,box){
-            if((box.xIndex==media.x)&&(box.yIndex==media.y)){
-              box.setMedia(media.media,media.loop)
-            }
-          });
-        });
-      });
+
+      // update boxes
+      pool.allDispos.forEach(dispo => {
+        dispo.allBoxes.forEach(box => {
+          box.reset()
+        })
+      })
+
       // mediaList in mediaOverlay
       that.updateMediasSelector();
-
-      //No box just played
-      $.each(pool.allDispos,function(index,dispo){
-        $.each(dispo.allBoxes,function(index,box){
-          box.justPlayed = false;
-          box.setStateIcon('none')
-          // $(box.box).removeClass('justPlayed');
-          // $(box.validPlayDiv).removeClass('validPlay-true');
-        });
-      });
 
       $('.sceneEditor').html(that.name);
 
@@ -959,7 +975,7 @@ $(function() {
       $("#textOverlay").fadeOut(fadeTime);
       $(editedSequence).html($("#textToEdit").val());
       project.activeScene().allSequences[sequenceNumber] = $("#textToEdit").val();
-      project.saveProject();
+      // project.saveProject();
     }
   });
 
@@ -968,16 +984,17 @@ $(function() {
   $(".eraseSequence").click(function(){
     var that=this;
     var sequenceNumber = $(this).parent().parent().parent().index();
-    // dom
-    $.each(pool.allDispos,function(index,dispo){
-      $.each(dispo.allBoxes,function(index,box){
-        if(box.yIndex==sequenceNumber){box.setMedia('...','none');}
-      });
-    });
     // data
     project.activeScene().allMedias.forEach( media => {
       if(media.y==sequenceNumber){ media.media='...'; media.loop='none'; }
     })
+    // dom
+    $.each(pool.allDispos,function(index,dispo){
+      $.each(dispo.allBoxes,function(index,box){
+        if(box.yIndex==sequenceNumber) box.reset()
+      });
+    });
+
   });
 
 
@@ -1001,16 +1018,6 @@ $(function() {
     if(copying==true){
       $('.copyPasteSequence').removeClass('fa-files-o').addClass('fa-clipboard');
       copying=false;
-      // Dom
-      $.each(clipboard,function(index,media){
-        $.each(pool.allDispos,function(index,dispo){
-          $.each(dispo.allBoxes,function(index,box){
-            if((box.xIndex==media.x)&&(box.yIndex==sequenceNumber)){
-              box.setMedia(media.media,media.loop)
-            }
-          });
-        });
-      });
 
       // memory
       $.each(project.activeScene().allMedias,function(index, media){
@@ -1020,7 +1027,17 @@ $(function() {
           });
         }
       });
-      project.saveProject();
+
+      // Dom
+      $.each(clipboard,function(index,media){
+        $.each(pool.allDispos,function(index,dispo){
+          $.each(dispo.allBoxes,function(index,box){
+            if((box.xIndex==media.x)&&(box.yIndex==sequenceNumber)) box.reset()
+          });
+        });
+      });
+
+      // project.saveProject();
       return;
     }
 
@@ -1125,7 +1142,7 @@ $(function() {
   // RECEIVE FILETREE
 
   socket.on('fileTree', function(fileTreeIncoming){
-    // console.log("incoming fileTree", fileTreeIncoming)
+    console.log("incoming fileTree", fileTreeIncoming)
       
     fileTreePrepared = []
     k = 0
