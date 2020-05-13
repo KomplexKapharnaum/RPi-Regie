@@ -1,18 +1,18 @@
 [
 	{
-		"name": "casa",
+		"name": "screenL",
 		"operator": "regie"
 	},
 	{
-		"name": "screenL",
+		"name": "screenR",
 		"operator": "Jhonny"
 	},
 	{
-		"name": "screenR",
+		"name": "proto",
 		"operator": "operator"
 	},
 	{
-		"name": "proto",
+		"name": "casa",
 		"operator": "operator"
 	}
 ]

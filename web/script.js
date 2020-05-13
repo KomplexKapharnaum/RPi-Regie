@@ -536,7 +536,7 @@ $(function() {
       if(editionMode==true){
         that.edit();
       }else{
-        emitEvent(that.action());
+        emitEvent(that.action())
       }
     });
 
@@ -638,15 +638,19 @@ $(function() {
       }
       else {
         this.activeBox()
-        if (this.loop == 'unloop')    msg['event'] = 'playonce'
-        else if (this.loop == 'loop') msg['event'] = 'playloop'
-        else                          msg['event'] = 'play'
-        
         scene = project.activeScene().name
+        msg['event'] = 'play'
         msg['data'] = scene +'/'+ this.media
       }
 
-      return msg
+      cmds = [msg]
+
+      if (this.loop == 'unloop')
+        cmds.push({'peer': this.dispo.name, 'event': 'unloop'})
+      else if (this.loop == 'loop')
+        cmds.push({'peer': this.dispo.name, 'event': 'loop', 'data': 1})
+
+      return cmds
     }
 
   }
@@ -958,16 +962,14 @@ $(function() {
       $('#textToEdit').unbind().keypress(function(e){ if(e.keyCode == 13){ e.preventDefault(); that.validateText(); } });
       $('.validateText').unbind().click(function(){ that.validateText(); });
     }else{
-      playSequenceArray = [];
+      allCmds = [];
       $.each(pool.allDispos,function(index,dispo){
         $.each(dispo.allBoxes,function(index,box){
-          if(box.yIndex==sequenceNumber){
-            playSequenceArray.push(box.action());
-          }
+          if(box.yIndex==sequenceNumber)
+            allCmds = allCmds.concat(box.action());
         });
       });
-
-      emitEvent(playSequenceArray)
+      emitEvent(allCmds)
     }
     // OK
     this.validateText = function(){
@@ -1178,7 +1180,7 @@ $(function() {
   function emitEvent(msg) {
     if (!Array.isArray(msg)) msg = [msg]
     socket.emit('event', msg)
-    // console.log('event', msg)
+    console.log('event', msg)
   }
 
 

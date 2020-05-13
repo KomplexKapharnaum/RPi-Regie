@@ -29,50 +29,50 @@
 				{
 					"x": 0,
 					"y": 0,
-					"media": "00_pointeur.mov",
-					"loop": "none"
+					"media": "1SIGNAL_test01.mov",
+					"loop": "loop"
 				},
 				{
 					"x": 0,
 					"y": 1,
-					"media": "00_pointeur.mov",
-					"loop": "none"
+					"media": "stop",
+					"loop": "loop"
 				},
 				{
 					"x": 0,
 					"y": 2,
-					"media": "...",
-					"loop": "none"
+					"media": "Moto2_graph07rouge.mov",
+					"loop": "unloop"
 				},
 				{
 					"x": 0,
 					"y": 3,
-					"media": "...",
+					"media": "fade #ffffff",
 					"loop": "none"
 				},
 				{
 					"x": 0,
 					"y": 4,
-					"media": "...",
+					"media": "unfade",
 					"loop": "none"
 				},
 				{
 					"x": 0,
 					"y": 5,
-					"media": "...",
-					"loop": "none"
+					"media": "1SIGNAL_test02.mov",
+					"loop": "loop"
 				},
 				{
 					"x": 0,
 					"y": 6,
-					"media": "...",
-					"loop": "none"
+					"media": "00_pointeur.mov",
+					"loop": "unloop"
 				},
 				{
 					"x": 0,
 					"y": 7,
-					"media": "...",
-					"loop": "none"
+					"media": "pause",
+					"loop": "unloop"
 				},
 				{
 					"x": 0,
@@ -149,53 +149,53 @@
 				{
 					"x": 1,
 					"y": 0,
-					"media": "00_pointeur.mov",
-					"loop": "none"
+					"media": "1SIGNAL_test01.mov",
+					"loop": "loop"
 				},
 				{
 					"x": 1,
 					"y": 1,
+					"media": "...",
+					"loop": "unloop"
+				},
+				{
+					"x": 1,
+					"y": 2,
+					"media": "Moto2_graph07rouge.mov",
+					"loop": "unloop"
+				},
+				{
+					"x": 1,
+					"y": 3,
+					"media": "fade #ffffff",
+					"loop": "none"
+				},
+				{
+					"x": 1,
+					"y": 4,
+					"media": "unfade",
+					"loop": "none"
+				},
+				{
+					"x": 1,
+					"y": 5,
+					"media": "1SIGNAL_test03.mov",
+					"loop": "loop"
+				},
+				{
+					"x": 1,
+					"y": 6,
+					"media": "00_pointeur.mov",
+					"loop": "unloop"
+				},
+				{
+					"x": 1,
+					"y": 7,
 					"media": "pause",
 					"loop": "none"
 				},
 				{
 					"x": 1,
-					"y": 2,
-					"media": "...",
-					"loop": "none"
-				},
-				{
-					"x": 1,
-					"y": 3,
-					"media": "...",
-					"loop": "none"
-				},
-				{
-					"x": 1,
-					"y": 4,
-					"media": "...",
-					"loop": "none"
-				},
-				{
-					"x": 1,
-					"y": 5,
-					"media": "...",
-					"loop": "none"
-				},
-				{
-					"x": 1,
-					"y": 6,
-					"media": "...",
-					"loop": "none"
-				},
-				{
-					"x": 1,
-					"y": 7,
-					"media": "...",
-					"loop": "none"
-				},
-				{
-					"x": 1,
 					"y": 8,
 					"media": "...",
 					"loop": "none"
@@ -269,49 +269,49 @@
 				{
 					"x": 2,
 					"y": 0,
-					"media": "00_pointeur.mov",
-					"loop": "none"
+					"media": "1SIGNAL_test01.mov",
+					"loop": "loop"
 				},
 				{
 					"x": 2,
 					"y": 1,
-					"media": "...",
-					"loop": "none"
+					"media": "stop",
+					"loop": "loop"
 				},
 				{
 					"x": 2,
 					"y": 2,
-					"media": "...",
-					"loop": "none"
+					"media": "Moto2_graph07rouge.mov",
+					"loop": "unloop"
 				},
 				{
 					"x": 2,
 					"y": 3,
-					"media": "...",
+					"media": "fade #ffffff",
 					"loop": "none"
 				},
 				{
 					"x": 2,
 					"y": 4,
-					"media": "...",
+					"media": "unfade",
 					"loop": "none"
 				},
 				{
 					"x": 2,
 					"y": 5,
-					"media": "...",
-					"loop": "none"
+					"media": "1SIGNAL_test01.mov",
+					"loop": "loop"
 				},
 				{
 					"x": 2,
 					"y": 6,
-					"media": "...",
-					"loop": "none"
+					"media": "00_pointeur.mov",
+					"loop": "unloop"
 				},
 				{
 					"x": 2,
 					"y": 7,
-					"media": "...",
+					"media": "pause",
 					"loop": "none"
 				},
 				{
@@ -390,13 +390,13 @@
 					"x": 3,
 					"y": 0,
 					"media": "00_pointeur.mov",
-					"loop": "none"
+					"loop": "loop"
 				},
 				{
 					"x": 3,
 					"y": 1,
 					"media": "...",
-					"loop": "none"
+					"loop": "unloop"
 				},
 				{
 					"x": 3,

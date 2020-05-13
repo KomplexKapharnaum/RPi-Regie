@@ -220,7 +220,7 @@ thead th {
 }
 thead th:first-child {
   left: 0;
-  z-index: 3;
+  z-index: 20;
 }
 /*SEQ*/
 tbody th {
