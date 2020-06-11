@@ -662,8 +662,6 @@ $(function() {
         return
       }
 
-      console.log('saving', projectExport)
-
       // SOCKETIO
       return projectExport
     }
@@ -965,7 +963,12 @@ $(function() {
     data['pool'] = pool.export();
     data['project'] = project.export();
     
+    console.log('saving', data)
+
     socket.emit('save', JSON.stringify(data, null, "\t"))
+
+    // TODO: fallback to AJAX -> /data/save.php (type project) if socketio not available)
+
   }
 
 
@@ -992,6 +995,8 @@ $(function() {
     $('.connectionState').removeClass('disconnected').addClass('connected');
 
     emitCtrl('load')
+
+    // TODO: fallback to AJAX -> /data/load.php (type project) if socketio not available)
   });
 
   socket.on('disconnect', function(){
