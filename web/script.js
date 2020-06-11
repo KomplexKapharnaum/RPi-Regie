@@ -33,8 +33,7 @@ $(function() {
   $('.editToggle').click(function(){
     if(editionMode==true)
     {
-      pool.savePool();
-      project.saveProject();
+      saveAll()
 
       $('.editToggle').removeClass('btnOn').addClass('btnOff');
       $('body').removeClass('editionMode').addClass('playMode');
@@ -190,15 +189,9 @@ $(function() {
 
     }
 
-    // SAVE - interval
-    // this.savePoolInterval = function(){
-    //   setInterval(function(){
-    //     that.savePool();
-    //   }, 10000);
-    // }
-
     // SAVE
-    this.savePool = function(){
+    this.export = function()
+    {
       // FILL EXPORT ARRAY
       poolExport = [];
       $.each(that.allDispos,function(index,dispo){
@@ -207,52 +200,10 @@ $(function() {
           operator:dispo.operator
         });
       });
-      // AJAX
-      $.ajax({
-        url: "data/save.php",
-        dataType: "json",
-        type: "POST",
-        data: {
-            contents: JSON.stringify(poolExport, null, "\t"),
-            filename: 'pool',
-            timestamp: $.now(),
-            type: 'pool'
-        }
-      })
-      .done(function(reponse){
-        // console.log(reponse.status);
-      })
-      .fail(function(){
-        // console.log('save failed');
-      });
+
+      // SOCKETIO
+      return poolExport
     }
-
-
-    this.loadPool = function(){
-      $.ajax({
-        url: "data/load.php",
-        dataType: "json",
-        type: "POST",
-        data: {
-            filename: 'pool',
-            type: 'pool'
-        }
-      })
-      .done(function(reponse) {
-        if (reponse.status == 'success')
-        {
-          poolImport = JSON.parse(reponse.contents);
-          $.each(poolImport, function( index, dispo ) {
-            that.allDispos.push(new dispoObject(dispo.name, dispo.operator, index));
-          });
-          project.loadProject();
-        }
-      });
-    }
-
-    // INIT POOL
-    this.loadPool();
-    // this.savePoolInterval();
 
   }
 
@@ -309,7 +260,6 @@ $(function() {
         $("#textOverlay").fadeOut(fadeTime);
         $(that.operatorDiv).html($("#textToEdit").val());
         that.operator = $("#textToEdit").val();
-        // pool.savePool();
       }
     });
 
@@ -335,7 +285,6 @@ $(function() {
             $("#dispoOverlay").fadeOut(fadeTime);
             $(that.nameDiv).html(selectedDispo);
             that.name = selectedDispo;
-            // pool.savePool();
             emitCtrl('init')
             that.checkStates();
           });
@@ -692,15 +641,9 @@ $(function() {
       return this.allScenes.find(s => s.name == name)
     }
 
-    // SAVE - interval
-    // this.saveProjectInterval = function(){
-    //   setInterval(function(){
-    //     that.saveProject();
-    //   }, 2000);
-    // }
-
     // SAVE
-    this.saveProject = function(){
+    this.export = function()
+    {
       // FILL EXPORT ARRAY
       var projectExport = [];
       // OLD WAY - SAVE ALL SCENES
@@ -721,97 +664,8 @@ $(function() {
 
       console.log('saving', projectExport)
 
-      // AJAX
-      $.ajax({
-        url: "data/save.php",
-        dataType: "json",
-        type: "POST",
-        data: {
-            contents: JSON.stringify(projectExport, null, "\t"),
-            filename: 'project',
-            timestamp: $.now(),
-            type: 'project'
-        }
-      })
-      .done(function(reponse){
-        console.log(reponse.status);
-      })
-      .fail(function(){
-        console.log('save failed');
-      });
-    }
-
-
-    this.loadProject = function(){
-      $.ajax({
-        url: "data/load.php",
-        dataType: "json",
-        type: "POST",
-        data: {
-            filename: 'project',
-            type: 'project'
-        }
-      })
-      .done(function(reponse) {
-        if (reponse.status == 'success')
-        {
-          // FROM JSON
-          that.allScenes=[];
-          projectImport = JSON.parse(reponse.contents);
-          console.log(projectImport)
-
-          // SCENES
-          $.each(projectImport[0], function( index, incomingScene ) {
-            
-            // import scene
-            newScene = that.createScene(incomingScene.name)
-            
-            // sequences (import and complete with empty)
-            newScene.allSequences = projectImport[0][index].allSequences
-            for (var y = newScene.allSequences.length; y < SEQ_SIZE; y++)
-            newScene.allSequences.push('seq'+y)
-
-            // medias
-            $.each(newScene.allMedias, (i,media) => {
-              m = projectImport[0][index].allMedias.find(m => (m.x == media.x && m.y == media.y))
-              if (m) newScene.allMedias[i] = m;
-            });
-
-          });
-          
-          // // FROM SCRATCH
-          // //NEW SCENES
-          // $.each(allScenesTemp,function(index){
-          //   that.allScenes.push(new sceneObject(allScenesTemp[index]) );
-          // });
-          // // EDIT SCENE
-          // $.each(that.allScenes,function(index,scene){
-          //   // scene.allSequences = allSequencesTemp;
-          //   $.each(allSequencesTemp,function(index,seqName){
-          //     scene.allSequences.push(seqName);
-          //   });
-          //   $.each(pool.allDispos,function(indexX,dispo){
-          //     for (var indexY = 0; indexY < SEQ_SIZE; indexY++) {
-          //       scene.allMedias.push(new media(indexX,indexY,'...','none'));
-          //     }
-          //   });
-          // });
-
-          // LOAD FILE SYSTEM
-          // updateFileTree();
-
-          // LOAD FIRST SCENE
-          if (project.allScenes.length > 0) {
-            project.allScenes[0].loadScene();
-            $('.sceneEditor').html(project.allScenes[0].name);
-          }
-
-          // READY TO REQUEST INIT INFO ON SOCKETIO
-          emitCtrl('init')
-
-        }
-      });
-
+      // SOCKETIO
+      return projectExport
     }
 
     this.createScene = function(newFolderName){
@@ -829,10 +683,6 @@ $(function() {
       that.allScenes.push(newScene);
       return newScene
     }
-
-
-    // this.saveProjectInterval();
-
 
   }
 
@@ -1080,12 +930,6 @@ $(function() {
       project.activeScene().updateMediasSelector()
   }
 
-  function loadLocalFileTree(){
-
-  }
-  function backupFileTree(){
-
-  }
 
 
   ////////////////////////   DISPOS   /////////////////////////
@@ -1112,6 +956,18 @@ $(function() {
 
   }
 
+  ///////////////////////////////////////////////////////////
+  ///////////////////////   SAVE ALL  ////////////////////////
+  ////////////////////////////////////////////////////////////
+
+  function saveAll() {
+    data = {}
+    data['pool'] = pool.export();
+    data['project'] = project.export();
+    
+    socket.emit('save', JSON.stringify(data, null, "\t"))
+  }
+
 
 
   ////////////////////////////////////////////////////////////
@@ -1134,6 +990,8 @@ $(function() {
     console.log('Connected to Server: '+url);
     $('.connectionStateText').text('connecté');
     $('.connectionState').removeClass('disconnected').addClass('connected');
+
+    emitCtrl('load')
   });
 
   socket.on('disconnect', function(){
@@ -1141,29 +999,78 @@ $(function() {
     $('.connectionState').removeClass('connected').addClass('disconnected');
   });
 
-  // RECEIVE FILETREE
 
-  socket.on('fileTree', function(fileTreeIncoming){
-    console.log("incoming fileTree", fileTreeIncoming)
-      
-    fileTreePrepared = []
-    k = 0
-    for (key in fileTreeIncoming)
-        fileTreePrepared[k++] = {
-            'name': key,
-            'files': fileTreeIncoming[key]
+  // RECEIVE LOAD DATA
+  socket.on('data', (data) => {
+
+      console.log('loading', data)
+
+      // SAVED DATA
+      if ('fullproject' in data) 
+      {
+        // PARSE JSON
+        let fullproject = JSON.parse(data['fullproject']);
+
+        // POOL
+        $.each(fullproject['pool'], function( index, dispo ) {
+          pool.allDispos.push(new dispoObject(dispo.name, dispo.operator, index));
+        });
+
+        // PROJECT
+        project.allScenes=[];
+        let projectImport = fullproject['project'];
+
+        // SCENES
+        $.each(projectImport[0], function( index, incomingScene ) {
+          
+          // import scene
+          newScene = project.createScene(incomingScene.name)
+          
+          // sequences (import and complete with empty)
+          newScene.allSequences = projectImport[0][index].allSequences
+          for (var y = newScene.allSequences.length; y < SEQ_SIZE; y++)
+          newScene.allSequences.push('seq'+y)
+
+          // medias
+          $.each(newScene.allMedias, (i,media) => {
+            m = projectImport[0][index].allMedias.find(m => (m.x == media.x && m.y == media.y))
+            if (m) newScene.allMedias[i] = m;
+          });
+
+        });
+
+        // LOAD FIRST SCENE
+        if (project.allScenes.length > 0) {
+          project.allScenes[0].loadScene();
+          $('.sceneEditor').html(project.allScenes[0].name);
         }
-    
-    // Check any variation of filetree 
-    if(JSON.stringify(fileTree)!=JSON.stringify(fileTreePrepared)){
-      fileTree = fileTreePrepared;
-      updateFileTree();
-      // & BACKUP ???
-    }
 
-    // setTimeout(fuzzy , 2000)
+      }
 
-  });
+
+      // FILETREE
+      if ('fileTree' in data) 
+      {
+        fileTreePrepared = []
+        k = 0
+        for (key in data['fileTree'])
+            fileTreePrepared[k++] = {
+                'name': key,
+                'files': data['fileTree'][key]
+            }
+        
+        // Check any variation of filetree 
+        if(JSON.stringify(fileTree)!=JSON.stringify(fileTreePrepared)){
+          fileTree = fileTreePrepared;
+          updateFileTree();
+        }
+      }
+
+      // READY TO REQUEST INIT INFO ON SOCKETIO
+      emitCtrl('init')
+
+  })
+
 
   // RECEIVE DISPO STATUS
   socket.on('dispo', (data) => {
@@ -1182,6 +1089,8 @@ $(function() {
     socket.emit('event', msg)
     console.log('event', msg)
   }
+
+  
 
 
 
