@@ -1,18 +1,18 @@
 [
 	{
-		"name": "screenL",
-		"operator": "regie"
-	},
-	{
-		"name": "screenR",
-		"operator": "Jhonny"
-	},
-	{
-		"name": "proto",
+		"name": "3BP22R",
 		"operator": "operator"
 	},
 	{
-		"name": "casa",
+		"name": "3BP21R",
+		"operator": "operator"
+	},
+	{
+		"name": "3BP04R",
+		"operator": "operator"
+	},
+	{
+		"name": "3BP20R",
 		"operator": "operator"
 	}
 ]

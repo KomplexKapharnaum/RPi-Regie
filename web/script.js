@@ -1161,7 +1161,7 @@ $(function() {
       // & BACKUP ???
     }
 
-    //setTimeout(fuzzy , 2000)
+    // setTimeout(fuzzy , 2000)
 
   });
 
