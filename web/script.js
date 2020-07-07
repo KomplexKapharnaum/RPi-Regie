@@ -168,6 +168,7 @@ $(function() {
       // reset boxes
       dispo.allBoxes.forEach(box => { box.reset() })
     }
+
     // REMOVE
     this.removeDispo = function(){
       // remove dispo & dispo div
@@ -186,7 +187,11 @@ $(function() {
           return media.x !== xToRemove;
         });
       });
+    }
 
+    // CLEAR
+    this.clearAll = function(){
+      while(that.allDispos.length > 0) this.removeDispo()
     }
 
     // SAVE
@@ -1017,9 +1022,15 @@ $(function() {
         let fullproject = JSON.parse(data['fullproject']);
 
         // POOL
+        pool.clearAll()
         $.each(fullproject['pool'], function( index, dispo ) {
           pool.allDispos.push(new dispoObject(dispo.name, dispo.operator, index));
         });
+
+        // SAVE ACTIVE SCENE
+        var nameOfActiveScene;
+        for (scene of project.allScenes) 
+          if(scene.isActive) nameOfActiveScene = scene.name
 
         // PROJECT
         project.allScenes=[];
@@ -1044,11 +1055,11 @@ $(function() {
 
         });
 
-        // LOAD FIRST SCENE
-        if (project.allScenes.length > 0) {
-          project.allScenes[0].loadScene();
-          $('.sceneEditor').html(project.allScenes[0].name);
-        }
+        // LOAD LAST ACTIVE SCENE
+        let lastActiveScenes = project.allScenes.filter(scene => scene.name == nameOfActiveScene)
+        if (lastActiveScenes.length == 0) lastActiveScenes = [project.allScenes[0]]
+        lastActiveScenes[0].loadScene() 
+        $('.sceneEditor').html(lastActiveScenes[0].name)
 
       }
 
