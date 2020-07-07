@@ -290,7 +290,7 @@ $(function() {
             $("#dispoOverlay").fadeOut(fadeTime);
             $(that.nameDiv).html(selectedDispo);
             that.name = selectedDispo;
-            emitCtrl('init')
+            emitCtrl('register')
             that.checkStates();
           });
 
@@ -999,7 +999,7 @@ $(function() {
     $('.connectionStateText').text('connecté');
     $('.connectionState').removeClass('disconnected').addClass('connected');
 
-    emitCtrl('load')
+    emitCtrl('init')
 
     // TODO: fallback to AJAX -> /data/load.php (type project) if socketio not available)
   });
@@ -1053,16 +1053,9 @@ $(function() {
             if (m) newScene.allMedias[i] = m;
           });
 
-        });
-
-        // LOAD LAST ACTIVE SCENE
-        let lastActiveScenes = project.allScenes.filter(scene => scene.name == nameOfActiveScene)
-        if (lastActiveScenes.length == 0) lastActiveScenes = [project.allScenes[0]]
-        lastActiveScenes[0].loadScene() 
-        $('.sceneEditor').html(lastActiveScenes[0].name)
-
+        }); 
+        
       }
-
 
       // FILETREE
       if ('fileTree' in data) 
@@ -1082,8 +1075,18 @@ $(function() {
         }
       }
 
-      // READY TO REQUEST INIT INFO ON SOCKETIO
-      emitCtrl('init')
+      // LOAD LAST ACTIVE SCENE
+      if ('fullproject' in data) 
+      {
+        let lastActiveScenes = project.allScenes.filter(scene => scene.name == nameOfActiveScene)
+        if (lastActiveScenes.length == 0) lastActiveScenes = [project.allScenes[0]]
+        if (lastActiveScenes[0]) {
+          lastActiveScenes[0].loadScene() 
+          $('.sceneEditor').html(lastActiveScenes[0].name)
+        }
+
+        emitCtrl('register') 
+      }
 
   })
 
