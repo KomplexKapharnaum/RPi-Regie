@@ -119,7 +119,7 @@ thead th:first-child{
 }
 
 /* COLUMN WIDTH*/
-.dispo,.box .mediaSelector,.box .loopInfo{
+.dispo,.box .mediaSelector{
   font-weight: normal;
   width: 200px;
 }
@@ -127,27 +127,42 @@ thead th:first-child{
   z-index:0;
   position:relative;
 }
-.box .mediaSelector,.box .loopInfo{
+.box .mediaSelector, .box .lightSelector {
   position: absolute;
-  top: 42%;
   width: 100%;
   text-align: center;
   text-overflow: ellipsis;
   overflow-x: hidden;
   white-space: nowrap;
 }
-.loopInfo {
-  margin-top: 10px;
+.box .mediaSelector{
+  top: 37%;
 }
-.loopInfo .loopInfo-none{
-  opacity:0;
+.box .lightSelector{
+  top: 65%;
 }
-.loopInfo .loopInfo-loop{
-  color: #ffffff;
+
+.colorPreview {
+  padding: 0px 7px;
 }
-.loopInfo .loopInfo-unloop{
-  color: #606060;
+
+
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+  width: 64px;
+  /* height: 20px; */
+  position: relative;
+  top: 8px;
+  left: 10px;
 }
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
 
 .validPlayInfo{
   position: absolute;
@@ -161,20 +176,29 @@ thead th:first-child{
 
 .stateiDiv{
   position: absolute;
-  top: 19%;
-  width: 100%;
-  text-align: center;
-  /* right: 50%; */
-  opacity:0.4;
+  top: 0;
+  right: 0;
+  opacity: 0.4;
+  margin-left: 132px;
+  background: #CCC;
+  color: #111;
+}
+
+.stateiDiv i {
+  margin: 5px 7px;
 }
 
 .loopiDiv{
   position: absolute;
-  top: 66%;
-  width: 100%;
-  text-align: center;
-  /* right: 50%; */
-  opacity:0.4;
+  top: 0;
+  right: 25px;
+  opacity: 0.4;
+  margin-left: 132px;
+  background: #111;
+}
+
+.loopiDiv i {
+  margin: 5px 7px;
 }
 
 
@@ -293,14 +317,22 @@ tbody th {
   background-color : #303030;
   display: inline-block;
   vertical-align: middle;
+  position: relative;
 }
-.overlayTitle{
-  margin: 2%;
-  padding: 3% 0% 0% 2%;
-  width: 30%;
+.overlayTitle, .overlayTitle2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 50%;  
+  padding: 1%;
+  font-size: 1.5em;
   text-align: left;
-  float: left;
 }
+.overlayTitle2 {
+  left: 51%;
+  right: 0;
+}
+
 #confirmOverlay .overlayTitle{
   margin: 30px 0% 0% 15%;
   padding:0;
@@ -337,7 +369,8 @@ tbody th {
   width: 40%;
   height: 100px;
 }
-.mediaList, .dispoList, .sceneList{
+
+.dispoList, .sceneList{
   height: 83%;
   overflow-y: scroll;
   /* padding-left: 5%; */
@@ -345,24 +378,39 @@ tbody th {
   background-color: #404040;
   clear: both;
 }
-.mediaList .mediaItem, .dispoList .dispoItem, .sceneList .sceneItem{
+.mediaList .mediaItem, .dispoList .dispoItem, .sceneList .sceneItem, .lightList  .lightItem {
   cursor: pointer;
-  height: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 5%;
+  line-height: 40px;
+  padding-left: 3%;
+  vertical-align: center;
 }
+
+.lightList, .mediaList {
+  position: absolute;
+  top: 9%;
+  bottom: 0;
+  overflow-y: auto;
+  text-align: left;
+  line-height: 37px;
+}
+
+.lightList {
+  left: 50%;
+  right: 0;
+  background: #333;
+}
+
+.mediaList {
+  left: 0;
+  right: 50%;
+  background: #222;
+}
+
+
 
 /*ARGUMENTS*/
 .mediaArguments{
-  top: 0;
-  float: right;
-  padding-top:10px;
-  padding-left: 2%;
-  position: sticky;
-  width: 33%;
-  height: 100%;
-  background: #505050;
+
 }
 .mediaArguments > *{
   margin-bottom: 10px;
@@ -377,8 +425,7 @@ tbody th {
 
 
 #mediaOverlay .controls, #dispoOverlay .controls, #sceneOverlay .controls{
-  height: 10%;
-  margin: 3%;
+  margin: 0.3% 0.6%;
   text-align: right;
 }
 

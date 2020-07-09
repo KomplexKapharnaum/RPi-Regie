@@ -118,22 +118,6 @@ $(function() {
 
 
 
-  // AUDIO-VIDEO OR LIGHT
-  $("input[name='mediaType']").click(function(){
-    if($(this).val()=='audiovideo'){
-      $('.lightList').hide();
-      $('.mediaListDynamic').show();
-    }
-    if($(this).val()=='light'){
-      $('.mediaListDynamic').hide();
-      $('.lightList').show();
-    }
-  });
-
-
-
-
-
   ////////////////////////////////////////////////////////////
   /////////////////////////    POOL   ////////////////////////
   ////////////////////////////////////////////////////////////
@@ -424,10 +408,7 @@ $(function() {
 
     var that = this;
     this.box = $('<td class="box"></td>').appendTo($(seqdiv).parent());
-    this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
     
-    // this.loopDiv = $('<div class="loopInfo"><i class="fa fa-repeat loopInfoIcon loopInfo-none" aria-hidden="true"></i></div>').appendTo($(this.box));
-    // this.validPlayDiv = $('<div class="validPlayInfo"><i class="fa fa-check" aria-hidden="true"></i></div>').appendTo($(this.box));
     
     this.stateiDiv = $('<div class="stateiDiv">').appendTo(this.box)
     this.stateIcons = {
@@ -440,6 +421,10 @@ $(function() {
       loop:   $('<i class="fa fa-repeat" aria-hidden="true"></i>').appendTo(this.loopiDiv),
       unloop:  $('<i class="fa fa-share" aria-hidden="true"></i>').appendTo(this.loopiDiv),
     }
+    
+    this.mediaDiv = $('<div class="mediaSelector">...</div>').appendTo($(this.box));
+    this.lightDiv = $('<div class="lightSelector"></div>').appendTo($(this.box));
+
 
     this.setStateIcon = function(state) {
       Object.values(this.stateIcons).every( i => i.hide())
@@ -452,7 +437,8 @@ $(function() {
     }
 
     this.media='?';
-    this.loop='?';
+    this.light='?';
+    this.loop ='?';
     this.dispo = dispo;
     this.xIndex = xIndex;
     this.yIndex = yIndex;
@@ -464,9 +450,11 @@ $(function() {
 
       this.loop = mediadata.loop;
       this.media = mediadata.media;
+      this.light = mediadata.light;
 
       this.setLoopIcon(this.loop)
       $(this.mediaDiv).html(this.media);
+      $(this.lightDiv).html(this.light);
     }
 
     // Reset box 
@@ -497,60 +485,84 @@ $(function() {
     this.edit=function(){
 
       var selectedMedia = 'none';
+      var selectedLight = 'none';
       $('.listItem').removeClass('selected');
       $("#mediaOverlay").fadeIn(fadeTime);
-      bindColorPicker();
 
       // update Radio
       $('input:radio[name="loopArg"]').filter('[value="'+that.loop+'"]').prop('checked', true);
+      
       // update media
       $(".mediaItem").each(function(index,div){
         if($(div).html()==that.media){$(div).addClass('selected');}
       });
 
-      // Select
+      // update light
+      $(".lightItem").each(function(index,div){
+        if($(div).html()==that.light){$(div).addClass('selected');}
+      });
+
+
+      // Picker (prevent selection)
+      $(".mediaColorPicker").unbind().click(function(e){
+        e.stopPropagation()
+      });
+
+
+      // Select Media
       $(".mediaItem").unbind().click(function(){
         var selectedDiv = this;
         selectedMedia = $(this).html();
+
         $('.listItem').removeClass('selected'); $(this).addClass('selected');
+        
         // Color picker
-        // if( media = color ) bindColorPicker PLUS change selected media
-        if($(selectedDiv).hasClass('mediaColor')){
-          $("#mediaColorEdit").unbind().on('change',function(){
-            $('.mediaColor').html('color '+$("#mediaColorEdit").val());
-            selectedMedia = 'color '+$("#mediaColorEdit").val();
-          });
+        if($(selectedDiv).hasClass('mediaColor')) {
+          selectedMedia = 'fade <span class="colorPreview" style="background-color:'+$(selectedDiv).find('.mediaColorPicker').val()+'">'+$(selectedDiv).find('.mediaColorPicker').val()+'</span>'
         }
-
+        
         $(".validateMedia").click();
+      });
 
+
+      // Select Light
+      $(".lightItem").unbind().click(function(){
+        var selectedDiv = this;
+        selectedLight = $(this).html();
+
+        $('.listItem').removeClass('selected'); $(this).addClass('selected');
+        
+        // Color picker
+        if($(selectedDiv).hasClass('mediaColor')) {
+          selectedMedia = 'light <span class="colorPreview" style="background-color:'+$(selectedDiv).find('.mediaColorPicker').val()+'">'+$(selectedDiv).find('.mediaColorPicker').val()+'</span>'
+        }
       });
 
       // validate
       ///////////////////////   SAVE BOX    //////////////////////
       $(".validateMedia").unbind().click(function(){
 
-
-        
         $("#mediaOverlay").fadeOut(fadeTime);
+        
         if(selectedMedia!='none') {that.media = selectedMedia;}
+        if(selectedLight!='none') {that.light = selectedLight;}
         that.loop = $("input[name='loopArg']:checked").val();
         if(that.loop==undefined){ that.loop = 'none' }
 
         $(that.mediaDiv).html(that.media);
+        $(that.lightDiv).html(that.light);
         that.setLoopIcon(that.loop)
 
         // Save it in project
         $.each(project.activeScene().allMedias,function(index,media){
           if((media.x==that.xIndex)&&(media.y==that.yIndex)){
             media.media = that.media;
+            media.light = that.light;
             media.loop = that.loop;
-            console.log('editing media x:'+that.xIndex+' y:'+that.yIndex+' '+media.media+' '+media.loop);
+            console.log('editing media x:'+that.xIndex+' y:'+that.yIndex+' '+media.media+' '+media.light+' '+media.loop);
           }
         });
-
-        // project.saveProject();
-
+        
       });
 
     }
@@ -571,7 +583,7 @@ $(function() {
     {
 
       // Build action
-      var msg = {'peer': this.dispo.name}
+      var msg = {'peer': this.dispo.name, 'synchro': true}
 
       if (this.media == 'stop') {
         this.activeBox()
@@ -588,7 +600,7 @@ $(function() {
       }
       else if (this.media.startsWith('fade')) {
         msg['event'] = 'fade'
-        msg['data'] = this.media.split(' ')[1]
+        msg['data'] = $(this.media.split('fade ')[1]).text();
       }
       else {
         this.activeBox()
@@ -604,18 +616,18 @@ $(function() {
       else if (this.loop == 'loop')
         cmds.push({'peer': this.dispo.name, 'event': 'loop', 'data': 1})
 
+      if (this.light) {
+        if (this.media.startsWith('color')) 
+          cmds.push({'peer': this.dispo.name, 'event': 'esp', 'topic': 'light/all', 'data': $(this.media.split('color ')[1]).text()})
+
+        else if (this.media.startsWith('preset')) 
+          cmds.push({'peer': this.dispo.name, 'event': 'esp', 'topic': 'light/preset', 'data': $(this.media.split('preset ')[1]).text()})
+      }
+
       return cmds
     }
 
   }
-
-    ///////////////////    BOX - MORE    /////////////////////
-
-    function bindColorPicker(){
-      $("#mediaColorEdit").unbind().on('change',function(){
-        $('.mediaColor').html('fade '+$("#mediaColorEdit").val());
-      });
-    }
 
 
 
