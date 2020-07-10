@@ -268,6 +268,8 @@ $(function() {
             console.log('CLICK dispoItem');
             selectedDispo = $(this).html();
             $('.listItem').removeClass('selected'); $(this).addClass('selected');
+
+            $(".validateDispo").click()
           });
           // validate
           $(".validateDispo").unbind().click(function(){
@@ -514,7 +516,7 @@ $(function() {
         var selectedDiv = this;
         selectedMedia = $(this).html();
 
-        $('.listItem').removeClass('selected'); $(this).addClass('selected');
+        $('.mediaItem').removeClass('selected'); $(this).addClass('selected');
         
         // Color picker
         if($(selectedDiv).hasClass('mediaColor')) {
@@ -530,11 +532,11 @@ $(function() {
         var selectedDiv = this;
         selectedLight = $(this).html();
 
-        $('.listItem').removeClass('selected'); $(this).addClass('selected');
+        $('.lightItem').removeClass('selected'); $(this).addClass('selected');
         
         // Color picker
-        if($(selectedDiv).hasClass('mediaColor')) {
-          selectedMedia = 'light <span class="colorPreview" style="background-color:'+$(selectedDiv).find('.mediaColorPicker').val()+'">'+$(selectedDiv).find('.mediaColorPicker').val()+'</span>'
+        if($(selectedDiv).hasClass('lightColor')) {
+          selectedLight = 'light <span class="colorPreview" style="background-color:'+$(selectedDiv).find('.mediaColorPicker').val()+'">'+$(selectedDiv).find('.mediaColorPicker').val()+'</span>'
         }
       });
 
@@ -617,11 +619,11 @@ $(function() {
         cmds.push({'peer': this.dispo.name, 'event': 'loop', 'data': 1})
 
       if (this.light) {
-        if (this.media.startsWith('color')) 
-          cmds.push({'peer': this.dispo.name, 'event': 'esp', 'topic': 'light/all', 'data': $(this.media.split('color ')[1]).text()})
+        if (this.light.startsWith('light')) 
+          cmds.push({'peer': this.dispo.name, 'synchro': true, 'event': 'esp', 'topic': 'light/all', 'data': $(this.light.split('light ')[1]).text()})
 
-        else if (this.media.startsWith('preset')) 
-          cmds.push({'peer': this.dispo.name, 'event': 'esp', 'topic': 'light/preset', 'data': $(this.media.split('preset ')[1]).text()})
+        else if (this.light.startsWith('preset')) 
+          cmds.push({'peer': this.dispo.name, 'synchro': true, 'event': 'esp', 'topic': 'light/mem', 'data': this.light.split('preset ')[1]})
       }
 
       return cmds

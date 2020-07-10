@@ -319,22 +319,24 @@ tbody th {
   vertical-align: middle;
   position: relative;
 }
+
+
 .overlayTitle, .overlayTitle2 {
   position: absolute;
   top: 0;
   left: 0;
   right: 50%;  
-  padding: 1%;
+  padding: 0.6%;
   font-size: 1.5em;
   text-align: left;
 }
 .overlayTitle2 {
   left: 51%;
-  right: 0;
+  right: 100px;
 }
 
 #confirmOverlay .overlayTitle{
-  margin: 30px 0% 0% 15%;
+  margin: 5% 0% 0% 40%;
   padding:0;
   width: 40%;
   text-align: left;
@@ -406,6 +408,45 @@ tbody th {
   background: #222;
 }
 
+/* RADIO */
+.inline-radio {
+	display: flex;
+	overflow: hidden;
+}
+
+.inline-radio div {
+  position: relative;
+  flex: 1;
+}
+
+.inline-radio input {
+  width: 100%;
+  /* height: 60px; */
+  opacity: 0;
+}
+
+.inline-radio label {
+  position: absolute;
+  top: 0; left: 0;
+  color: #fff;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.inline-radio div:last-child label {
+  border-right: 0;
+}
+
+.inline-radio input:checked + label {
+  background: #505050;
+  font-weight: 500;
+  color: #fff;
+}
 
 
 /*ARGUMENTS*/
@@ -427,6 +468,7 @@ tbody th {
 #mediaOverlay .controls, #dispoOverlay .controls, #sceneOverlay .controls{
   margin: 0.3% 0.6%;
   text-align: right;
+  z-index: 10000;
 }
 
 #textOverlay .overlayContent{
@@ -492,7 +534,7 @@ tbody th {
   font-size: 30px !important;
 }
 .btnBig{
-  font-size: 50px !important;
+  font-size: 3.6em !important;
 }
 .btn{
   cursor: pointer;

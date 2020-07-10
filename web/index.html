@@ -20,17 +20,17 @@
 <!-- OVERLAYS -->
 <div class="overlay" id="mediaOverlay">
   <div class="overlayContent">
-    <div class="overlayTitle">MEDIA</div>
-    <div class="overlayTitle2">LIGHT</div>
     <div class="controls">
       <i class="btn fa fa-check-circle btnBig validateMedia" aria-hidden="true"></i>
     </div>
+    <div class="overlayTitle">MEDIA</div>
+    <div class="overlayTitle2">LIGHT</div>
     <div class="lightList">
         <!-- <input type="radio" id="audiovideo" name="mediaType" value="audiovideo" checked><label for="none">Audio & Video</label><br>
         <input type="radio" id="light" name="mediaType" value="light"><label for="loop">Light</label><br> -->
         <div class="lightListStatic">
           <div class="listItem lightItem">off</div>
-          <div class="listItem mediaItem mediaColor">color <input class="mediaColorPicker" type="color" id="lightColorEdit"></div>
+          <div class="listItem lightItem lightColor">color <input class="mediaColorPicker" type="color" id="lightColorEdit"></div>
           <hr />
           <div class="listItem lightItem">preset 1</div>
           <div class="listItem lightItem">preset 2</div>
@@ -59,9 +59,11 @@
     <div class="mediaList">
       <div class="mediaArguments">
         <p>LOOP ARGUMENT</p>
-        <input type="radio" id="none" name="loopArg" value="none"><label for="none">none</label><br>
-        <input type="radio" id="loop" name="loopArg" value="loop"><label for="loop">loop</label><br>
-        <input type="radio" id="unloop" name="loopArg" value="unloop"><label for="unloop">unloop</label>
+        <group class="inline-radio">
+          <div><input type="radio" id="none" name="loopArg" value="none"><label for="none">none</label></div>
+          <div><input type="radio" id="loop" name="loopArg" value="loop"><label for="loop">loop</label></div>
+          <div><input type="radio" id="unloop" name="loopArg" value="unloop"><label for="unloop">unloop</label></div>
+        </group>
         
       </div>
       <hr />
