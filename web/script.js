@@ -141,7 +141,7 @@ $(function() {
       console.log("adding medias with index X: "+xIndex);
       $.each(project.allScenes,function(index,scene){
         for (var indexY = 0; indexY < SEQ_SIZE; indexY++) {
-          scene.allMedias.push(new media(xIndex,indexY,'...','none'));
+          scene.allMedias.push(new media(xIndex,indexY,'...','...','none'));
         }
       });
       
@@ -620,10 +620,37 @@ $(function() {
 
       if (this.light) {
         if (this.light.startsWith('light')) 
-          cmds.push({'peer': this.dispo.name, 'synchro': true, 'event': 'esp', 'topic': 'light/all', 'data': $(this.light.split('light ')[1]).text()})
+          cmds.push(
+            { 'peer': this.dispo.name, 
+              'synchro': true, 
+              'event': 'esp', 
+              'data': {
+                'topic':  'leds/all', 
+                'data':   $(this.light.split('light ')[1]).text()
+              }
+            })
 
         else if (this.light.startsWith('preset')) 
-          cmds.push({'peer': this.dispo.name, 'synchro': true, 'event': 'esp', 'topic': 'light/mem', 'data': this.light.split('preset ')[1]})
+          cmds.push(
+            { 'peer': this.dispo.name, 
+              'synchro': true, 
+              'event': 'esp', 
+              'data': {
+                'topic':  'leds/mem', 
+                'data':   this.light.split('preset ')[1]
+              }
+            })
+
+        else if (this.light.startsWith('off')) 
+          cmds.push(
+            { 'peer': this.dispo.name, 
+              'synchro': true, 
+              'event': 'esp', 
+              'data': {
+                'topic':  'leds/stop', 
+                'data':   ''
+              }
+            })
       }
 
       return cmds
@@ -694,7 +721,7 @@ $(function() {
       // fill medias
       $.each(pool.allDispos,function(indexX,dispo){
         for (var indexY = 0; indexY < SEQ_SIZE; indexY++) {
-          newScene.allMedias.push(new media(indexX,indexY,'...','none'));
+          newScene.allMedias.push(new media(indexX,indexY,'...','...','none'));
         }
       });
       that.allScenes.push(newScene);
@@ -797,10 +824,11 @@ $(function() {
   //////////////////////     MEDIA     //////////////////////
   ////////////////////////////////////////////////////////////
 
-  function media(x,y,media,loop){
+  function media(x,y,media,light,loop){
     this.x = x;
     this.y = y;
     this.media = media;
+    this.light = light;
     this.loop = loop;
   }
 
