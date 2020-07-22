@@ -883,7 +883,7 @@ $(function() {
     var sequenceNumber = $(this).parent().parent().parent().index();
     // data
     project.activeScene().allMedias.forEach( media => {
-      if(media.y==sequenceNumber){ media.media='...'; media.loop='none'; }
+      if(media.y==sequenceNumber){ media.media='...'; media.light='...'; media.loop='none'; }
     })
     // dom
     $.each(pool.allDispos,function(index,dispo){
@@ -920,7 +920,7 @@ $(function() {
       $.each(project.activeScene().allMedias,function(index, media){
         if(media.y==sequenceNumber){
           $.each(clipboard,function(index, clipboardmedia){
-            if(media.x==clipboardmedia.x){ media.media = clipboardmedia.media; media.loop = clipboardmedia.loop; }
+            if(media.x==clipboardmedia.x){ media.media = clipboardmedia.media; media.light = clipboardmedia.light; media.loop = clipboardmedia.loop; }
           });
         }
       });
