@@ -1,17 +1,16 @@
-body
-{
-  margin:0;
-  font-family: Helvetica, Sans-Serif;
-  font-size: 10pt;
-  background-color: #202020;
-  color:white;
-  overflow:hidden;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+body {
+    margin: 0;
+    font-family: Helvetica, Sans-Serif;
+    font-size: 10pt;
+    background-color: #202020;
+    color: white;
+    overflow: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 
@@ -21,572 +20,668 @@ https://stackoverflow.com/questions/15811653/table-with-fixed-header-and-fixed-c
 
 
 /*MASTER CONTROLS*/
-.masterControls{
-  padding-left:10px;
-  padding-bottom:5px;
-  margin:0;
-  text-align: initial;
+
+.masterControls {
+    padding-left: 10px;
+    padding-bottom: 5px;
+    margin: 0;
+    text-align: initial;
 }
 
-thead th:first-child{
-  vertical-align: top;
-}
-.masterControls .masterText{
-  width: 60%;
-}
-.masterControls .stopAll{
-  margin-top: 3px;
+thead th:first-child {
+    vertical-align: top;
 }
 
-.masterControls .nextScene, .masterControls .dispoToggle, .masterControls .editToggle{
-  margin-right: 11px;
+.masterControls .masterText {
+    width: 60%;
 }
 
-.masterControls .masterText{
-  float:left;
-  width: 75%;
-}
-.masterControls .connectionState{
-
-}
-.masterControls .sceneEditor{
-  font-size: 20px;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.masterControls .quickScene{
-  vertical-align: super;
-}
-.masterControls .masterControls_line2 > i{
-  width: 20%;
-}
-.dispoToggle{
-
+.masterControls .stopAll {
+    margin-top: 3px;
 }
 
+.masterControls .nextScene,
+.masterControls .dispoToggle,
+.masterControls .editToggle {
+    margin-right: 11px;
+}
+
+.masterControls .masterText {
+    float: left;
+    width: 75%;
+}
+
+.masterControls .connectionState {}
+
+.masterControls .sceneEditor {
+    font-size: 20px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.masterControls .quickScene {
+    vertical-align: super;
+}
+
+.masterControls .masterControls_line2>i {
+    width: 20%;
+}
+
+.dispoToggle {}
 
 .container {
-  max-width: 100vw;
-  max-height: 100vh;
-  height:100%;
-  overflow: scroll;
-  position: relative;
+    max-width: 100vw;
+    max-height: 100vh;
+    height: 100%;
+    overflow: scroll;
+    position: relative;
 }
 
-#addRemoveDispos{
-  /* color: rgb(101, 132, 150, 1); */
-  display:none;
+#addRemoveDispos {
+    /* color: rgb(101, 132, 150, 1); */
+    display: none;
 }
 
 
 /*DISPO*/
-.dispo{
-  text-align: initial;
-  padding:5px;
+
+.dispo {
+    text-align: initial;
+    padding: 5px;
 }
+
+
 /* .dispoBasics{
   text-align: initial;
 } */
-.dispoNaming{
-  width: 72%;
-  float: left;
-  padding: 4px;
-}
-.operatorEditor, .nameEditor{
-  font-size: 15px;
-  line-height: 20px;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.dispoMore{
-  margin:10px;
-}
-.dispoMore i{
-  text-align: center;
-  width:31%;
-  box-sizing: border-box; margin: 0;
 
+.dispoNaming {
+    width: 72%;
+    float: left;
+    padding: 4px;
 }
-.dispoMore i:first-child{
-  text-align: left;
+
+.operatorEditor,
+.nameEditor {
+    font-size: 15px;
+    line-height: 20px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.dispoMore i:last-child{
-  text-align: right;
+
+.dispoMore {
+    margin: 10px;
 }
+
+.dispoMore i {
+    text-align: center;
+    width: 31%;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.dispoMore i:first-child {
+    text-align: left;
+}
+
+.dispoMore i:last-child {
+    text-align: right;
+}
+
 
 /* COLUMN WIDTH*/
-.dispo,.box .mediaSelector{
-  font-weight: normal;
-  width: 200px;
+
+.dispo,
+.box .mediaSelector {
+    font-weight: normal;
+    width: 200px;
 }
-.box{
-  z-index:0;
-  position:relative;
+
+.box {
+    z-index: 0;
+    position: relative;
 }
-.box .mediaSelector, .box .lightSelector {
-  position: absolute;
-  width: 100%;
-  text-align: center;
-  text-overflow: ellipsis;
-  overflow-x: hidden;
-  white-space: nowrap;
+
+.box .mediaSelector,
+.box .lightSelector {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
 }
-.box .mediaSelector{
-  top: 37%;
+
+.box .mediaSelector {
+    top: 37%;
 }
-.box .lightSelector{
-  top: 65%;
+
+.box .lightSelector {
+    top: 65%;
 }
 
 .colorPreview {
-  padding: 0px 7px;
+    padding: 0px 7px;
 }
-
 
 input[type="color"] {
-  -webkit-appearance: none;
-  border: none;
-  width: 64px;
-  /* height: 20px; */
-  position: relative;
-  top: 8px;
-  left: 10px;
+    -webkit-appearance: none;
+    border: none;
+    width: 64px;
+    /* height: 20px; */
+    position: relative;
+    top: 8px;
+    left: 10px;
 }
+
 input[type="color"]::-webkit-color-swatch-wrapper {
-	padding: 0;
+    padding: 0;
 }
+
 input[type="color"]::-webkit-color-swatch {
-	border: none;
+    border: none;
 }
 
-
-.validPlayInfo{
-  position: absolute;
-  top: 37%;
-  right: 5px;
-  opacity:0;
-}
-.validPlay-true{
-  opacity:0.4;
+.validPlayInfo {
+    position: absolute;
+    top: 37%;
+    right: 5px;
+    opacity: 0;
 }
 
-.stateiDiv{
-  position: absolute;
-  top: 0;
-  right: 0;
-  opacity: 0.4;
-  margin-left: 132px;
-  background: #CCC;
-  color: #111;
+.validPlay-true {
+    opacity: 0.4;
 }
 
-.stateiDiv i {
-  margin: 5px 7px;
+.stateiDiv {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0.4;
+    margin-left: 132px;
+    background: #CCC;
+    color: #111;
 }
 
-.loopiDiv{
-  position: absolute;
-  top: 0;
-  right: 25px;
-  opacity: 0.4;
-  margin-left: 132px;
-  background: #111;
+.loopiDiv {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    opacity: 0.4;
+    margin-left: 132px;
+    background: #111;
 }
 
-.loopiDiv i {
-  margin: 5px 7px;
+.onendiDiv {
+    position: absolute;
+    bottom: 0;
+    opacity: 0.4;
+    background: #111;
 }
 
-
+.stateiDiv i,
+.loopiDiv i,
+.onendiDiv i {
+    margin: 5px 7px;
+}
 
 table {
-  position: relative;
-  border-spacing: separate;
-  border-spacing: 0;
+    position: relative;
+    border-spacing: separate;
+    border-spacing: 0;
 }
 
-.dispoBasics .btnBig{
-  display: block;
-  width: fit-content;
+.dispoBasics .btnBig {
+    display: block;
+    width: fit-content;
 }
 
 td,
-th {
-}
+th {}
+
 
 /*COLORS*/
-.dispo,thead th:first-child{
-  background: #404040;
+
+.dispo,
+thead th:first-child {
+    background: #404040;
 }
-.dispo,td, .seqDiv, thead th:first-child{
-  box-sizing:content-box;
-  border:4px solid #202020;
+
+.dispo,
+td,
+.seqDiv,
+thead th:first-child {
+    box-sizing: content-box;
+    border: 4px solid #202020;
 }
-.box{
-  background-color: #303030;
+
+.box {
+    background-color: #303030;
 }
-thead th:last-child .dispo{
-  background-color: #202020;
+
+thead th:last-child .dispo {
+    background-color: #202020;
 }
 
 
 /*HEAD*/
+
 thead th {
-  position: -webkit-sticky; /* for Safari */
-  position: sticky;
-  top: 0;
-  background: #202020;
-  z-index: 10;
+    position: -webkit-sticky;
+    /* for Safari */
+    position: sticky;
+    top: 0;
+    background: #202020;
+    z-index: 10;
 }
+
 thead th:first-child {
-  left: 0;
-  z-index: 20;
+    left: 0;
+    z-index: 20;
 }
+
+
 /*SEQ*/
+
 tbody th {
-  position: -webkit-sticky; /* for Safari */
-  position: sticky;
-  left: 0;
-  background-color: #404040;
-}
-.seqDiv{
-  height:100px;
-  z-index:2;
-}
-.seqName{
-  width: 157px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow-x: hidden;
-  margin: 22px 22px 22px 22px;
-  background-color: #00ab3f;
-  padding: 20px;
-  cursor:pointer;
-  border-radius:4px;
-}
-.seqName:active{
-
-}
-.editionMode .seqName{
-  background-color: rgb(101, 132, 150, 1);
-}
-.playMode .seqName{
-  background-color: #00ab3f;
-}
-.seqControls{
-  margin: 0px 0px 10px 0px;
-  color: rgb(101, 132, 150, 1);
-  float:left;
-  width:100%;
-  display: none;
-}
-.seqControls i{
-  text-align: center;
-  width:15%;
-  box-sizing: border-box; margin: 0;
+    position: -webkit-sticky;
+    /* for Safari */
+    position: sticky;
+    left: 0;
+    background-color: #404040;
 }
 
+.seqDiv {
+    height: 100px;
+    z-index: 2;
+}
 
+.seqName {
+    width: 157px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    margin: 22px 22px 22px 22px;
+    background-color: #00ab3f;
+    padding: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+}
 
+.seqName:active {}
+
+.editionMode .seqName {
+    background-color: rgb(101, 132, 150, 1);
+}
+
+.playMode .seqName {
+    background-color: #00ab3f;
+}
+
+.seqControls {
+    margin: 0px 0px 10px 0px;
+    color: rgb(101, 132, 150, 1);
+    float: left;
+    width: 100%;
+    display: none;
+}
+
+.seqControls i {
+    text-align: center;
+    width: 15%;
+    box-sizing: border-box;
+    margin: 0;
+}
 
 
 /* OVERLAYS */
+
 .overlay {
-  opacity: 0;
-  cursor: pointer;
-  position : absolute;
-  width : 100%;
-  height : 100%;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 100;
-  text-align: center;
-}
-.overlay:before{
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
+    opacity: 0;
+    cursor: pointer;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    text-align: center;
 }
 
-.overlayContent{
-  cursor: default;
-  background-color : #303030;
-  display: inline-block;
-  vertical-align: middle;
-  position: relative;
+.overlay:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
 }
 
-
-.overlayTitle, .overlayTitle2 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 50%;  
-  padding: 0.6%;
-  font-size: 1.5em;
-  text-align: left;
+.overlayContent {
+    cursor: default;
+    background-color: #303030;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
 }
+
+.overlayTitle,
 .overlayTitle2 {
-  left: 51%;
-  right: 100px;
+    position: absolute;
+    top: 1.5em;
+    left: 0;
+    right: 50%;
+    padding: 0.6%;
+    font-size: 1.2em;
+    text-align: center;
 }
 
-#confirmOverlay .overlayTitle{
-  margin: 5% 0% 0% 40%;
-  padding:0;
-  width: 40%;
-  text-align: left;
+.overlayTitle2 {
+    left: 51%;
+    right: 50px;
+    padding-left: 50px;
 }
-#confirmOverlay .controls{
-  margin: 20px 0% 0% 0%;
+
+#confirmOverlay .overlayTitle {
+    margin: 5% 0% 0% 40%;
+    padding: 0;
+    width: 40%;
+    text-align: left;
+}
+
+#confirmOverlay .controls {
+    margin: 20px 0% 0% 0%;
     float: left;
-    width:45%;
-}
-#confirmOverlay .controls i{
-  margin-right: 20%;
-}
-#textOverlay .overlayTitle{
-  margin: 8% 0% 0% 15%;
-  padding:0;
-  width: 100%;
-  text-align: left;
-}
-#mediaOverlay .overlayContent{
-  height : 80%;
-  width : 80%;
-}
-#dispoOverlay .overlayContent, #sceneOverlay .overlayContent{
-  width: 50%;
-  height : 80%;
-}
-#textOverlay .overlayContent{
-  width: 50%;
-  height: 42%;
-}
-#confirmOverlay .overlayContent{
-  width: 40%;
-  height: 100px;
+    width: 45%;
 }
 
-.dispoList, .sceneList{
-  height: 83%;
-  overflow-y: scroll;
-  /* padding-left: 5%; */
-  text-align: left;
-  background-color: #404040;
-  clear: both;
-}
-.mediaList .mediaItem, .dispoList .dispoItem, .sceneList .sceneItem, .lightList  .lightItem {
-  cursor: pointer;
-  line-height: 40px;
-  padding-left: 3%;
-  vertical-align: center;
+#confirmOverlay .controls i {
+    margin-right: 20%;
 }
 
-.lightList, .mediaList {
-  position: absolute;
-  top: 9%;
-  bottom: 0;
-  overflow-y: auto;
-  text-align: left;
-  line-height: 37px;
+#textOverlay .overlayTitle {
+    margin: 8% 0% 0% 15%;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+}
+
+#mediaOverlay .overlayContent {
+    height: 80%;
+    width: 80%;
+}
+
+#dispoOverlay .overlayContent,
+#sceneOverlay .overlayContent {
+    width: 50%;
+    height: 80%;
+}
+
+#textOverlay .overlayContent {
+    width: 50%;
+    height: 42%;
+}
+
+#confirmOverlay .overlayContent {
+    width: 40%;
+    height: 100px;
+}
+
+.dispoList,
+.sceneList {
+    height: 83%;
+    overflow-y: scroll;
+    /* padding-left: 5%; */
+    text-align: left;
+    background-color: #404040;
+    clear: both;
+}
+
+.mediaList .mediaItem,
+.dispoList .dispoItem,
+.sceneList .sceneItem,
+.lightList .lightItem {
+    cursor: pointer;
+    line-height: 40px;
+    padding-left: 3%;
+    vertical-align: center;
+}
+
+.lightList,
+.mediaList {
+    position: absolute;
+    top: 6%;
+    bottom: 0;
+    overflow-y: auto;
+    text-align: left;
+    line-height: 37px;
 }
 
 .lightList {
-  left: 50%;
-  right: 0;
-  background: #333;
+    left: 50%;
+    right: 0;
+    background: #333;
 }
 
 .mediaList {
-  left: 0;
-  right: 50%;
-  background: #222;
+    left: 0;
+    right: 50%;
+    background: #222;
 }
 
+
 /* RADIO */
+
 .inline-radio {
-	display: flex;
-	overflow: hidden;
+    display: flex;
+    overflow: hidden;
 }
 
 .inline-radio div {
-  position: relative;
-  flex: 1;
+    position: relative;
+    flex: 1;
 }
 
 .inline-radio input {
-  width: 100%;
-  /* height: 60px; */
-  opacity: 0;
+    width: 100%;
+    /* height: 60px; */
+    opacity: 0;
 }
 
 .inline-radio label {
-  position: absolute;
-  top: 0; left: 0;
-  color: #fff;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
 }
 
 .inline-radio div:last-child label {
-  border-right: 0;
+    border-right: 0;
 }
 
-.inline-radio input:checked + label {
-  background: #505050;
-  font-weight: 500;
-  color: #fff;
+.inline-radio input:checked+label {
+    background: #505050;
+    font-weight: 500;
+    color: #fff;
+}
+
+hr {
+    border: 1px solid #666;
 }
 
 
 /*ARGUMENTS*/
-.mediaArguments{
 
-}
-.mediaArguments > *{
-  margin-bottom: 10px;
-}
-.mediaArguments label{
-  margin-left:10px;
-}
-.mediaArguments .mediaColorPicker{
-  width: 50%;
-  outline: none;
+.mediaArguments {}
+
+.mediaArguments>* {}
+
+.mediaArguments .label {
+    display: inline-block;
+    width: 20%;
+    padding-left: 2%;
 }
 
-
-#mediaOverlay .controls, #dispoOverlay .controls, #sceneOverlay .controls{
-  margin: 0.3% 0.6%;
-  text-align: right;
-  z-index: 10000;
+.mediaArguments .list {
+    display: inline-block;
+    width: 75%;
 }
 
-#textOverlay .overlayContent{
-
+.mediaArguments .mediaColorPicker {
+    width: 50%;
+    outline: none;
 }
 
-#textOverlay textarea{
-  font-size: 17px;
-  width:50%;
-  float: left;
-  margin: 5% 10% 10% 15%;
-}
-#textOverlay .controls{
-  margin: 15% 10% 10% 15%;
+#mediaOverlay .controls,
+#dispoOverlay .controls,
+#sceneOverlay .controls {
+    margin: 0.3% 0.6%;
+    text-align: right;
+    z-index: 10000;
 }
 
+#textOverlay .overlayContent {}
+
+#textOverlay textarea {
+    font-size: 17px;
+    width: 50%;
+    float: left;
+    margin: 5% 10% 10% 15%;
+}
+
+#textOverlay .controls {
+    margin: 15% 10% 10% 15%;
+}
 
 
 /* UI */
-.circle{
-  width: 10px;
-  height: 10px;
 
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-}
-.connectionState{
-  font-weight: lighter;
-  font-style: italic;
-  font-size: 12px;
-  margin-top: 10px;
-}
-.connected .fa-circle-o-notch{
-  display:none;
-}
-.disconnected .fa-circle-o{
-  display:none;
-}
-.connected{
- color: #00ab3f
-}
-.disconnected{
-  color: #f0624d;
+.circle {
+    width: 10px;
+    height: 10px;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
 }
 
-.stopAll,.stopDispo{
-  color:#f0624d;
-}
-.btnOn{
-  opacity: 1;
-  transition: 0.1s;
-}
-.btnOff{
-  opacity: 0.4;
-  transition: 0.1s;
+.connectionState {
+    font-weight: lighter;
+    font-style: italic;
+    font-size: 12px;
+    margin-top: 10px;
 }
 
-.btnSmall{
-  font-size: 25px !important;
+.connected .fa-circle-o-notch {
+    display: none;
 }
-.btnMedium{
-  font-size: 30px !important;
+
+.disconnected .fa-circle-o {
+    display: none;
 }
-.btnBig{
-  font-size: 3.6em !important;
+
+.connected {
+    color: #00ab3f
 }
-.btn{
-  cursor: pointer;
+
+.disconnected {
+    color: #f0624d;
 }
-.btn:hover{
-  opacity:0.8;
-  transition: 0.1s;
+
+.stopAll,
+.stopDispo {
+    color: #f0624d;
 }
-.btn:active{
-  opacity:0.4;
-  transition: 0.1s;
+
+.btnOn {
+    opacity: 1;
+    transition: 0.1s;
 }
+
+.btnOff {
+    opacity: 0.4;
+    transition: 0.1s;
+}
+
+.btnSmall {
+    font-size: 25px !important;
+}
+
+.btnMedium {
+    font-size: 30px !important;
+}
+
+.btnBig {
+    font-size: 3.6em !important;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.btn:hover {
+    opacity: 0.8;
+    transition: 0.1s;
+}
+
+.btn:active {
+    opacity: 0.4;
+    transition: 0.1s;
+}
+
 textarea {
-  outline: none;
-}
-.stateOn{
-  opacity:1;
-}
-.stateOff{
-  opacity:0.4;
+    outline: none;
 }
 
-.listItem:active{
-  background-color: #454545;
-}
-.listItem:hover{
-  background-color: #454545;
-}
-.selected{
-  background-color: #505050;
-}
-.selected:hover{
-  background-color: #505050 !important;
-}
-.box:hover{
-  background-color: #404040;
-  transition: 0.1s;
-}
-.box:active{
-  background-color: #808080;
-  transition: 0.1s;
-}
-.justPlayed{
-  background-color: #404040 !important;
-  transition: 0.1s;
+.stateOn {
+    opacity: 1;
 }
 
+.stateOff {
+    opacity: 0.4;
+}
 
+.listItem:active {
+    background-color: #454545;
+}
 
+.listItem:hover {
+    background-color: #454545;
+}
+
+.selected {
+    background-color: #505050;
+}
+
+.selected:hover {
+    background-color: #505050 !important;
+}
+
+.box:hover {
+    background-color: #404040;
+    transition: 0.1s;
+}
+
+.box:active {
+    background-color: #808080;
+    transition: 0.1s;
+}
+
+.justPlayed {
+    background-color: #404040 !important;
+    transition: 0.1s;
+}
 
 
 /*CUSTOM RADIO*/
+
 input[type='radio']:after {
     width: 15px;
     height: 15px;
