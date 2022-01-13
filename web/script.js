@@ -617,8 +617,15 @@ $(function() {
             } else {
                 this.activeBox()
                 scene = project.activeScene().name
-                msg['event'] = 'play'
-                msg['data'] = scene + '/' + this.media
+                msg['event'] = 'playthen'
+                msg['data'] = [scene + '/' + this.media]
+
+                if (this.onend == 'next') 
+                    msg['data'].push( { 'event': 'do-playseq', 'data': [project.activeSceneIndex(), this.yIndex+1] } )
+                else if (this.onend == 'prev') 
+                    msg['data'].push( { 'event': 'do-playseq', 'data': [project.activeSceneIndex(), this.yIndex-1] } )
+                else if (this.onend == 'replay') 
+                    msg['data'].push( { 'event': 'do-playseq', 'data': [project.activeSceneIndex(), this.yIndex] } )
             }
 
             cmds = [msg]
@@ -690,6 +697,15 @@ $(function() {
         // GET active Scene
         this.activeScene = function() {
             return this.allScenes.find(s => s.isActive)
+        }
+
+        // GET active Scene
+        this.activeSceneIndex = function() {
+            var index = 0
+            $.each(that.allScenes, function(key, scene) {
+                if (scene.isActive) index = key
+            });
+            return index
         }
 
         // GET scene by Name
@@ -1083,6 +1099,22 @@ $(function() {
 
         console.log('loading', data)
 
+        // SCENE SELECT
+        if ('scene' in data) {
+            // Active Scene
+            project.allScenes[data['scene']].loadScene();
+        }
+
+        // SCENE SELECT
+        if ('sequence' in data) {
+            // console.log('SEQ', data['sequence'])
+            $.each(pool.allDispos, function(index, dispo) {
+                $.each(dispo.allBoxes, function(index, box) {
+                    if (box.yIndex == data['sequence']) box.action();
+                });
+            });
+        }
+
         // SAVED DATA
         if ('fullproject' in data) {
             // PARSE JSON
@@ -1155,10 +1187,11 @@ $(function() {
 
     })
 
+    
+    socket.on('peer', (data) => {
 
-    // RECEIVE DISPO STATUS
-    socket.on('dispo', (data) => {
-        console.log(data['name'], data['type'], data['data'])
+        // RECEIVE DISPO STATUS
+        console.log('PEER', data['type'], data['name'], data['data'])
         updateDispo(data['name'], data['type'], data['data'])
     })
 
