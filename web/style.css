@@ -138,7 +138,7 @@ thead th:first-child {
 .dispo,
 .box .mediaSelector {
     font-weight: normal;
-    width: 200px;
+    width: 130px;
 }
 
 .box {
@@ -301,7 +301,7 @@ tbody th {
 }
 
 .seqName {
-    width: 157px;
+    width: 100px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow-x: hidden;
