@@ -323,6 +323,10 @@ $(function() {
                         playbox.setStateIcon('pause')
                     else
                         playbox.setStateIcon('stop')
+
+                    // progress
+                    let percent = (this.state['status']['time'] / this.state['status']['duration']) * 100
+                    playbox.progress(percent)
                 }
             } else if (key == 'settings') {
                 // mute
@@ -404,6 +408,9 @@ $(function() {
         var that = this;
         this.box = $('<td class="box"></td>').appendTo($(seqdiv).parent());
 
+        // progress bar div on top
+        this.progressDiv = $('<div class="progressDiv"></div>').appendTo(this.box);
+        this.progressBar = $('<div class="progressBar"></div>').appendTo(this.progressDiv);
 
         this.stateiDiv = $('<div class="stateiDiv">').appendTo(this.box)
         this.stateIcons = {
@@ -593,8 +600,16 @@ $(function() {
                 box.setStateIcon('none')
             })
 
+            $('.progressDiv').hide()
+
             that.justPlayed = true;
             $(that.box).addClass('justPlayed');
+            that.progress(0)
+        }
+
+        this.progress = function(percent) {
+            $(this.progressBar).css({ width: percent + '%' })
+            if (percent > 0) $(this.progressDiv).show()
         }
 
         this.action = function() {
@@ -796,6 +811,7 @@ $(function() {
     //////////////////////      SCENE      /////////////////////
     ////////////////////////////////////////////////////////////
     var fileTree = []
+    var activeScene = null;
 
     function sceneObject(sceneName) {
 
@@ -809,6 +825,7 @@ $(function() {
             // set active
             $.each(project.allScenes, function(index, scene) { scene.isActive = false; });
             that.isActive = true;
+            activeScene = that;
 
             //scene names dom
             $('.seqName').each(function(index, div) {
@@ -831,19 +848,31 @@ $(function() {
         }
 
 
-        this.updateMediasSelector = function() {
+        this.updateMediasSelector = function(filter=null) {
             $('.mediaListDynamic').empty();
             $.each(fileTree, function(index, folder) {
                 if (folder.name == that.name) {
                     $.each(folder.files, function(index, fileName) {
+                        if (filter && !fileName.toLowerCase().includes(filter)) return
                         $('<div class="listItem mediaItem">' + fileName + '</div>').appendTo($('.mediaListDynamic'));
                     });
                 }
             });
         }
-
-
     }
+
+    // keyup
+    $('#mediaFilterInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        if (activeScene) activeScene.updateMediasSelector(value)
+    });
+
+    // clear
+    $('#mediaFilterClear').click(function() {
+        $('#mediaFilterInput').val('')
+        if (activeScene) activeScene.updateMediasSelector()
+    });
+
 
     ////////////////////////////////////////////////////////////
     //////////////////////     MEDIA     //////////////////////
