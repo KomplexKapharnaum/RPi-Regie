@@ -1,5 +1,6 @@
-const SEQ_SIZE = 20
+const SEQ_SIZE = 30
 
+const STREAM_IP = '10.0.0.3:8554'
 
 $(function() {
 
@@ -539,6 +540,11 @@ $(function() {
                     selectedMedia = 'fade <span class="colorPreview" style="background-color:' + $(selectedDiv).find('.mediaColorPicker').val() + '">' + $(selectedDiv).find('.mediaColorPicker').val() + '</span>'
                 }
 
+                // Stream
+                if ($(selectedDiv).hasClass('mediaStream')) {
+                    selectedMedia = 'rtsp://' + selectedMedia
+                }
+
                 $(".validateMedia").click();
             });
 
@@ -629,6 +635,11 @@ $(function() {
             } else if (this.media.startsWith('fade')) {
                 msg['event'] = 'fade'
                 msg['data'] = $(this.media.split('fade ')[1]).text();
+            } else if (this.media.includes('://')) {
+                this.activeBox()
+                msg['event'] = 'playstream'
+                msg['data'] = this.media.split('://')[0] + '://' + STREAM_IP + '/' + this.media.split('://')[1]
+                msg['synchro'] = false
             } else {
                 this.activeBox()
                 scene = project.activeScene().name
