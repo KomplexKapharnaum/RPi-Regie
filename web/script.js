@@ -934,14 +934,14 @@ $(function() {
 
         this.filterMediasSelector = function(filter='') {
             $('.mediaListDynamic .mediaItem').each((index, div) => {
-                if (!filter || $(div).html().includes(filter)) $(div).show()
+                if (!filter || $(div).html().toLowerCase().includes(filter.toLowerCase())) $(div).show()
                 else $(div).hide()
             }) 
         }
 
         this.filterDirectSelector = function(filter='') {
             $('.directListDynamic .directItem').each((index, div) => {
-                if (!filter || $(div).html().includes(filter)) $(div).show()
+                if (!filter || $(div).html().toLowerCase().includes(filter.toLowerCase())) $(div).show()
                 else $(div).hide()
             }) 
         }
