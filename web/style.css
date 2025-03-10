@@ -11,6 +11,7 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -112,6 +113,10 @@ thead th:first-child {
 .dispoCtrl {
     width: 100%;
     text-align: center;
+}
+
+.dispoCtrl i {
+    margin-right: 10px;
 }
 
 .operatorEditor {
@@ -411,8 +416,8 @@ tbody th {
 .overlayTitle,
 .overlayTitle2 {
     position: absolute;
-    top: 1.5em;
-    left: 0;
+    top: 10px;
+    left: 5px;
     padding: 0.6%;
     font-size: 1.2em;
     text-align: center;
@@ -451,6 +456,11 @@ tbody th {
     width: 80%;
 }
 
+#directOverlay .overlayContent {
+    height: 80%;
+    width: 20%;
+}
+
 #dispoOverlay .overlayContent,
 #sceneOverlay .overlayContent {
     width: 50%;
@@ -478,6 +488,7 @@ tbody th {
 }
 
 .mediaList .mediaItem,
+.directList .directItem,
 .dispoList .dispoItem,
 .sceneList .sceneItem,
 .lightList .lightItem {
@@ -487,7 +498,9 @@ tbody th {
     vertical-align: center;
 }
 
-.mediaListStatic .mediaItem {
+.mediaListStatic .mediaItem, 
+.directListStatic .directItem,
+{
     display: inline-block;
     border: 1px solid #505050;
     margin: 0 5px 5px 0;
@@ -496,7 +509,8 @@ tbody th {
 }
 
 .lightList,
-.mediaList {
+.mediaList,
+.directList {
     position: absolute;
     top: 6%;
     bottom: 0;
@@ -516,6 +530,12 @@ tbody th {
     right: 40%;
     background: #222;
 }
+
+.directList {
+    width: 100%;
+    background: #222;
+}
+
 
 /* RADIO */
 
@@ -722,6 +742,7 @@ hr {
 
 .btn {
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn:hover {

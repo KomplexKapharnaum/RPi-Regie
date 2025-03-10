@@ -14,6 +14,7 @@ $(function() {
     var expandedMode = true;
     var fadeTime = 200;
     var radioStates = {}
+    var directDispo = null
 
     $('.dispoToggle').click(function() {
         if (expandedMode == true) {
@@ -230,6 +231,7 @@ $(function() {
         //stopper
         this.dispoCtrl = $('<div class="dispoCtrl"></div>').appendTo(this.dispoHeader.children()); 
         this.stop = $('<i class="fa fa-stop btn btnBig stopDispo" aria-hidden="true"></i>').appendTo(this.dispoCtrl);
+        this.direct = $('<i class="fa fa-film btn btnMedium directDispo" aria-hidden="true"></i>').appendTo(this.dispoCtrl);
         //more btns
         this.dispoMore = $('<div class="dispoMore"></div>').appendTo(this.dispoHeader.children());
         this.mute = $('<i class="fa fa-volume-up btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
@@ -407,6 +409,15 @@ $(function() {
                 //   $(box.validPlayDiv).removeClass('validPlay-true'); 
                 // });
         });
+
+        // DIRECT
+        this.direct.click(() => {
+            $("#directOverlay").fadeIn(fadeTime);
+            directDispo = this
+            project.activeScene().filterDirectSelector(this.state['settings']['filter']);
+            $("#directOverlay .overlayTitle").html(this.operator + ' - ' + this.name);
+        })
+
 
         this.pause.click(function() {
             if (that.state['status']['isPaused'])
@@ -901,10 +912,19 @@ $(function() {
 
         this.updateMediasSelector = function() {
             $('.mediaListDynamic').empty();
+            $('.dynamicListDynamic').empty();
             $.each(fileTree, function(index, folder) {
                 if (folder.name == that.name) {
                     $.each(folder.files, function(index, fileName) {
                         $('<div class="listItem mediaItem">' + fileName + '</div>').appendTo($('.mediaListDynamic'));
+
+                        $('<div class="listItem directItem">' + fileName + '</div>').appendTo($('.directListDynamic'))
+                            .on('click', () => { 
+                                if (!directDispo) return
+                                let media = fileName
+                                if (!media.includes('://')) media = that.name + '/' + fileName
+                                emitEvent({ 'peer': directDispo.name, 'event': 'play', 'data': [that.name + '/' + fileName] })
+                            })
                     });
                 }
             });
@@ -914,7 +934,14 @@ $(function() {
 
         this.filterMediasSelector = function(filter='') {
             $('.mediaListDynamic .mediaItem').each((index, div) => {
-                if (!filter || $(div).html().toLowerCase().includes(filter)) $(div).show()
+                if (!filter || $(div).html().includes(filter)) $(div).show()
+                else $(div).hide()
+            }) 
+        }
+
+        this.filterDirectSelector = function(filter='') {
+            $('.directListDynamic .directItem').each((index, div) => {
+                if (!filter || $(div).html().includes(filter)) $(div).show()
                 else $(div).hide()
             }) 
         }
