@@ -32,9 +32,6 @@ thead th:first-child {
     vertical-align: top;
 }
 
-.masterControls .masterText {
-    width: 60%;
-}
 
 .masterControls .stopAll {
     margin-top: 3px;
@@ -46,9 +43,17 @@ thead th:first-child {
     margin-right: 11px;
 }
 
+.masterControls .editToggle {
+    float:inline-end;
+}
+
 .masterControls .masterText {
-    float: left;
-    width: 75%;
+    width: 100%;
+}
+
+.masterControls .masterControls_line1 {
+    width: 100%;
+    /* text-align: center; */
 }
 
 .masterControls .connectionState {}
@@ -67,9 +72,12 @@ thead th:first-child {
 
 .masterControls .masterControls_line2>i {
     width: 20%;
+    vertical-align: super;
 }
 
-.dispoToggle {}
+.dispoToggle {
+    display: none;
+}
 
 .container {
     max-width: 100vw;
@@ -89,7 +97,7 @@ thead th:first-child {
 
 .dispo {
     text-align: initial;
-    padding: 5px;
+    overflow-x: hidden;
 }
 
 
@@ -98,20 +106,49 @@ thead th:first-child {
 } */
 
 .dispoNaming {
-    width: 72%;
-    float: left;
-    padding: 4px;
+    width: 100%;
+}
+
+.dispoCtrl {
+    width: 100%;
+    text-align: center;
+}
+
+.operatorEditor {
+    background-color: #CCC;
+    color: black;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.nameEditor {
+    font-size: 12px;
 }
 
 .operatorEditor,
 .nameEditor {
-    font-size: 15px;
+    text-align: center;
     line-height: 20px;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.filterBoxInput {
+    width: 100%;
+    padding: 5px;
+    text-align: left;
+    background-color: #111;
+    color: white;
+    border: 0px;
+    text-align: center;
+}
+
+.filterBoxInput::placeholder {
+    font-style: italic;
+    opacity: 0.5;
+  }
 
 .dispoMore {
     margin: 10px;
@@ -148,20 +185,25 @@ thead th:first-child {
 
 .box .mediaSelector,
 .box .lightSelector {
-    position: absolute;
+    /* position: absolute; */
     width: 100%;
+    max-height: 30px;
+    overflow: hidden;
     text-align: center;
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis; */
+    overflow-wrap: break-word;
     overflow-x: hidden;
-    white-space: nowrap;
+    /* white-space: nowrap; */
 }
 
 .box .mediaSelector {
-    top: 37%;
+    margin-top: 25px;
 }
 
 .box .lightSelector {
-    top: 65%;
+    margin-top: 5px;
+    font-style: italic;
+    opacity: 0.5;
 }
 
 .colorPreview {
@@ -296,7 +338,7 @@ tbody th {
 }
 
 .seqDiv {
-    height: 100px;
+    /* height: 100px; */
     z-index: 2;
 }
 
@@ -305,7 +347,7 @@ tbody th {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow-x: hidden;
-    margin: 22px 22px 22px 22px;
+    margin: 3px;
     background-color: #00ab3f;
     padding: 20px;
     cursor: pointer;
@@ -371,16 +413,13 @@ tbody th {
     position: absolute;
     top: 1.5em;
     left: 0;
-    right: 50%;
     padding: 0.6%;
     font-size: 1.2em;
     text-align: center;
 }
 
 .overlayTitle2 {
-    left: 51%;
-    right: 50px;
-    padding-left: 50px;
+    left: 60%;
 }
 
 #confirmOverlay .overlayTitle {
@@ -452,8 +491,8 @@ tbody th {
     display: inline-block;
     border: 1px solid #505050;
     margin: 0 5px 5px 0;
-    padding: 15px;
-    line-height: 20px;
+    padding: 10px;
+    line-height: 10px;
 }
 
 .lightList,
@@ -467,17 +506,16 @@ tbody th {
 }
 
 .lightList {
-    left: 50%;
+    left: 60%;
     right: 0;
     background: #333;
 }
 
 .mediaList {
     left: 0;
-    right: 50%;
+    right: 40%;
     background: #222;
 }
-
 
 /* RADIO */
 
@@ -489,11 +527,12 @@ tbody th {
 .inline-radio div {
     position: relative;
     flex: 1;
+    margin: 2px;
 }
 
 .inline-radio input {
     width: 100%;
-    /* height: 60px; */
+    height: 100%;
     opacity: 0;
 }
 
@@ -514,7 +553,7 @@ tbody th {
 }
 
 .inline-radio div:last-child label {
-    border-right: 0;
+    /* border-right: 0; */
 }
 
 .inline-radio input:checked+label {
@@ -550,9 +589,10 @@ hr {
 
 .mediaArguments>* {}
 
-.mediaArguments .label {
+.mediaArguments .label,
+.mediaListStatic .label {
     display: inline-block;
-    width: 20%;
+    width: 10%;
     padding-left: 2%;
 }
 
@@ -685,8 +725,8 @@ hr {
 }
 
 .btn:hover {
-    opacity: 0.8;
-    transition: 0.1s;
+    /* opacity: 0.8;
+    transition: 0.1s; */
 }
 
 .btn:active {

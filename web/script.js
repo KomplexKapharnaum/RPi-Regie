@@ -13,6 +13,7 @@ $(function() {
     var editionMode = false;
     var expandedMode = true;
     var fadeTime = 200;
+    var radioStates = {}
 
     $('.dispoToggle').click(function() {
         if (expandedMode == true) {
@@ -93,6 +94,17 @@ $(function() {
         });
     });
 
+    // RADIO: on click on already checked radio, look for none value in the group and select it
+    $('input[type=radio]').click(function() {
+        var radioName = $(this).attr('name');
+        if (radioStates[radioName] == $(this).val()) {
+            $(this).prop('checked', false);
+            $(radioName).filter('[value="none"]').prop('checked', true);
+            radioStates[radioName] = "none"
+        }
+        else radioStates[radioName] = $(this).val()
+    });
+
 
     // PREV NEXT SCENE
     $('.quickScene').click(function() {
@@ -100,13 +112,15 @@ $(function() {
         var indexOfActiveScene, indexToGo = 0;
         $.each(project.allScenes, function(index, scene) { if (scene.isActive) indexOfActiveScene = index; });
 
-        if (($(this).hasClass('prevScene')) && (indexOfActiveScene > 0)) {
+        if ($(this).hasClass('prevScene')) {
             indexToGo = indexOfActiveScene - 1;
+            if (indexToGo < 0) indexToGo = project.allScenes.length - 1;
             console.log('prev');
             project.allScenes[indexToGo].loadScene();
         }
-        if (($(this).hasClass('nextScene')) && (indexOfActiveScene < project.allScenes.length - 1)) {
+        if ($(this).hasClass('nextScene')) {
             indexToGo = indexOfActiveScene + 1;
+            if (indexToGo > project.allScenes.length - 1) indexToGo = 0;
             console.log('next');
             project.allScenes[indexToGo].loadScene();
         } else return;
@@ -143,7 +157,7 @@ $(function() {
             });
 
             // Push new dispo
-            var dispo = new dispoObject('dispo', 'operator', xIndex)
+            var dispo = new dispoObject({}, xIndex)
             this.allDispos.push(dispo)
 
             // reset boxes
@@ -198,13 +212,13 @@ $(function() {
     /////////////////////////   DISPO   ////////////////////////
     ////////////////////////////////////////////////////////////
 
-    function dispoObject(name, operator, xIndex) {
+    function dispoObject(dispo, xIndex) {
 
         var that = this;
 
         // input
-        this.name = name;
-        this.operator = operator;
+        this.name = dispo.name || 'dispo';
+        this.operator = dispo.operator || 'operator';
         this.xIndex = xIndex;
 
         // divs
@@ -214,12 +228,28 @@ $(function() {
         this.operatorDiv = $('<div class="operatorEditor textbtn">' + that.operator + '</div>').appendTo(this.dispoNaming);
         this.nameDiv = $('<div class="nameEditor textbtn">' + that.name + '</div>').appendTo(this.dispoNaming);
         //stopper
-        this.stop = $('<i class="fa fa-stop btn btnBig stopDispo" aria-hidden="true"></i>').appendTo(this.dispoHeader.children());
+        this.dispoCtrl = $('<div class="dispoCtrl"></div>').appendTo(this.dispoHeader.children()); 
+        this.stop = $('<i class="fa fa-stop btn btnBig stopDispo" aria-hidden="true"></i>').appendTo(this.dispoCtrl);
         //more btns
         this.dispoMore = $('<div class="dispoMore"></div>').appendTo(this.dispoHeader.children());
         this.mute = $('<i class="fa fa-volume-up btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
         this.loop = $('<i class="fa fa-repeat btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
         this.pause = $('<i class="fa fa-pause btn btnMedium stateOn" aria-hidden="true"></i>').appendTo(this.dispoMore);
+
+        // Filter box
+        this.filterBox = $('<div class="filterBox"></div>').appendTo(this.dispoHeader.children());
+        this.filterInput = $('<input type="text" class="filterBoxInput" placeholder="Filter" />').appendTo(this.filterBox);
+        this.filterInput.on('change', function() {
+            let filter = $(this).val()
+            that.emit('filter', filter)
+            $(this).val('')
+        })
+
+
+        // FILTER disable focus when not edition mode
+        // $(that.filterInput).click(function() {
+        //     if (!editionMode) $(this).blur()
+        // })
 
 
         // CREATE BOXES
@@ -256,7 +286,6 @@ $(function() {
         // NAME EDIT
         this.bindDispoSelection = function() {
             $(that.nameDiv).unbind().click(function() {
-                console.log('CLICK');
                 var selectedDispo = 'none';
                 if (editionMode == true) {
                     $('.listItem').removeClass('selected');
@@ -287,9 +316,10 @@ $(function() {
         }
         this.bindDispoSelection();
 
+
         // STATES - IN
         this.state = {
-            'settings': { loop: 0, volume: 50, mute: false, audiomode: "stereo", pan: [100, 100], autoplay: false, flip: false },
+            'settings': { loop: 0, volume: 50, mute: false, audiomode: "stereo", pan: [100, 100], autoplay: false, flip: false, filter: '' },
             'status': { isPlaying: false, isPaused: false, media: null, time: 0, duration: 0 },
             'link': 0
         }
@@ -339,6 +369,12 @@ $(function() {
                 let isLoop = this.state['settings']['loop'] > 0
                 $(this.loop).toggleClass('stateOn', isLoop)
                 $(this.loop).toggleClass('stateOff', !isLoop)
+
+                // filter
+                let filter = this.state['settings']['filter']
+                $(this.filterInput).val(filter)
+                this.filter = filter
+
             } else if (key == 'link') {
                 // link
                 let isLinked = this.state['link'] > 0
@@ -354,10 +390,11 @@ $(function() {
 
 
         // EMIT with name
-        this.emit = function(event) {
+        this.emit = function(event, data) {
             emitEvent({
                 'peer': this.name,
-                'event': event
+                'event': event,
+                'data': data
             })
         }
 
@@ -562,6 +599,10 @@ $(function() {
                     selectedLight = 'light <span class="colorPreview" style="background-color:' + $(selectedDiv).find('.mediaColorPicker').val() + '">' + $(selectedDiv).find('.mediaColorPicker').val() + '</span>'
                 }
             });
+
+            // Filter
+            $('#mediaFilterInput').val(this.dispo.filterInput.val())
+            $('#mediaFilterInput').trigger('keyup')
 
             // validate
             ///////////////////////   SAVE BOX    //////////////////////
@@ -852,36 +893,43 @@ $(function() {
 
             // mediaList in mediaOverlay
             that.updateMediasSelector();
-
             $('.sceneEditor').html(that.name);
 
             console.log('scene loaded: ' + that.name);
         }
 
 
-        this.updateMediasSelector = function(filter=null) {
+        this.updateMediasSelector = function() {
             $('.mediaListDynamic').empty();
             $.each(fileTree, function(index, folder) {
                 if (folder.name == that.name) {
                     $.each(folder.files, function(index, fileName) {
-                        if (filter && !fileName.toLowerCase().includes(filter)) return
                         $('<div class="listItem mediaItem">' + fileName + '</div>').appendTo($('.mediaListDynamic'));
                     });
                 }
             });
+            // trigger keyup
+            $('#mediaFilterInput').trigger('keyup');
+        }
+
+        this.filterMediasSelector = function(filter='') {
+            $('.mediaListDynamic .mediaItem').each((index, div) => {
+                if (!filter || $(div).html().toLowerCase().includes(filter)) $(div).show()
+                else $(div).hide()
+            }) 
         }
     }
 
     // keyup
     $('#mediaFilterInput').on('keyup', function() {
         var value = $(this).val().toLowerCase();
-        if (activeScene) activeScene.updateMediasSelector(value)
+        if (activeScene) activeScene.filterMediasSelector(value)
     });
 
     // clear
     $('#mediaFilterClear').click(function() {
         $('#mediaFilterInput').val('')
-        if (activeScene) activeScene.updateMediasSelector()
+        if (activeScene) activeScene.filterMediasSelector()
     });
 
 
@@ -1071,6 +1119,7 @@ $(function() {
             $(".dispoList").empty();
             for (let name of dispoNames.sort())
                 $('<div class="listItem dispoItem">' + name + '</div>').appendTo($('.dispoList'));
+            $('<div class="listItem dispoItem">...</div>').appendTo($('.dispoList'));
 
             pool.allDispos.forEach(d => d.bindDispoSelection())
         }
@@ -1163,7 +1212,7 @@ $(function() {
             // POOL
             pool.clearAll()
             $.each(fullproject['pool'], function(index, dispo) {
-                pool.allDispos.push(new dispoObject(dispo.name, dispo.operator, index));
+                pool.allDispos.push(new dispoObject(dispo, index));
             });
 
             // SAVE ACTIVE SCENE

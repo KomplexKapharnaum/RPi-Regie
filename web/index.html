@@ -64,7 +64,8 @@
                     <div class="label">LOOP</div>
                     <div class="list">
                         <group class="inline-radio">
-                            <div><input type="radio" id="loopArg-none" name="loopArg" value="none"><label for="none">unchanged</label></div>
+                            <div style="display:none">
+                                <input type="radio" id="loopArg-none" name="loopArg" value="none"><label for="none">...</label></div>
                             <div><input type="radio" id="loopArg-loop" name="loopArg" value="loop"><label for="loop">loop</label></div>
                             <div><input type="radio" id="loopArg-unloop" name="loopArg" value="unloop"><label for="unloop">unloop</label></div>
                         </group>
@@ -72,10 +73,11 @@
                 </div>
                 <hr />
                 <div class="mediaArguments">
-                    <div class="label">ON MEDIA END</div>
+                    <div class="label">END</div>
                     <div class="list">
                         <group class="inline-radio">
-                            <div><input type="radio" id="onEndArg-none" name="onEndArg" value="none"><label for="none">nothing</label></div>
+                            <div style="display:none">
+                                <input type="radio" id="onEndArg-none" name="onEndArg" value="none"><label for="none">...</label></div>
                             <div><input type="radio" id="onEndArg-next" name="onEndArg" value="next"><label for="next">next seq</label></div>
                             <div><input type="radio" id="onEndArg-prev" name="onEndArg" value="prev"><label for="prev">prev seq</label></div>
                             <div><input type="radio" id="onEndArg-unloop" name="onEndArg" value="replay"><label for="replay">replay seq</label></div>
@@ -84,6 +86,7 @@
                 </div>
                 <hr />
                 <div class="mediaListStatic">
+                    <div class="label">MEDIA</div>
                     <div class="listItem mediaItem mediaNone">...</div>
                     <div class="listItem mediaItem mediaStop">stop</div>
                     <div class="listItem mediaItem mediaPause">pause</div>
@@ -232,18 +235,17 @@
                                 <div class="sceneEditor textbtn btn">SCENE A</div>
                             </div>
 
-                            <i class="btn fa fa-stop btnBig stopAll masterBtn" aria-hidden="true"></i>
+                            <div class="masterControls_line1">
+                                <i class="btn fa fa-stop btnBig stopAll masterBtn" aria-hidden="true"></i>
+                            </div>
 
                             <div class="masterControls_line2">
                                 <i class="btn fa fa-arrow-left btnMedium quickScene prevScene" aria-hidden="true"></i>
                                 <i class="btn fa fa-arrow-right btnMedium quickScene nextScene" aria-hidden="true"></i>
 
-                                <i class="btn fa fa-cog btnOff btnBig editToggle masterBtn" aria-hidden="true"></i>
-                                <i class="btn fa fa-chevron-circle-up btnBig dispoToggle" aria-hidden="true"></i>
+                                <i class="btn fa fa-cog btnOff btnMedium editToggle masterBtn" aria-hidden="true"></i>
+                                <i class="btn fa fa-chevron-circle-up btnMedium dispoToggle" aria-hidden="true"></i>
                             </div>
-
-                            <!-- <i class="btn fa fa-plus-circle btnBig dispoToggle" aria-hidden="true"></i> -->
-
 
                         </div>
                     </th>
