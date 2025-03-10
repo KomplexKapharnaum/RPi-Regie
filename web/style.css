@@ -203,6 +203,7 @@ thead th:first-child {
 
 .box .mediaSelector {
     margin-top: 25px;
+width:130px;
 }
 
 .box .lightSelector {
