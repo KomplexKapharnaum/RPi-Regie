@@ -1191,7 +1191,7 @@ $(function() {
 
     // url = 'casa.local:9111';
     url = window.location.host;
-    var socket = io(url);
+    var socket = io(url, { maxHttpBufferSize: 100_000_000, pingTimeout: 20000 } )
 
     // CONNECT
     socket.on('connect', function() {
