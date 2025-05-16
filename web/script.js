@@ -1,6 +1,5 @@
 const SEQ_SIZE = 30
-
-const STREAM_IP = '10.0.0.3:8554'
+const STREAM1_IP = '10.0.0.3:8554'
 
 $(function() {
 
@@ -29,7 +28,6 @@ $(function() {
                 expandedMode = true;
             });
         }
-
     });
 
 
@@ -43,6 +41,9 @@ $(function() {
             $('.seqControls, #addRemoveDispos').fadeOut(fadeTime, function() {
                 editionMode = false;
             });
+
+            // hide colorBox
+            $('.colorBox').hide()
         }
         if (editionMode == false) {
             $('.editToggle').removeClass('btnOff').addClass('btnOn');
@@ -51,6 +52,9 @@ $(function() {
             $('.seqControls, #addRemoveDispos').fadeIn(fadeTime, function() {
                 editionMode = true;
             });
+
+            // show colorBox
+            $('.colorBox').show()
         }
     });
 
@@ -197,7 +201,8 @@ $(function() {
             $.each(that.allDispos, function(index, dispo) {
                 poolExport.push({
                     name: dispo.name,
-                    operator: dispo.operator
+                    operator: dispo.operator,
+                    color: dispo.color
                 });
             });
 
@@ -220,6 +225,8 @@ $(function() {
         // input
         this.name = dispo.name || 'dispo';
         this.operator = dispo.operator || 'operator';
+        this.color = dispo.color || '#CCC';
+        console.log('dispo color', this.color)
         this.xIndex = xIndex;
 
         // divs
@@ -247,12 +254,22 @@ $(function() {
             $(this).val('')
         })
 
+        // color set
+        this.operatorDiv.css({ backgroundColor: this.color });
+
+        // Color picker : 5 square of predefined color -> on click, set color to device
+        this.colorBox = $('<div class="colorBox"></div>').appendTo(this.dispoHeader.children()).hide();
+        this.colorBox.append('<div class="colorItem" style="background-color: #CCC"></div>');
+        this.colorBox.append('<div class="colorItem" style="background-color: #00FF00"></div>');
+        this.colorBox.append('<div class="colorItem" style="background-color: #FFFF00"></div>');
+        this.colorBox.append('<div class="colorItem" style="background-color: #FF0000"></div>');
+        this.colorBox.append('<div class="colorItem" style="background-color: #0000FF"></div>');
+        
 
         // FILTER disable focus when not edition mode
         // $(that.filterInput).click(function() {
         //     if (!editionMode) $(this).blur()
         // })
-
 
         // CREATE BOXES
         this.allBoxes = new Array();
@@ -284,6 +301,13 @@ $(function() {
                 that.operator = $("#textToEdit").val();
             }
         });
+
+        // COLOR EDIT
+        this.colorBox.find('.colorItem').click(function() {
+            that.color = $(this).css('background-color')
+            that.operatorDiv.css({ backgroundColor: that.color });
+            console.log('color', that.color)
+        })
 
         // NAME EDIT
         this.bindDispoSelection = function() {
@@ -321,7 +345,7 @@ $(function() {
 
         // STATES - IN
         this.state = {
-            'settings': { loop: 0, volume: 50, mute: false, audiomode: "stereo", pan: [100, 100], autoplay: false, flip: false, filter: '' },
+            'settings': { loop: 0, volume: 50, mute: false, audiomode: "stereo", pan: [100, 100], autoplay: false, flip: false, filter: '', init: false },
             'status': { isPlaying: false, isPaused: false, media: null, time: 0, duration: 0 },
             'link': 0
         }
@@ -377,11 +401,17 @@ $(function() {
                 $(this.filterInput).val(filter)
                 this.filter = filter
 
+                // init
+                this.state['settings']['init'] = true
+
             } else if (key == 'link') {
                 // link
                 let isLinked = this.state['link'] > 0
                 this.dispoHeader.css({ opacity: (isLinked) ? 1.0 : 0.4 });
                 this.allBoxes.forEach(b => b.updateOpacity((isLinked) ? 1.0 : 0.4))
+
+                // ask for settings if not yet initialized
+                if (this.state['settings']['init'] === false) that.emit('get-settings')
             }
         }
 
@@ -690,7 +720,7 @@ $(function() {
             } else if (this.media.includes('://')) {
                 this.activeBox()
                 msg['event'] = 'playstream'
-                msg['data'] = this.media.split('://')[0] + '://' + STREAM_IP + '/' + this.media.split('://')[1]
+                msg['data'] = this.media.split('://')[0] + '://' + STREAM1_IP + '/' + this.media.split('://')[1]
                 msg['synchro'] = false
             } else {
                 this.activeBox()
@@ -836,10 +866,9 @@ $(function() {
 
 
     // SCENE CHANGE
-
     bindSceneSelection = function() {
         $('.sceneEditor').unbind().click(function() {
-            if (editionMode == true) {
+            // if (editionMode == true) {
                 var selectedSceneName;
                 $('.listItem').removeClass('selected');
                 $("#sceneOverlay").fadeIn(fadeTime);
@@ -852,22 +881,17 @@ $(function() {
                     selectedSceneName = $(this).html();
                     $('.listItem').removeClass('selected');
                     $(this).addClass('selected');
-                });
-                // validate
-                $(".validateFoler").unbind().click(function() {
+
+                    // load scene
                     $("#sceneOverlay").fadeOut(fadeTime);
                     project.sceneByName(selectedSceneName).loadScene()
                 });
-            }
+
+            // }
         });
 
     }
-
     bindSceneSelection();
-
-
-
-
 
 
     ////////////////////////////////////////////////////////////

@@ -155,6 +155,26 @@ thead th:first-child {
     opacity: 0.5;
   }
 
+.colorBox {
+    width: 100%;
+    text-align: left;
+    background-color: #111;
+    color: white;
+    border: 0px;
+    margin-top: 5px;
+}
+
+.colorItem {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin: 5px;
+    text-align: left;
+    background-color: #111;
+    color: white;
+    border: 0px;
+}
+
 .dispoMore {
     margin: 10px;
 }
