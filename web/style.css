@@ -38,6 +38,10 @@ thead th:first-child {
     margin-top: 3px;
 }
 
+.masterControls .refreshAll {
+    margin-left: 25px;
+}
+
 .masterControls .nextScene,
 .masterControls .dispoToggle,
 .masterControls .editToggle {
@@ -65,6 +69,10 @@ thead th:first-child {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.masterControls_line2 {
+    margin-top: 20px;
 }
 
 .masterControls .quickScene {

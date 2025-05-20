@@ -5,6 +5,11 @@ $(function() {
 
     $('.overlay').css('opacity', '1').hide();
 
+    $('.refreshAll').click(function() {
+        // reload page
+        location.reload();
+    })
+
     ////////////////////////////////////////////////////////////
     /////////////////////////  GENERAL  ////////////////////////
     ////////////////////////////////////////////////////////////
@@ -700,10 +705,10 @@ $(function() {
             if (percent > 0) $(this.progressDiv).show()
         }
 
-        this.action = function() {
+        this.action = function(sync=false) {
 
             // Build action
-            var msg = { 'peer': this.dispo.name, 'synchro': true }
+            var msg = { 'peer': this.dispo.name, 'synchro': sync }
 
             if (this.media == 'stop') {
                 this.activeBox()
@@ -1031,7 +1036,7 @@ $(function() {
             $.each(pool.allDispos, function(index, dispo) {
                 $.each(dispo.allBoxes, function(index, box) {
                     if (box.yIndex == sequenceNumber)
-                        allCmds = allCmds.concat(box.action());
+                        allCmds = allCmds.concat(box.action(true));
                 });
             });
             emitEvent(allCmds)
@@ -1253,6 +1258,7 @@ $(function() {
                     if (box.yIndex == data['sequence']) box.action();
                 });
             });
+            
         }
 
         // SAVED DATA
