@@ -1268,7 +1268,11 @@ $(function() {
 
             // POOL
             pool.clearAll()
+
+            // order by operator
+            fullproject['pool'].sort((a, b) => a.operator.localeCompare(b.operator))
             $.each(fullproject['pool'], function(index, dispo) {
+                console.log('dispo', dispo)
                 pool.allDispos.push(new dispoObject(dispo, index));
             });
 
