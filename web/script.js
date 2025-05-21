@@ -63,6 +63,24 @@ $(function() {
         }
     });
 
+    $('.saveProject').click(function() {
+        if (editionMode == true) $('.editToggle').click()
+            
+        // download json
+        let data = exportAll()
+        let json = JSON.stringify(data, null, 2)
+        let blob = new Blob([json], { type: 'application/json' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = 'project.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log('project backup saved');
+    })
+
 
     ///////// Overlay Closer
     $(".overlay").click(function(e) {
@@ -1190,20 +1208,18 @@ $(function() {
     ///////////////////////   SAVE ALL  ////////////////////////
     ////////////////////////////////////////////////////////////
 
-    function saveAll() {
-        data = {}
+    function exportAll() {
+        let data = {}
         data['pool'] = pool.export();
         data['project'] = project.export();
-
-        console.log('saving', data)
-
-        socket.emit('save', JSON.stringify(data, null, "\t"))
-
-        // TODO: fallback to AJAX -> /data/save.php (type project) if socketio not available)
-
+        return data
     }
 
-
+    function saveAll() {
+        let data = exportAll()
+        console.log('saving', data)
+        socket.emit('save', JSON.stringify(data, null, "\t"))
+    }
 
     ////////////////////////////////////////////////////////////
     ///////////////////////   SOCKETIO  ////////////////////////
