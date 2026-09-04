@@ -647,9 +647,22 @@ $(function() {
                     selectedMedia = 'rtsp://' + selectedMedia
                 }
 
-                // NDI source (HNdi node on the peer)
+                // NDI source (HNdi node on the peer): ask the server to drop a
+                // `<source>.ndi` file in the scene folder — the cell then holds an
+                // ordinary media name that every peer (old sacvp Pis included) plays
                 if ($(selectedDiv).hasClass('mediaNdi')) {
-                    selectedMedia = 'ndi:' + selectedMedia
+                    selectedMedia = 'none'
+                    var ndiSource = $(this).text()
+                    socket.once('ndifile', function(d) {
+                        if (d && d.name) {
+                            that.media = d.name
+                            $(that.mediaDiv).html(that.media)
+                            $.each(project.activeScene().allMedias, function(index, media) {
+                                if ((media.x == that.xIndex) && (media.y == that.yIndex)) { media.media = that.media; }
+                            });
+                        }
+                    })
+                    socket.emit('ndifile', { 'scene': project.activeScene().name, 'source': ndiSource })
                 }
 
                 $(".validateMedia").click();
@@ -1271,7 +1284,7 @@ $(function() {
         $('.mediaListNdi').empty()
         if (ndiSources.length) $('<div class="label">NDI</div>').appendTo($('.mediaListNdi'))
         ndiSources.forEach(name => {
-            $('<div class="listItem mediaItem mediaNdi">' + name + '</div>').appendTo($('.mediaListNdi'))
+            $('<div class="listItem mediaItem mediaNdi" title="creates ' + name + '.ndi in the scene folder">' + name + '</div>').appendTo($('.mediaListNdi'))
         })
     }
 
