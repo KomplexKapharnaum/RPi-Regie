@@ -392,7 +392,8 @@ $(function() {
                 // play state 
                 let playbox = this.allBoxes.find(b => b.justPlayed)
                 if (playbox) {
-                    let isPlaying = this.state['status']['media'] && this.state['status']['media'].endsWith(playbox.media)
+                    let playing = playbox.media.startsWith('ndi:') ? 'ndi://' + playbox.media.slice(4) : playbox.media
+                    let isPlaying = this.state['status']['media'] && this.state['status']['media'].endsWith(playing)
                     isPlaying = isPlaying && (this.state['status']['isPlaying'] || this.state['status']['isPaused'])
 
                     // console.log(isPlaying, this.state['status'])
@@ -646,6 +647,11 @@ $(function() {
                     selectedMedia = 'rtsp://' + selectedMedia
                 }
 
+                // NDI source (HNdi node on the peer)
+                if ($(selectedDiv).hasClass('mediaNdi')) {
+                    selectedMedia = 'ndi:' + selectedMedia
+                }
+
                 $(".validateMedia").click();
             });
 
@@ -740,6 +746,10 @@ $(function() {
             } else if (this.media.startsWith('fade')) {
                 msg['event'] = 'fade'
                 msg['data'] = $(this.media.split('fade ')[1]).text();
+            } else if (this.media.startsWith('ndi:')) {
+                this.activeBox()
+                msg['event'] = 'playstream'
+                msg['data'] = 'ndi://' + this.media.slice(4)
             } else if (this.media.includes('://')) {
                 this.activeBox()
                 msg['event'] = 'playstream'
@@ -1255,10 +1265,26 @@ $(function() {
     });
 
 
+    // NDI sources seen by the box serving this page (pushed by the regie interface)
+    var ndiSources = []
+    function renderNdiSources() {
+        $('.mediaListNdi').empty()
+        if (ndiSources.length) $('<div class="label">NDI</div>').appendTo($('.mediaListNdi'))
+        ndiSources.forEach(name => {
+            $('<div class="listItem mediaItem mediaNdi">' + name + '</div>').appendTo($('.mediaListNdi'))
+        })
+    }
+
     // RECEIVE LOAD DATA
     socket.on('data', (data) => {
 
         console.log('loading', data)
+
+        // NDI SOURCES
+        if ('ndiSources' in data) {
+            ndiSources = data['ndiSources'] || []
+            renderNdiSources()
+        }
 
         // SCENE SELECT
         if ('scene' in data) {
