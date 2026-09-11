@@ -65,7 +65,7 @@ thead th:first-child {
 
 .masterControls .sceneEditor {
     font-size: 20px;
-    width: 100%;
+    width: 180px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -528,8 +528,7 @@ tbody th {
 }
 
 .mediaListStatic .mediaItem, 
-.directListStatic .directItem,
-{
+.directListStatic .directItem {
     display: inline-block;
     border: 1px solid #505050;
     margin: 0 5px 5px 0;

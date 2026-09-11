@@ -1,5 +1,5 @@
 const SEQ_SIZE = 30
-const STREAM1_IP = '10.0.0.3:8554'
+const STREAM_IP = '10.0.0.3:8554'
 
 $(function() {
 
@@ -253,7 +253,7 @@ $(function() {
         this.xIndex = xIndex;
 
         // divs
-        this.dispoHeader = $('<th><div class="dispo"></div></th>').insertBefore('#addRemoveDispos');
+        this.dispoHeader = $('<th data-name="'+that.operator+'"><div class="dispo"></div></th>').insertBefore('#addRemoveDispos');
         // naming
         this.dispoNaming = $('<div class="dispoNaming"></div>').appendTo(this.dispoHeader.children());
         this.operatorDiv = $('<div class="operatorEditor textbtn">' + that.operator + '</div>').appendTo(this.dispoNaming);
@@ -743,7 +743,7 @@ $(function() {
             } else if (this.media.includes('://')) {
                 this.activeBox()
                 msg['event'] = 'playstream'
-                msg['data'] = this.media.split('://')[0] + '://' + STREAM1_IP + '/' + this.media.split('://')[1]
+                msg['data'] = this.media.split('://')[0] + '://' + STREAM_IP + '/' + this.media.split('://')[1]
                 msg['synchro'] = false
             } else {
                 this.activeBox()
@@ -1286,7 +1286,7 @@ $(function() {
             pool.clearAll()
 
             // order by operator
-            fullproject['pool'].sort((a, b) => a.operator.localeCompare(b.operator))
+            // fullproject['pool'].sort((a, b) => a.operator.localeCompare(b.operator))
             $.each(fullproject['pool'], function(index, dispo) {
                 console.log('dispo', dispo)
                 pool.allDispos.push(new dispoObject(dispo, index));
@@ -1351,6 +1351,9 @@ $(function() {
             emitCtrl('register')
         }
 
+        // ORDER COLUMNS
+        sortDispos()
+
     })
 
     
@@ -1373,6 +1376,50 @@ $(function() {
         console.log('event', msg)
     }
 
+    ////////
+
+    /// SORT DISPOS
+    function sortDispos() {
+        const table = document.querySelector('table');
+        const thead = table.querySelector('thead tr');
+        const ths = Array.from(thead.children);
+
+        // Keep the first column fixed
+        const firstTh = ths[0];
+        const lastTh = ths[ths.length - 1];
+        const sortableThs = ths.slice(1).slice(0, -1); // Exclude first and last th
+
+        // Sort the remaining columns by data-name
+        const sortedThs = sortableThs.slice().sort((a, b) => 
+            a.dataset.name.localeCompare(b.dataset.name)
+        );
+
+        // Build the new order: always start with the fixed column
+        const newOrder = [firstTh, ...sortedThs, lastTh];
+
+        // Rearrange the header
+        thead.innerHTML = '';
+        newOrder.forEach(th => thead.appendChild(th));
+
+        // Rearrange each row in tbody
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+        const cells = Array.from(row.children);
+        const fixedCell = cells[0];
+        const sortableCells = cells.slice(1);
+
+        // Map sortedThs to the corresponding cell by original index
+        const sortedCells = sortedThs.map(th => {
+            const idx = sortableThs.indexOf(th);
+            return sortableCells[idx];
+        });
+
+        // Build new row: fixed cell + sorted cells
+        row.innerHTML = '';
+        row.appendChild(fixedCell);
+            sortedCells.forEach(td => row.appendChild(td));
+        });
+    }
 
 
 
