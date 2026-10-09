@@ -1,9 +1,16 @@
 const SEQ_SIZE = 30
 const STREAM_IP = '10.0.0.3:8554'
+// shown under the connection state, so a tablet can be seen running this page:
+// keep it equal to the ?v= on script.js and style.css in index.html
+const REGIE_VERSION = '2026.10.09-t004'
 
 $(function() {
 
     $('.overlay').css('opacity', '1').hide();
+
+    $('<div class="regieVersion">régie ' + REGIE_VERSION + '</div>')
+        .css({ fontSize: '10px', opacity: 0.6 })
+        .insertAfter('.connectionState');
 
     $('.refreshAll').click(function() {
         // reload page
@@ -122,12 +129,20 @@ $(function() {
         });
     });
 
+    // DIRECT streams (static items of the DIRECT overlay): play on the dispo it was opened for,
+    // the same order a stream box sends
+    $('.directStream').click(function() {
+        if (!directDispo) return
+        emitEvent({ 'peer': directDispo.name, 'event': 'playstream', 'data': 'rtsp://' + STREAM_IP + '/' + $(this).text() })
+    });
+
     // RADIO: on click on already checked radio, look for none value in the group and select it
+    // (radioStates holds the values of the box being edited: box.edit() sets them)
     $('input[type=radio]').click(function() {
         var radioName = $(this).attr('name');
         if (radioStates[radioName] == $(this).val()) {
             $(this).prop('checked', false);
-            $(radioName).filter('[value="none"]').prop('checked', true);
+            $('input[name="' + radioName + '"]').filter('[value="none"]').prop('checked', true);
             radioStates[radioName] = "none"
         }
         else radioStates[radioName] = $(this).val()
@@ -194,16 +209,15 @@ $(function() {
 
         // REMOVE
         this.removeDispo = function() {
-            // remove dispo & dispo div
-            that.allDispos.pop();
-            $("#dispos").find('th:nth-last-child(2)').remove();
-            // Remove boxes
-            $('.seqLine').each(function(index, div) {
-                $(div).find('.box:last-child').remove();
-            });
+            // remove dispo & its own header and boxes: sortDispos() reorders the columns,
+            // so the last one on screen is not the last one in allDispos
+            var dispo = that.allDispos.pop();
+            if (!dispo) return
+            dispo.dispoHeader.remove();
+            dispo.allBoxes.forEach(box => { box.box.remove() })
             // Reduce allMedias Array
             // project.removeDispo();
-            var xToRemove = that.allDispos.length;
+            var xToRemove = dispo.xIndex;
             console.log("removing medias with index X: " + xToRemove);
             $.each(project.allScenes, function(index, scene) {
                 scene.allMedias = scene.allMedias.filter(function(media) {
@@ -343,7 +357,8 @@ $(function() {
                     // $(".dispoItem").unbind().click(function(){
                     // prefer this method so that if elements have been updated (".dispoItem" deleted & refilled) the event still works
                     // otherwise, user have to close & reopen window to bind ".dispoItem" click again
-                    $(document).on("click", ".dispoItem", function() {
+                    // .off first: each opening used to ADD one more handler, so one pick registered k times
+                    $(document).off("click.pick", ".dispoItem").on("click.pick", ".dispoItem", function() {
                         console.log('CLICK dispoItem');
                         selectedDispo = $(this).html();
                         $('.listItem').removeClass('selected');
@@ -571,8 +586,8 @@ $(function() {
 
             this.setLoopIcon(this.loop)
             this.setOnendIcon(this.onend)
-            $(this.mediaDiv).html(this.media);
-            $(this.lightDiv).html(this.light);
+            $(this.mediaDiv).html(cueHtml(this.media));
+            $(this.lightDiv).html(cueHtml(this.light));
         }
 
         // Reset box 
@@ -612,6 +627,11 @@ $(function() {
             // update Radio
             $('input:radio[name="onEndArg"]').filter('[value="' + that.onend + '"]').prop('checked', true);
 
+            // the "tap a checked radio to clear it" memory starts from THIS box's values,
+            // not from the last box edited (one tap used to be swallowed as a clear)
+            radioStates['loopArg'] = that.loop;
+            radioStates['onEndArg'] = that.onend;
+
             // update media
             $(".mediaItem").each(function(index, div) {
                 if ($(div).html() == that.media) { $(div).addClass('selected'); }
@@ -639,7 +659,7 @@ $(function() {
 
                 // Color picker
                 if ($(selectedDiv).hasClass('mediaColor')) {
-                    selectedMedia = 'fade <span class="colorPreview" style="background-color:' + $(selectedDiv).find('.mediaColorPicker').val() + '">' + $(selectedDiv).find('.mediaColorPicker').val() + '</span>'
+                    selectedMedia = 'fade ' + $(selectedDiv).find('.mediaColorPicker').val()
                 }
 
                 // Stream
@@ -679,7 +699,7 @@ $(function() {
 
                 // Color picker
                 if ($(selectedDiv).hasClass('lightColor')) {
-                    selectedLight = 'light <span class="colorPreview" style="background-color:' + $(selectedDiv).find('.mediaColorPicker').val() + '">' + $(selectedDiv).find('.mediaColorPicker').val() + '</span>'
+                    selectedLight = 'light ' + $(selectedDiv).find('.mediaColorPicker').val()
                 }
             });
 
@@ -702,8 +722,8 @@ $(function() {
                 that.onend = $("input[name='onEndArg']:checked").val();
                 if (that.onend == undefined) { that.onend = 'none' }
 
-                $(that.mediaDiv).html(that.media);
-                $(that.lightDiv).html(that.light);
+                $(that.mediaDiv).html(cueHtml(that.media));
+                $(that.lightDiv).html(cueHtml(that.light));
                 that.setLoopIcon(that.loop)
                 that.setOnendIcon(that.onend)
 
@@ -723,14 +743,14 @@ $(function() {
         }
 
         this.activeBox = function() {
+            // this column only: the other dispos keep their state and progress bar
             pool.allDispos.find(d => d.xIndex == that.xIndex).allBoxes.forEach(box => {
                 box.justPlayed = false;
                 $(box.box).removeClass('justPlayed');
                 // $(box.validPlayDiv).removeClass('validPlay-true'); 
                 box.setStateIcon('none')
+                $(box.progressDiv).hide()
             })
-
-            $('.progressDiv').hide()
 
             that.justPlayed = true;
             $(that.box).addClass('justPlayed');
@@ -758,7 +778,7 @@ $(function() {
                 msg['event'] = 'unfade'
             } else if (this.media.startsWith('fade')) {
                 msg['event'] = 'fade'
-                msg['data'] = $(this.media.split('fade ')[1]).text();
+                msg['data'] = cueColor(this.media);
             } else if (this.media.startsWith('ndi:')) {
                 this.activeBox()
                 msg['event'] = 'playstream'
@@ -797,7 +817,7 @@ $(function() {
                         'event': 'esp',
                         'data': {
                             'topic': 'leds/all',
-                            'data': $(this.light.split('light ')[1]).text()
+                            'data': cueColor(this.light)
                         }
                     })
 
@@ -922,7 +942,8 @@ $(function() {
                 // $(".sceneItem").unbind().click(function(){
                 // prefer this method so that if elements have been updated (".sceneItem" deleted & refilled) the event still works
                 // otherwise, user have to close & reopen window to bind ".sceneItem" click again
-                $(document).on("click", ".sceneItem", function() {
+                // .off first: each opening used to ADD one more handler, so one pick loaded the scene k times
+                $(document).off("click.pick", ".sceneItem").on("click.pick", ".sceneItem", function() {
                     console.log('scene item click');
                     selectedSceneName = $(this).html();
                     $('.listItem').removeClass('selected');
@@ -982,7 +1003,7 @@ $(function() {
 
         this.updateMediasSelector = function() {
             $('.mediaListDynamic').empty();
-            $('.dynamicListDynamic').empty();
+            $('.directListDynamic').empty();
             $.each(fileTree, function(index, folder) {
                 if (folder.name == that.name) {
                     $.each(folder.files, function(index, fileName) {
@@ -1041,6 +1062,31 @@ $(function() {
         this.light = light;
         this.loop = loop;
         this.onend = onend;
+    }
+
+    // COLOR CUES: a colour fade / LED colour is saved as `fade #rrggbb` / `light #rrggbb`,
+    // the form HPlayer2's own sequence path (END chains, numpad) sends on as is.
+    // Older saves hold HTML (`fade <span class="colorPreview" ...>#rrggbb</span>`): read both.
+    function cueColor(cue) {
+        let hex = String(cue).match(/#[0-9a-f]{6}/i)
+        return hex ? hex[0] : ''
+    }
+
+    function plainCue(cue) {
+        if (typeof cue != 'string' || !cue.includes('<')) return cue
+        for (let kind of ['fade', 'light'])
+            if (cue.startsWith(kind + ' ') && cueColor(cue)) return kind + ' ' + cueColor(cue)
+        return cue
+    }
+
+    // what a box shows: the cue with its colour swatch
+    function cueHtml(cue) {
+        cue = plainCue(cue)
+        if (typeof cue != 'string') return cue
+        for (let kind of ['fade', 'light'])
+            if (cue.startsWith(kind + ' #') && cueColor(cue))
+                return kind + ' <span class="colorPreview" style="background-color:' + cueColor(cue) + '">' + cueColor(cue) + '</span>'
+        return cue
     }
 
 
@@ -1288,6 +1334,10 @@ $(function() {
         })
     }
 
+    // casa's folder index, as last followed: its file manager re-announces the SAME index on
+    // every media refresh (a Syncthing delivery, a dropped file), which must not move the page
+    var serverScene = null
+
     // RECEIVE LOAD DATA
     socket.on('data', (data) => {
 
@@ -1299,10 +1349,14 @@ $(function() {
             renderNdiSources()
         }
 
-        // SCENE SELECT
-        if ('scene' in data) {
-            // Active Scene
-            project.allScenes[data['scene']].loadScene();
+        // SCENE SELECT: follow casa only when its folder changes
+        if ('scene' in data && data['scene'] !== serverScene) {
+            // Active Scene (an index the page does not know yet is skipped, not thrown)
+            let followed = project.allScenes[data['scene']]
+            if (followed) {
+                serverScene = data['scene']
+                followed.loadScene();
+            }
         }
 
         // SCENE SELECT
@@ -1354,7 +1408,12 @@ $(function() {
                 // medias
                 $.each(newScene.allMedias, (i, media) => {
                     m = projectImport[0][index].allMedias.find(m => (m.x == media.x && m.y == media.y))
-                    if (m) newScene.allMedias[i] = m;
+                    if (m) {
+                        // colour cues saved as HTML by older pages: the next save writes them plain
+                        m.media = plainCue(m.media);
+                        m.light = plainCue(m.light);
+                        newScene.allMedias[i] = m;
+                    }
                 });
 
             });
